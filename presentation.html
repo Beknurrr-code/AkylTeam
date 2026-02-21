@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AkylTeam — alem.ai Battle 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  :root{
+    --blue:#4f8ef7;
+    --purple:#9b5de5;
+    --cyan:#00d4ff;
+    --green:#06d6a0;
+    --orange:#f77f00;
+    --pink:#e040fb;
+    --dark:#0d0f1a;
+    --card:#161929;
+    --border:rgba(255,255,255,0.08);
+  }
+
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--dark);
+    color:#fff;
+    overflow:hidden;
+    height:100vh;
+    width:100vw;
+  }
+
+  /* ── SLIDES ── */
+  .slides{width:100%;height:100vh;position:relative;}
+  .slide{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:60px 80px;
+    opacity:0;pointer-events:none;
+    transform:translateX(60px);
+    transition:opacity .45s ease, transform .45s ease;
+  }
+  .slide.active{opacity:1;pointer-events:all;transform:translateX(0);}
+  .slide.exit{opacity:0;transform:translateX(-60px);}
+
+  /* ── BACKGROUNDS ── */
+  .slide-1{background:radial-gradient(ellipse at 20% 50%,#1a1060 0%,var(--dark) 60%);}
+  .slide-2{background:radial-gradient(ellipse at 80% 20%,#0e2040 0%,var(--dark) 60%);}
+  .slide-3{background:radial-gradient(ellipse at 20% 80%,#0e1a30 0%,var(--dark) 60%);}
+  .slide-4{background:radial-gradient(ellipse at 70% 50%,#1a0e30 0%,var(--dark) 60%);}
+  .slide-5{background:radial-gradient(ellipse at 30% 30%,#0e2030 0%,var(--dark) 60%);}
+  .slide-6{background:radial-gradient(ellipse at 60% 70%,#1a1020 0%,var(--dark) 60%);}
+  .slide-7{background:radial-gradient(ellipse at 20% 60%,#081a20 0%,var(--dark) 60%);}
+  .slide-8{background:radial-gradient(ellipse at 50% 50%,#1a0e40 0%,var(--dark) 60%);}
+
+  /* ── GRID OVERLAY ── */
+  .slide::before{
+    content:'';position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+    background-size:50px 50px;
+    pointer-events:none;
+  }
+
+  /* ── COMMON ── */
+  .tag{
+    display:inline-block;padding:5px 14px;border-radius:20px;
+    font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    border:1px solid;margin-bottom:16px;
+  }
+  .tag-blue{color:var(--blue);border-color:var(--blue);background:rgba(79,142,247,.1);}
+  .tag-purple{color:var(--purple);border-color:var(--purple);background:rgba(155,93,229,.1);}
+  .tag-cyan{color:var(--cyan);border-color:var(--cyan);background:rgba(0,212,255,.1);}
+  .tag-green{color:var(--green);border-color:var(--green);background:rgba(6,214,160,.1);}
+  .tag-orange{color:var(--orange);border-color:var(--orange);background:rgba(247,127,0,.1);}
+
+  h1{font-size:clamp(36px,5vw,68px);font-weight:900;line-height:1.1;text-align:center;}
+  h2{font-size:clamp(28px,3.5vw,48px);font-weight:800;line-height:1.15;text-align:center;margin-bottom:10px;}
+  .sub{font-size:clamp(15px,1.6vw,20px);color:rgba(255,255,255,.55);text-align:center;line-height:1.6;max-width:750px;margin-top:16px;}
+
+  .gradient-text{background:linear-gradient(135deg,var(--blue),var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .gradient-text-green{background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .gradient-text-purple{background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+  /* ── CARDS ── */
+  .cards{display:grid;gap:16px;margin-top:32px;width:100%;max-width:1100px;}
+  .cards-2{grid-template-columns:1fr 1fr;}
+  .cards-3{grid-template-columns:1fr 1fr 1fr;}
+  .cards-4{grid-template-columns:1fr 1fr 1fr 1fr;}
+
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:16px;padding:24px;
+    transition:transform .2s;
+  }
+  .card-icon{font-size:32px;margin-bottom:12px;}
+  .card-title{font-size:16px;font-weight:700;margin-bottom:6px;}
+  .card-desc{font-size:13px;color:rgba(255,255,255,.5);line-height:1.5;}
+
+  /* ── PROBLEM SLIDE ── */
+  .problem-list{list-style:none;max-width:800px;margin-top:32px;display:flex;flex-direction:column;gap:14px;}
+  .problem-list li{
+    display:flex;align-items:flex-start;gap:14px;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:18px 22px;
+    font-size:16px;line-height:1.5;
+  }
+  .problem-list li .ico{font-size:24px;flex-shrink:0;margin-top:2px;}
+  .problem-list li span{color:rgba(255,255,255,.75);}
+  .problem-list li strong{color:#fff;}
+
+  /* ── SOLUTION FLOW ── */
+  .flow{display:flex;align-items:center;gap:12px;margin-top:32px;flex-wrap:wrap;justify-content:center;max-width:1000px;}
+  .flow-box{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:20px 24px;text-align:center;
+    min-width:150px;flex:1;
+  }
+  .flow-box .fi{font-size:28px;margin-bottom:8px;}
+  .flow-box p{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;}
+  .flow-box strong{font-size:14px;}
+  .arrow{font-size:22px;color:rgba(255,255,255,.2);}
+
+  /* ── TECH STACK ── */
+  .stack-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:28px;max-width:900px;}
+  .stack-badge{
+    padding:8px 18px;border-radius:10px;font-size:13px;font-weight:600;
+    background:var(--card);border:1px solid var(--border);
+    display:flex;align-items:center;gap:8px;
+  }
+  .stack-badge .dot{width:8px;height:8px;border-radius:50%;}
+
+  /* ── STATS ── */
+  .stats{display:flex;gap:32px;margin-top:36px;flex-wrap:wrap;justify-content:center;}
+  .stat{text-align:center;}
+  .stat-num{font-size:clamp(36px,4vw,56px);font-weight:900;line-height:1;}
+  .stat-label{font-size:13px;color:rgba(255,255,255,.45);margin-top:6px;}
+
+  /* ── TEAM ── */
+  .team-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:20px;padding:32px 40px;
+    display:flex;flex-direction:column;align-items:center;gap:12px;
+    max-width:340px;
+  }
+  .avatar{
+    width:90px;height:90px;border-radius:50%;
+    background:linear-gradient(135deg,var(--blue),var(--purple));
+    display:flex;align-items:center;justify-content:center;
+    font-size:36px;font-weight:900;
+  }
+  .team-name{font-size:22px;font-weight:800;}
+  .team-role{font-size:14px;color:rgba(255,255,255,.5);}
+  .team-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px;}
+  .chip{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(79,142,247,.15);color:var(--blue);border:1px solid rgba(79,142,247,.3);}
+
+  /* ── ROADMAP ── */
+  .roadmap{display:flex;flex-direction:column;gap:12px;max-width:900px;margin-top:28px;width:100%;}
+  .rm-item{
+    display:flex;align-items:center;gap:16px;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:16px 22px;
+  }
+  .rm-phase{
+    padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;
+    white-space:nowrap;flex-shrink:0;letter-spacing:.04em;text-transform:uppercase;
+  }
+  .rm-done{background:rgba(6,214,160,.15);color:var(--green);border:1px solid rgba(6,214,160,.3);}
+  .rm-now{background:rgba(79,142,247,.15);color:var(--blue);border:1px solid rgba(79,142,247,.3);}
+  .rm-next{background:rgba(155,93,229,.15);color:var(--purple);border:1px solid rgba(155,93,229,.3);}
+  .rm-text{font-size:14px;color:rgba(255,255,255,.8);}
+  .rm-text strong{color:#fff;}
+
+  /* ── FINAL CTA ── */
+  .cta-box{
+    background:linear-gradient(135deg,rgba(79,142,247,.15),rgba(155,93,229,.15));
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:24px;padding:40px 60px;text-align:center;
+    max-width:800px;margin-top:32px;
+  }
+  .cta-box h3{font-size:22px;font-weight:700;margin-bottom:10px;}
+  .cta-box p{color:rgba(255,255,255,.55);font-size:15px;line-height:1.6;}
+
+  /* ── NAV ── */
+  .nav{
+    position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+    display:flex;align-items:center;gap:12px;
+    background:rgba(255,255,255,.06);backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.1);border-radius:50px;
+    padding:10px 20px;z-index:100;
+  }
+  .nav-btn{
+    background:none;border:none;color:rgba(255,255,255,.5);
+    font-size:18px;cursor:pointer;padding:4px 10px;border-radius:6px;
+    transition:color .2s;
+  }
+  .nav-btn:hover{color:#fff;}
+  .nav-dots{display:flex;gap:8px;align-items:center;}
+  .dot-btn{
+    width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);
+    border:none;cursor:pointer;transition:all .2s;padding:0;
+  }
+  .dot-btn.active{width:24px;border-radius:4px;background:var(--blue);}
+  .slide-counter{font-size:13px;color:rgba(255,255,255,.35);min-width:36px;text-align:center;}
+
+  /* ── LOGO TOP ── */
+  .logo-top{
+    position:fixed;top:24px;left:32px;
+    font-size:14px;font-weight:700;color:rgba(255,255,255,.3);
+    letter-spacing:.05em;z-index:100;
+  }
+  .slide-num-top{
+    position:fixed;top:24px;right:32px;
+    font-size:13px;color:rgba(255,255,255,.2);z-index:100;
+  }
+
+  /* keyboard hint */
+  .key-hint{position:fixed;bottom:90px;right:32px;font-size:11px;color:rgba(255,255,255,.18);}
+
+  /* glow */
+  .glow{filter:drop-shadow(0 0 20px rgba(79,142,247,.4));}
+</style>
+</head>
+<body>
+
+<div class="logo-top">AkylTeam</div>
+<div class="slide-num-top" id="slideNumTop">1 / 8</div>
+<div class="key-hint">← → для навигации</div>
+
+<div class="slides" id="slides">
+
+  <!-- ── SLIDE 1: TITLE ── -->
+  <div class="slide slide-1 active">
+    <div class="tag tag-cyan">alem.ai Battle 2026</div>
+    <h1><span class="gradient-text">AkylTeam</span></h1>
+    <p class="sub">AI-платформа нового поколения для хакатонных и студенческих команд — от идеи до готового продукта за минуты</p>
+    <div class="stats" style="margin-top:48px;">
+      <div class="stat">
+        <div class="stat-num gradient-text">8+</div>
+        <div class="stat-label">AI-модулей</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num gradient-text">24</div>
+        <div class="stat-label">темы алгоритмов</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num gradient-text">100%</div>
+        <div class="stat-label">рабочий MVP</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 2: PROBLEM ── -->
+  <div class="slide slide-2">
+    <div class="tag tag-orange">Проблема</div>
+    <h2>Команды <span style="color:#f77f00;">тратят время</span> не там</h2>
+    <ul class="problem-list">
+      <li>
+        <span class="ico">⏱️</span>
+        <div><strong>60% времени хакатона</strong> <span>уходит на организацию: распределение задач, поиск информации, синхронизацию — а не на создание продукта</span></div>
+      </li>
+      <li>
+        <span class="ico">📚</span>
+        <div><strong>Олимпиадники и студенты</strong> <span>учатся разрозненно: Stack Overflow, YouTube, Codeforces — без системы и AI-поддержки в реальном времени</span></div>
+      </li>
+      <li>
+        <span class="ico">😓</span>
+        <div><strong>Выгорание и потеря мотивации</strong> <span>из-за отсутствия структуры, трекинга прогресса и своевременной помощи</span></div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ── SLIDE 3: SOLUTION ── -->
+  <div class="slide slide-3">
+    <div class="tag tag-green">Решение</div>
+    <h2>Один инструмент — <span class="gradient-text-green">всё что нужно</span></h2>
+    <p class="sub">AkylTeam заменяет 7 разных приложений одной платформой с AI в центре каждого модуля</p>
+    <div class="flow">
+      <div class="flow-box">
+        <div class="fi">💡</div>
+        <strong>Идея</strong>
+        <p>AI генерирует концепцию</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-box">
+        <div class="fi">🗺️</div>
+        <strong>Роадмап</strong>
+        <p>Пошаговый план за 30 сек</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-box">
+        <div class="fi">📋</div>
+        <strong>Kanban</strong>
+        <p>Автосинк задач</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-box">
+        <div class="fi">🤖</div>
+        <strong>Ментор</strong>
+        <p>AI помогает 24/7</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-box">
+        <div class="fi">🏆</div>
+        <strong>Победа</strong>
+        <p>Готовый продукт</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 4: FEATURES ── -->
+  <div class="slide slide-4">
+    <div class="tag tag-purple">Возможности</div>
+    <h2>Ключевые <span class="gradient-text-purple">модули</span></h2>
+    <div class="cards cards-4" style="margin-top:24px;">
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <div class="card-title">AI-ментор</div>
+        <div class="card-desc">Личный чат с контекстом задач и веб-поиском в реальном времени</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🗺️</div>
+        <div class="card-title">Планировщик</div>
+        <div class="card-desc">Роадмап проекта за 30 сек + автоперенос шагов в Kanban</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📐</div>
+        <div class="card-title">Олимпиадный тренажёр</div>
+        <div class="card-desc">24 темы, генерация задач, AI-разбор для 3 уровней сложности</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📚</div>
+        <div class="card-title">AI-учитель</div>
+        <div class="card-desc">Объяснения любых тем + квизы для самопроверки знаний</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📋</div>
+        <div class="card-title">Kanban-доска</div>
+        <div class="card-desc">Управление задачами команды с приоритетами и статусами</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">💤</div>
+        <div class="card-title">Детектор выгорания</div>
+        <div class="card-desc">Мониторинг состояния + персональные рекомендации</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏆</div>
+        <div class="card-title">XP и достижения</div>
+        <div class="card-desc">Геймификация — ранги, бейджи, лидерборд команды</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🗂️</div>
+        <div class="card-title">Каталог хакатонов</div>
+        <div class="card-desc">AI-подбор соревнований + подготовка питча</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 5: TECH ── -->
+  <div class="slide slide-5">
+    <div class="tag tag-cyan">Технологии</div>
+    <h2>Стек <span class="gradient-text">под капотом</span></h2>
+    <div class="stack-grid">
+      <div class="stack-badge"><span class="dot" style="background:#3572A5;"></span>Python 3.12</div>
+      <div class="stack-badge"><span class="dot" style="background:#009688;"></span>FastAPI</div>
+      <div class="stack-badge"><span class="dot" style="background:#f7931e;"></span>SQLAlchemy + SQLite</div>
+      <div class="stack-badge"><span class="dot" style="background:#4f8ef7;"></span>OpenRouter API</div>
+      <div class="stack-badge"><span class="dot" style="background:#9b5de5;"></span>DeepSeek R1</div>
+      <div class="stack-badge"><span class="dot" style="background:#00d4ff;"></span>GLM-4.5 Air</div>
+      <div class="stack-badge"><span class="dot" style="background:#e34c26;"></span>HTML5 / CSS3</div>
+      <div class="stack-badge"><span class="dot" style="background:#f0db4f;"></span>Vanilla JavaScript</div>
+      <div class="stack-badge"><span class="dot" style="background:#06d6a0;"></span>DuckDuckGo Search</div>
+      <div class="stack-badge"><span class="dot" style="background:#ff6b6b;"></span>WebSocket</div>
+      <div class="stack-badge"><span class="dot" style="background:#888;"></span>Uvicorn</div>
+      <div class="stack-badge"><span class="dot" style="background:#ffd166;"></span>REST API</div>
+    </div>
+    <div class="stats" style="margin-top:36px;">
+      <div class="stat">
+        <div class="stat-num gradient-text">15+</div>
+        <div class="stat-label">API-эндпоинтов</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num gradient-text">3</div>
+        <div class="stat-label">AI-модели</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num gradient-text">0₸</div>
+        <div class="stat-label">стоимость API</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 6: HOW IT WORKS ── -->
+  <div class="slide slide-6">
+    <div class="tag tag-blue">Как это работает</div>
+    <h2>Умный <span class="gradient-text">контекст</span> — главное отличие</h2>
+    <div class="cards cards-3" style="margin-top:28px;max-width:1000px;">
+      <div class="card" style="border-color:rgba(79,142,247,.3);">
+        <div class="card-icon">🔗</div>
+        <div class="card-title" style="color:var(--blue);">Межмодульная интеграция</div>
+        <div class="card-desc">AI-ментор знает твои задачи в Kanban, прогресс в роадмапе и историю чатов — даёт релевантные советы</div>
+      </div>
+      <div class="card" style="border-color:rgba(0,212,255,.3);">
+        <div class="card-icon">🌐</div>
+        <div class="card-title" style="color:var(--cyan);">Веб-поиск в реальном времени</div>
+        <div class="card-desc">При вопросах про технологии, API или документацию — автоматически ищет актуальные источники и цитирует их</div>
+      </div>
+      <div class="card" style="border-color:rgba(6,214,160,.3);">
+        <div class="card-icon">⚡</div>
+        <div class="card-title" style="color:var(--green);">Быстрый старт (шаблоны)</div>
+        <div class="card-desc">6 готовых шаблонов: MVP за 48ч, подготовка к олимпиаде, full-stack, ML-проект — план готов за 30 секунд</div>
+      </div>
+    </div>
+    <div class="cards cards-2" style="margin-top:16px;max-width:1000px;">
+      <div class="card" style="border-color:rgba(155,93,229,.3);">
+        <div class="card-icon">📊</div>
+        <div class="card-title" style="color:var(--purple);">Roadmap → Kanban за 1 клик</div>
+        <div class="card-desc">AI генерирует пошаговый план → одна кнопка → все шаги автоматически становятся задачами на Kanban-доске</div>
+      </div>
+      <div class="card" style="border-color:rgba(247,127,0,.3);">
+        <div class="card-icon">🎯</div>
+        <div class="card-title" style="color:var(--orange);">Олимпиадный тренажёр</div>
+        <div class="card-desc">Выбираешь тему (сортировки, графы, DP) → AI объясняет на твоём уровне → генерирует задачу → разбирает решение</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 7: TEAM ── -->
+  <div class="slide slide-7">
+    <div class="tag tag-purple">Команда</div>
+    <h2>Кто стоит <span class="gradient-text-purple">за проектом</span></h2>
+    <div style="display:flex;gap:32px;margin-top:36px;justify-content:center;align-items:flex-start;flex-wrap:wrap;">
+      <div class="team-card">
+        <div class="avatar">Б</div>
+        <div class="team-name">Бауржанулы Бекнур</div>
+        <div class="team-role">Full-Stack Developer & AI Engineer</div>
+        <div class="team-chips" style="margin-top:12px;">
+          <span class="chip">Python</span>
+          <span class="chip">FastAPI</span>
+          <span class="chip">AI/ML</span>
+          <span class="chip">JavaScript</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;max-width:460px;justify-content:center;">
+        <div class="card" style="border-color:rgba(79,142,247,.25);">
+          <div class="card-icon" style="font-size:22px;">🏫</div>
+          <div class="card-title">Образование</div>
+          <div class="card-desc">Школьник, г. Астана<br/>Участник олимпиад по программированию</div>
+        </div>
+        <div class="card" style="border-color:rgba(6,214,160,.25);">
+          <div class="card-icon" style="font-size:22px;">🚀</div>
+          <div class="card-title">О проекте</div>
+          <div class="card-desc">AkylTeam создан с нуля за несколько недель. Backend, frontend, AI-интеграции, база данных — всё реализовано одним разработчиком.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 8: ROADMAP & CTA ── -->
+  <div class="slide slide-8">
+    <div class="tag tag-green">Планы</div>
+    <h2>Что <span class="gradient-text-green">дальше</span></h2>
+    <div class="roadmap">
+      <div class="rm-item">
+        <span class="rm-phase rm-done">✓ Готово</span>
+        <div class="rm-text"><strong>MVP:</strong> AI-ментор, планировщик, Kanban, олимпиадный тренажёр, XP-система, веб-поиск, 15+ эндпоинтов</div>
+      </div>
+      <div class="rm-item">
+        <span class="rm-phase rm-now">→ Сейчас</span>
+        <div class="rm-text"><strong>Хакатон alem.ai Battle:</strong> получение обратной связи, доработка UX, расширение базы тем</div>
+      </div>
+      <div class="rm-item">
+        <span class="rm-phase rm-next">↑ Q2 2026</span>
+        <div class="rm-text"><strong>Мобильное приложение</strong> (Flutter) + голосовой AI-ментор + интеграция с GitHub</div>
+      </div>
+      <div class="rm-item">
+        <span class="rm-phase rm-next">↑ Q3 2026</span>
+        <div class="rm-text"><strong>Публичный запуск</strong> для школ и университетов Казахстана — бесплатный базовый доступ</div>
+      </div>
+    </div>
+    <div class="cta-box" style="margin-top:24px;padding:28px 48px;">
+      <h3>AkylTeam — AI-инструмент, который уже работает 🚀</h3>
+      <p>«Акыл» (каз.) — разум, интеллект. Мы делаем AI-поддержку доступной<br/>для каждого студента и участника хакатона в Казахстане</p>
+    </div>
+  </div>
+
+</div><!-- /slides -->
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">←</button>
+  <div class="nav-dots" id="navDots"></div>
+  <span class="slide-counter" id="counter">1 / 8</span>
+  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">→</button>
+</nav>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let cur = 0;
+
+  // build dots
+  const dotsEl = document.getElementById('navDots');
+  slides.forEach((_,i)=>{
+    const b = document.createElement('button');
+    b.className = 'dot-btn' + (i===0?' active':'');
+    b.onclick = ()=>goTo(i);
+    dotsEl.appendChild(b);
+  });
+
+  function goTo(n){
+    if(n<0||n>=total) return;
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add('exit');
+    setTimeout(()=>slides[cur].classList.remove('exit'), 450);
+    cur = n;
+    slides[cur].classList.add('active');
+    document.querySelectorAll('.dot-btn').forEach((b,i)=>b.classList.toggle('active',i===cur));
+    const label = `${cur+1} / ${total}`;
+    document.getElementById('counter').textContent = label;
+    document.getElementById('slideNumTop').textContent = label;
+  }
+
+  function changeSlide(dir){ goTo(cur+dir); }
+
+  document.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') changeSlide(1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp') changeSlide(-1);
+  });
+
+  // touch swipe
+  let tx=0;
+  document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+  document.addEventListener('touchend',e=>{
+    const dx=tx-e.changedTouches[0].clientX;
+    if(Math.abs(dx)>50) changeSlide(dx>0?1:-1);
+  });
+</script>
+</body>
+</html>

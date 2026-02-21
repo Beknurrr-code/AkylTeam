@@ -1,0 +1,2506 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AkylTeam — AI Hackathon Platform</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" />
+  <link rel="manifest" href="/static/manifest.json" />
+  <meta name="theme-color" content="#7c3aed" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AkylTeam" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- ══════════════════════════════════════════════════════════
+       AUTH LANDING PAGE — shown when not logged in
+       ══════════════════════════════════════════════════════════ -->
+  <div id="authLanding" class="auth-landing">
+    <!-- Left branding panel -->
+    <div class="auth-left">
+      <div class="auth-brand">
+        <span class="auth-brand-icon">🧠</span>
+        <span class="auth-brand-name">AkylTeam</span>
+      </div>
+      <h1 class="auth-tagline" id="landingTagline" data-i18n="home.landingTitle">AI-платформа для хакатонных команд</h1>
+      <p class="auth-sub" id="landingSub" data-i18n="home.landingSub">Умный ментор, детектор выгорания, AI-учитель, турниры и лидерборд — всё в одном месте.</p>
+      <div class="auth-features">
+        <div class="auth-feature">
+          <span class="auth-feature-icon">🤖</span>
+          <div class="auth-feature-text">
+            <strong id="lf1title" data-i18n="home.lf1title">AI-ментор и учитель</strong>
+            <span id="lf1desc" data-i18n="home.lf1desc">Анализ команды, распределение ролей, объяснение тем и генерация квизов</span>
+          </div>
+        </div>
+        <div class="auth-feature">
+          <span class="auth-feature-icon">🏆</span>
+          <div class="auth-feature-text">
+            <strong id="lf2title" data-i18n="home.lf2title">Турниры проектов</strong>
+            <span id="lf2desc" data-i18n="home.lf2desc">Мини-DevPost: создавай турниры, получай AI-оценку, голосуй за лучшие проекты</span>
+          </div>
+        </div>
+        <div class="auth-feature">
+          <span class="auth-feature-icon">⚡</span>
+          <div class="auth-feature-text">
+            <strong id="lf3title" data-i18n="home.lf3title">Гамификация</strong>
+            <span id="lf3desc" data-i18n="home.lf3desc">XP, ранги, бейджи, стрики и лидерборд — мотивация учиться и участвовать</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right form panel -->
+    <div class="auth-right">
+      <div class="auth-form-title" id="landingFormTitle" data-i18n="home.landingFormTitle">Добро пожаловать 👋</div>
+      <div class="auth-form-sub" id="landingFormSub" data-i18n="home.landingFormSub">Войди или создай аккаунт чтобы начать</div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="landingTabLogin" onclick="switchLandingTab('login')" data-i18n="auth.loginTab">Войти</button>
+        <button class="auth-tab-btn" id="landingTabReg" onclick="switchLandingTab('register')" data-i18n="auth.registerTab">Регистрация</button>
+      </div>
+
+      <!-- Login form -->
+      <div class="auth-panel active" id="landingLoginPanel">
+        <div class="form-group">
+          <label id="ll_userLbl" data-i18n="auth.loginLabel">Логин или Email</label>
+          <input type="text" id="llUsername" class="input" placeholder="username" autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label id="ll_passLbl" data-i18n="auth.passwordLabel">Пароль</label>
+          <input type="password" id="llPassword" class="input" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="doLandingLogin()" id="ll_btn" data-i18n="auth.loginBtn">Войти</button>
+        <div class="auth-divider" style="margin:14px 0;display:flex;align-items:center;gap:10px;">
+          <div style="flex:1;height:1px;background:var(--card-border)"></div>
+          <span style="font-size:12px;color:var(--text-dimmer)">или</span>
+          <div style="flex:1;height:1px;background:var(--card-border)"></div>
+        </div>
+        <button class="btn btn-secondary" style="width:100%;" onclick="doLandingGuestLogin()">👻 Войти как гость</button>
+        <p style="text-align:center;font-size:13px;color:var(--text-dim);margin-top:12px">
+          <span id="ll_noAcc" data-i18n="auth.noAccount">Нет аккаунта?</span>
+          <a href="#" onclick="switchLandingTab('register')" style="color:var(--primary);margin-left:4px" id="ll_regLink" data-i18n="auth.registerLink">Зарегистрируйся</a>
+        </p>
+      </div>
+
+      <!-- Register form -->
+      <div class="auth-panel" id="landingRegPanel">
+        <div class="form-group">
+          <label id="lr_userLbl" data-i18n="auth.usernameLbl">Логин *</label>
+          <input type="text" id="lrUsername" class="input" placeholder="coolhacker" autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label id="lr_emailLbl" data-i18n="auth.emailLbl">Email *</label>
+          <input type="email" id="lrEmail" class="input" placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label id="lr_passLbl" data-i18n="auth.passwordLbl">Пароль *</label>
+          <input type="password" id="lrPassword" class="input" placeholder="••••••••" autocomplete="new-password" />
+        </div>
+        <div class="form-group">
+          <label id="lr_nameLbl" data-i18n="auth.fullNameLbl">Имя</label>
+          <input type="text" id="lrFullName" class="input" placeholder="Имя Фамилия" />
+        </div>
+        <div class="form-group">
+          <label id="lr_skillsLbl" data-i18n="auth.skillsLbl">Навыки (через запятую)</label>
+          <input type="text" id="lrSkills" class="input" placeholder="Python, React, ML" />
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+          <input type="checkbox" id="lrLooking" style="width:16px;height:16px;accent-color:var(--primary)" />
+          <label for="lrLooking" id="lr_lookingLbl" style="font-size:14px;cursor:pointer" data-i18n="auth.lookingLbl">Ищу команду</label>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="doLandingRegister()" id="lr_btn" data-i18n="auth.registerBtn">Зарегистрироваться</button>
+        <p style="text-align:center;font-size:13px;color:var(--text-dim);margin-top:12px">
+          <span id="lr_hasAcc" data-i18n="auth.hasAccount">Уже есть аккаунт?</span>
+          <a href="#" onclick="switchLandingTab('login')" style="color:var(--primary);margin-left:4px" id="lr_loginLink" data-i18n="auth.loginLink">Войти</a>
+        </p>
+      </div>
+
+      <!-- Lang switcher on landing -->
+      <div class="auth-lang">
+        <button class="auth-lang-btn active" data-lang="ru" onclick="setLandingLang('ru')">RU</button>
+        <button class="auth-lang-btn" data-lang="kz" onclick="setLandingLang('kz')">KZ</button>
+        <button class="auth-lang-btn" data-lang="en" onclick="setLandingLang('en')">EN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SIDEBAR NAV (hidden — replaced by bottom nav + top bar) ── -->
+  <nav class="sidebar" id="sidebar" style="display:none">
+    <div class="sidebar-brand">
+      <span class="brand-icon">🧠</span>
+      <span class="brand-name">AkylTeam</span>
+    </div>
+    <!-- User profile bar (shown when logged in) -->
+    <div class="sidebar-user" id="sidebarUser" style="display:none">
+      <div class="sidebar-avatar" id="sidebarAvatar">?</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-username" id="sidebarUsername">User</div>
+        <div class="sidebar-xp">
+          <span class="xp-icon">⚡</span>
+          <span id="sidebarXP">0</span> XP
+          <span class="sidebar-rank" id="sidebarRank"></span>
+        </div>
+        <div class="xp-progress-wrap">
+          <div class="xp-progress-bar" id="sidebarXPBar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li><a class="nav-link active" data-page="home" href="#"><span class="nav-icon">🏠</span><span data-i18n="nav.home">Главная</span></a></li>
+      <li><a class="nav-link" data-page="team" href="#"><span class="nav-icon">👥</span><span data-i18n="nav.team">Команда</span></a></li>
+      <li><a class="nav-link" data-page="burnout" href="#"><span class="nav-icon">💤</span><span data-i18n="nav.burnout">Выгорание</span></a></li>
+      <li><a class="nav-link" data-page="teacher" href="#"><span class="nav-icon">📚</span><span data-i18n="nav.teacher">Учитель</span></a></li>
+      <li><a class="nav-link" data-page="ideas" href="#"><span class="nav-icon">💡</span><span data-i18n="nav.ideas">Идеи</span></a></li>
+      <li><a class="nav-link" data-page="codereview" href="#"><span class="nav-icon">🔍</span><span data-i18n="nav.codeReview">Код-ревью</span></a></li>
+      <li><a class="nav-link" data-page="pitch" href="#"><span class="nav-icon">🎤</span><span data-i18n="nav.pitch">Питч</span></a></li>
+      <li><a class="nav-link" data-page="chat" href="#"><span class="nav-icon">💬</span><span data-i18n="nav.chat">Чат</span></a></li>
+      <li><a class="nav-link" data-page="channels" href="#"><span class="nav-icon">#</span><span>Каналы</span></a></li>
+      <li><a class="nav-link" data-page="personal-chat" href="#"><span class="nav-icon">🤖</span><span data-i18n="nav.personalChat">Личный AI</span></a></li>
+      <li><a class="nav-link" data-page="kanban" href="#"><span class="nav-icon">📋</span><span data-i18n="nav.kanban">Канбан</span></a></li>
+      <li><a class="nav-link" data-page="project" href="#"><span class="nav-icon">🗺️</span><span>Планировщик AI</span></a></li>
+      <li><a class="nav-link" data-page="olympiad" href="#"><span class="nav-icon">📐</span><span>Олимпиада</span></a></li>
+      <li><a class="nav-link" data-page="dashboard" href="#"><span class="nav-icon">📈</span><span data-i18n="nav.dashboard">Дашборд</span></a></li>
+      <li><a class="nav-link" data-page="notes" href="#"><span class="nav-icon">🗒️</span><span>Заметки</span></a></li>
+      <li class="nav-separator"></li>
+      <li><a class="nav-link" data-page="tournaments" href="#"><span class="nav-icon">🏆</span><span data-i18n="nav.tournaments">Турниры</span></a></li>
+      <li><a class="nav-link" data-page="find-team" href="#"><span class="nav-icon">🔎</span><span data-i18n="nav.findTeam">Найти команду</span></a></li>
+      <li><a class="nav-link" data-page="leaderboard" href="#"><span class="nav-icon">📊</span><span data-i18n="nav.leaderboard">Лидерборд</span></a></li>
+      <li><a class="nav-link" data-page="profile" href="#" id="navProfile"><span class="nav-icon">👤</span><span id="navProfileLabel" data-i18n="nav.login">Войти</span></a></li>
+    </ul>
+
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="ru">RU</button>
+      <button class="lang-btn" data-lang="kz">KZ</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+    <!-- Theme toggle -->
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Сменить тему">🌙 <span id="themeLabel">Тёмная</span></button>
+  </nav>
+
+  <!-- ── HAMBURGER ─────────────────────────────────────────────── -->
+  <button class="hamburger" id="hamburger">☰</button>
+
+  <!-- ── TOP BAR ──────────────────────────────────────────────── -->
+  <div class="top-bar" id="topBar">
+    <button class="top-bar-menu" onclick="openDrawer()" aria-label="Меню">☰</button>
+    <div class="top-bar-brand">🧠 AkylTeam</div>
+    <div class="top-bar-right">
+      <div class="top-bar-xp" id="topBarXP" style="display:none" onclick="showPage('profile')" title="Мой профиль">
+        <span class="tbxp-icon" id="tbxpIcon">🌱</span>
+        <div class="tbxp-info">
+          <div class="tbxp-meta"><span id="tbxpTitle">Новичок</span> · Ур.<span id="tbxpLvl">1</span> · <span id="tbxpVal">0</span> XP</div>
+          <div class="tbxp-bar"><div class="tbxp-fill" id="tbxpFill" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div class="notif-wrap" id="notifWrap">
+        <button class="notif-bell" id="notifBell" onclick="toggleNotifPanel()" title="Уведомления">🔔<span class="notif-badge" id="notifBadge" style="display:none">0</span></button>
+        <div class="notif-panel" id="notifPanel">
+          <div class="notif-hdr">Уведомления <button class="notif-clear-btn" onclick="clearNotifs()">Очист.</button></div>
+          <div id="notifList"><div class="notif-empty">Нет новых уведомлений</div></div>
+        </div>
+      </div>
+      <div class="top-bar-avatar" id="topBarAvatar" onclick="showPage('profile')" title="Профиль">?</div>
+    </div>
+  </div>
+
+  <!-- ── DRAWER OVERLAY ───────────────────────────────────────── -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+  <!-- ── SIDE DRAWER ──────────────────────────────────────────── -->
+  <div class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+      <span class="drawer-brand">🧠 AkylTeam</span>
+      <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-links">
+      <button class="drawer-link" data-page="home" onclick="goPage('home')"><span class="dl-icon">🏠</span> Главная</button>
+      <button class="drawer-link" data-page="dashboard" onclick="goPage('dashboard')"><span class="dl-icon">📈</span> Дашборд</button>
+      <button class="drawer-link" data-page="kanban" onclick="goPage('kanban')"><span class="dl-icon">📋</span> Канбан-доска</button>
+      <button class="drawer-link" data-page="project" onclick="goPage('project')"><span class="dl-icon">🗺️</span> Планировщик AI</button>
+      <button class="drawer-link" data-page="olympiad" onclick="goPage('olympiad')"><span class="dl-icon">📐</span> Олимпиадный тренажёр</button>
+      <button class="drawer-link" data-page="notes" onclick="goPage('notes')"><span class="dl-icon">🗒️</span> Заметки</button>
+      <button class="drawer-link" data-page="channels" onclick="goPage('channels')"><span class="dl-icon">#</span> Каналы</button>
+      <button class="drawer-link" data-page="chat" onclick="goPage('chat')"><span class="dl-icon">💬</span> Командный чат</button>
+      <div class="drawer-sep"></div>
+      <button class="drawer-link" data-page="tournaments" onclick="goPage('tournaments')"><span class="dl-icon">🏆</span> Хакатоны</button>
+      <button class="drawer-link" data-page="leaderboard" onclick="goPage('leaderboard')"><span class="dl-icon">📊</span> Лидерборд</button>
+      <button class="drawer-link" data-page="find-team" onclick="goPage('find-team')"><span class="dl-icon">🔎</span> Найти команду</button>
+      <div class="drawer-sep"></div>
+      <button class="drawer-link" data-page="hackathon-catalog" onclick="goPage('hackathon-catalog')"><span class="dl-icon">🔍</span> Каталог хакатонов</button>
+      <button class="drawer-link" data-page="ideas" onclick="goPage('ideas')"><span class="dl-icon">💡</span> Генератор идей</button>
+      <button class="drawer-link" data-page="codereview" onclick="goPage('codereview')"><span class="dl-icon">🔍</span> Код-ревью</button>
+      <button class="drawer-link" data-page="pitch" onclick="goPage('pitch')"><span class="dl-icon">🎤</span> Питч-тренер</button>
+      <button class="drawer-link" data-page="ai-insights" onclick="goPage('ai-insights')"><span class="dl-icon">🤖</span> AI-аналитика</button>
+      <button class="drawer-link" data-page="role-test"  onclick="goPage('role-test')"><span class="dl-icon">🧭</span> Моя роль в команде</button>
+    </div>
+    <div class="drawer-footer">
+      <div class="drawer-lang">
+        <button class="lang-btn active" data-lang="ru">RU</button>
+        <button class="lang-btn" data-lang="kz">KZ</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <button class="drawer-theme-btn" id="drawerThemeBtn" onclick="toggleTheme()">🌙 Сменить тему</button>
+    </div>
+  </div>
+  <main class="main-content" id="mainContent">
+
+    <!-- ── HOME PAGE ── -->
+    <section class="page active" id="page-home">
+      <div class="hero">
+        <div class="hero-badge" data-i18n="home.badge">🏆 Hackathon AI Platform</div>
+        <h1 class="hero-title" data-i18n="home.title">AkylTeam</h1>
+        <p class="hero-subtitle" data-i18n="home.subtitle">AI-платформа для хакатонных команд</p>
+        <p class="hero-tagline" data-i18n="home.tagline">Умный ментор. Персональный учитель. Детектор выгорания.</p>
+        <button class="btn btn-primary btn-lg" onclick="showPage('teams')" data-i18n="home.getStarted">Начать</button>
+      </div>
+
+      <!-- Platform Stats -->
+      <div class="platform-stats" id="platformStats">
+        <div class="pstat">
+          <div class="pstat-val" id="statUsers">—</div>
+          <div class="pstat-lbl">👤 <span data-i18n="home.statUsers">Участников</span></div>
+        </div>
+        <div class="pstat">
+          <div class="pstat-val" id="statTournaments">—</div>
+          <div class="pstat-lbl">🏆 <span data-i18n="home.statTournaments">Турниров</span></div>
+        </div>
+        <div class="pstat">
+          <div class="pstat-val" id="statProjects">—</div>
+          <div class="pstat-lbl">🚀 <span data-i18n="home.statProjects">Проектов</span></div>
+        </div>
+      </div>
+
+      <div class="quote-of-day" id="quoteOfDay">
+        <span class="qotd-icon">💬</span>
+        <blockquote id="qotdText">Загрузка цитаты...</blockquote>
+        <cite id="qotdAuthor">—</cite>
+      </div>
+
+      <h2 class="section-title" data-i18n="home.modules">Модули</h2>
+      <div class="modules-grid">
+        <div class="module-card" onclick="showPage('personal-chat')">
+          <div class="module-icon">🤖</div>
+          <h3>AI-чат</h3>
+          <p>Персональный AI-ментор. Задавай вопросы, получай советы, разбирай проблемы.</p>
+        </div>
+        <div class="module-card" onclick="showPage('teams')">
+          <div class="module-icon">👥</div>
+          <h3 data-i18n="home.modTeamTitle">Команды</h3>
+          <p>Создай или вступи в команду. Чат, доска задач, заметки, файлы — всё вместе.</p>
+        </div>
+        <div class="module-card" onclick="showPage('learn')">
+          <div class="module-icon">📚</div>
+          <h3>AI-Обучение</h3>
+          <p>AI генерирует курс из 5 уроков по любой теме с тестами и XP-наградой.</p>
+        </div>
+        <div class="module-card" onclick="showPage('burnout')">
+          <div class="module-icon">💤</div>
+          <h3 data-i18n="home.modBurnoutTitle">Детектор выгорания</h3>
+          <p data-i18n="home.modBurnoutDesc">Определяет уровень выгорания, оптимизирует расписание и задачи.</p>
+        </div>
+        <div class="module-card" onclick="showPage('kanban')">
+          <div class="module-icon">📋</div>
+          <h3>Канбан-доска</h3>
+          <p>Управляй задачами команды: Todo, In Progress, Done. Экспорт в CSV.</p>
+        </div>
+        <div class="module-card" onclick="showPage('ideas')">
+          <div class="module-icon">💡</div>
+          <h3 data-i18n="home.modIdeasTitle">Генератор идей</h3>
+          <p data-i18n="home.modIdeasDesc">Генерирует и оценивает идеи проектов под тему хакатона.</p>
+        </div>
+        <div class="module-card" onclick="showPage('codereview')">
+          <div class="module-icon">🔍</div>
+          <h3 data-i18n="home.modCodeReviewTitle">AI Код-ревью</h3>
+          <p data-i18n="home.modCodeReviewDesc">Senior-разработчик проверяет код, находит баги и улучшает качество.</p>
+        </div>
+        <div class="module-card" onclick="showPage('pitch')">
+          <div class="module-icon">🎤</div>
+          <h3 data-i18n="home.modPitchTitle">Создатель питча</h3>
+          <p data-i18n="home.modPitchDesc">Создаёт убедительный питч для жюри с ответами на вопросы.</p>
+        </div>
+        <div class="module-card" onclick="showPage('ai-insights')">
+          <div class="module-icon">🔮</div>
+          <h3>AI-Аналитика</h3>
+          <p>Предсказание рисков команды, анализ навыков, итоговый отчёт хакатона.</p>
+        </div>
+        <div class="module-card" onclick="showPage('tournaments')">
+          <div class="module-icon">🏆</div>
+          <h3 data-i18n="home.modTournamentsTitle">Турниры проектов</h3>
+          <p data-i18n="home.modTournamentsDesc">Мини-DevPost: создавай турниры, подавай проекты, получай оценку AI и голосуй.</p>
+        </div>
+        <div class="module-card" onclick="showPage('leaderboard')">
+          <div class="module-icon">📊</div>
+          <h3 data-i18n="home.modLeaderboardTitle">Лидерборд</h3>
+          <p data-i18n="home.modLeaderboardDesc">Рейтинг хакатонщиков по XP. Зарабатывай очки, бейджи и поднимайся в топ.</p>
+        </div>
+        <div class="module-card" onclick="showPage('role-test')">
+          <div class="module-icon">🧭</div>
+          <h3>Найди свою роль</h3>
+          <p>6 вопросов — узнай, кто ты в команде: PM, Developer, Designer или ML-инженер.</p>
+        </div>
+      </div>
+
+      <!-- ── DAILY CHALLENGE ── -->
+      <div class="daily-challenge-wrap" id="dailyChallengeWrap">
+        <div class="daily-challenge-card" id="dailyChallengeCard">
+          <div class="dc-left">
+            <div class="dc-label">⚡ Задание дня</div>
+            <div class="dc-emoji" id="dcEmoji">🧠</div>
+            <div class="dc-title" id="dcTitle">Загрузка...</div>
+            <div class="dc-desc"  id="dcDesc">Получи ежедневное задание и XP!</div>
+            <div class="dc-xp"   id="dcXp"></div>
+          </div>
+          <div class="dc-right">
+            <div class="dc-streak" id="dcStreak">🔥 0</div>
+            <button class="btn btn-primary dc-btn" id="dcBtn" onclick="goToDailyChallenge()">Перейти →</button>
+            <button class="btn btn-outline dc-done-btn" id="dcDoneBtn" onclick="markChallengeComplete()" style="display:none;">✅ Выполнено!</button>
+            <div class="dc-done-badge" id="dcDoneBadge" style="display:none;">✅ Выполнено сегодня</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MY HACKATHONS ──────────────────────────────── -->
+      <div class="my-hackathons-wrap">
+        <div class="my-hack-header">
+          <h3 class="my-hack-title">🏆 Мои хакатоны</h3>
+          <button class="btn btn-outline btn-sm" onclick="goPage('hackathon-catalog')">+ Добавить</button>
+        </div>
+        <div class="my-hack-grid">
+
+          <!-- alem.ai battle — URGENT — deadline Feb 22 -->
+          <div class="my-hack-card my-hack-urgent">
+            <div class="my-hack-emoji">🇺🇿</div>
+            <div class="my-hack-body">
+              <div class="my-hack-name">alem.ai battle 2026</div>
+              <div class="my-hack-org">Astana Hub · MIDR RK</div>
+              <div class="my-hack-prize">💰 25 млн тенге</div>
+              <div class="my-hack-tags">
+                <span class="mh-tag">🤖 AI</span>
+                <span class="mh-tag">🇺🇿 Казахстан</span>
+                <span class="mh-tag">🎓 Студенты</span>
+              </div>
+              <div class="my-hack-deadline" id="mhd-alem">
+                <span class="mhd-label">⏰ До дедлайна:</span>
+                <span class="mhd-val" id="mhd-alem-val">—</span>
+              </div>
+              <div class="my-hack-desc">4 категории: школьники, студенты, стартапы, R&D. Нужен AI MVP.
+                Финал в Astana Hub.</div>
+            </div>
+            <a href="https://astanahub.com/account/service/alem_ai_battle/request/510/create/" target="_blank" class="btn btn-primary btn-sm my-hack-btn">Подать заявку →</a>
+          </div>
+
+          <!-- Next Byte Hacks — deadline Feb 24 -->
+          <div class="my-hack-card my-hack-hot">
+            <div class="my-hack-emoji">⚡</div>
+            <div class="my-hack-body">
+              <div class="my-hack-name">Next Byte Hacks: Jan 2026</div>
+              <div class="my-hack-org">Next Bytes · Devpost</div>
+              <div class="my-hack-prize">💰 $100 + CodeCrafters VIP ($720)</div>
+              <div class="my-hack-tags">
+                <span class="mh-tag">🌐 Online</span>
+                <span class="mh-tag">🚀 Open Ended</span>
+                <span class="mh-tag">👋 13+</span>
+              </div>
+              <div class="my-hack-deadline" id="mhd-nb">
+                <span class="mhd-label">⏰ До дедлайна:</span>
+                <span class="mhd-val" id="mhd-nb-val">—</span>
+              </div>
+              <div class="my-hack-desc">Open-ended: любая идея. Нужно: demo-видео 1-3 мин + GitHub + скриншоты.
+                Оценка по Impact.</div>
+            </div>
+            <a href="https://next-byte-january-2026.devpost.com/" target="_blank" class="btn btn-primary btn-sm my-hack-btn">Перейти →</a>
+          </div>
+
+          <!-- Creator Colosseum — deadline Mar 26 -->
+          <div class="my-hack-card">
+            <div class="my-hack-emoji">🏗️</div>
+            <div class="my-hack-body">
+              <div class="my-hack-name">Creator Colosseum 2026</div>
+              <div class="my-hack-org">Creator Colosseum · Devpost</div>
+              <div class="my-hack-prize">💰 $575 cash + Менторинг</div>
+              <div class="my-hack-tags">
+                <span class="mh-tag">🌍 Глобальный</span>
+                <span class="mh-tag">🏢 Стартап</span>
+                <span class="mh-tag">13–18 лет</span>
+              </div>
+              <div class="my-hack-deadline" id="mhd-cc">
+                <span class="mhd-label">⏰ До дедлайна:</span>
+                <span class="mhd-val" id="mhd-cc-val">—</span>
+              </div>
+              <div class="my-hack-desc">Startup-идея в Q&amp;A формате. 40% оценки — усилия. Судьи: Microsoft, Google,
+                IBM, Johnson &amp; Johnson.</div>
+            </div>
+            <a href="https://creatorcolosseumcompetition26.devpost.com/" target="_blank" class="btn btn-primary btn-sm my-hack-btn">Перейти →</a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── NEW IDEAS & IMPROVEMENTS ── -->
+      <div class="ideas-roadmap">
+        <button class="ideas-toggle" onclick="toggleIdeasRoadmap(this)">
+          🚀 Новые идеи и улучшения <span class="ideas-chevron">▼</span>
+        </button>
+        <div class="ideas-content" id="ideasContent" style="display:none">
+          <p class="ideas-intro">Планы по развитию платформы AkylTeam — функции, которые появятся в будущих версиях:</p>
+          <div class="ideas-grid">
+            <div class="idea-card">
+              <div class="idea-icon">⚡</div>
+              <h4>WebSocket реального времени</h4>
+              <p>Мгновенная доставка сообщений в каналах и чате без перезагрузки страницы через постоянные WebSocket-соединения.</p>
+              <span class="idea-tag idea-tag-high">Высокий приоритет</span>
+            </div>
+            <div class="idea-card">
+              <div class="idea-icon">📎</div>
+              <h4>Загрузка файлов и вложений</h4>
+              <p>Отправка изображений, PDF, ZIP-архивов и кода прямо в чат и каналы. Предпросмотр файлов без скачивания.</p>
+              <span class="idea-tag idea-tag-high">Высокий приоритет</span>
+            </div>
+            <div class="idea-card">
+              <div class="idea-icon">🔔</div>
+              <h4>Push-уведомления браузера</h4>
+              <p>Уведомления о новых сообщениях, упоминаниях @you и дедлайнах задач через Web Push API, даже если вкладка закрыта.</p>
+              <span class="idea-tag idea-tag-high">Высокий приоритет</span>
+            </div>
+            <div class="idea-card">
+              <div class="idea-icon">🎨</div>
+              <h4>Темы оформления</h4>
+              <p>Несколько цветовых схем на выбор: Dark, Light, Cyberpunk, Forest. Настройка акцентного цвета и размера шрифта.</p>
+              <span class="idea-tag idea-tag-med">Средний приоритет</span>
+            </div>
+            <div class="idea-card">
+              <div class="idea-icon">📄</div>
+              <h4>Экспорт отчётов в PDF</h4>
+              <p>Автоматическая генерация PDF-отчётов по команде, канбан-доске, AI-аналитике и итогам хакатона для жюри.</p>
+              <span class="idea-tag idea-tag-med">Средний приоритет</span>
+            </div>
+            <div class="idea-card">
+              <div class="idea-icon">🐙</div>
+              <h4>Интеграция с GitHub</h4>
+              <p>Синхронизация репозитория команды: автоматический code review на каждый пул-реквест, отображение коммитов в чате.</p>
+              <span class="idea-tag idea-tag-med">Средний приоритет</span>
+            </div>
+            <div class="idea-card">
+              <div class="idea-icon">👍</div>
+              <h4>Голосование за идеи</h4>
+              <p>Участники команды голосуют за предложенные идеи прямо в чате. Итоги голосования — в виде прогресс-баров.</p>
+              <span class="idea-tag idea-tag-med">Средний приоритет</span>
+            </div>
+            <div class="idea-card">
+              <div class="idea-icon">🏅</div>
+              <h4>Геймификация команд</h4>
+              <p>Командный рейтинг в дополнение к личному лидерборду. Командные достижения, трофеи и XP за совместные победы.</p>
+              <span class="idea-tag idea-tag-low">Низкий приоритет</span>
+            </div>
+            <div class="idea-card">
+              <div class="idea-icon">⏳</div>
+              <h4>Таймер обратного отсчёта</h4>
+              <p>Виджет с обратным отсчётом до конца хакатона на главной странице. Настраиваемое время дедлайна для каждой команды.</p>
+              <span class="idea-tag idea-tag-low">Низкий приоритет</span>
+            </div>
+            <div class="idea-card">
+              <div class="idea-icon">📱</div>
+              <h4>Нативное мобильное приложение</h4>
+              <p>PWA уже работает. Следующий шаг — нативные приложения для iOS и Android через Capacitor с офлайн-поддержкой.</p>
+              <span class="idea-tag idea-tag-low">Низкий приоритет</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TEAM PAGE ── -->
+    <section class="page" id="page-team">
+      <div class="page-header">
+        <h1 data-i18n="team.title">Менеджер команды</h1>
+      </div>
+
+      <div class="grid-2">
+        <!-- Create team -->
+        <div class="card">
+          <h3 class="card-title">➕ <span data-i18n="team.createTeam">Создать команду</span></h3>
+          <div class="form-group">
+            <label data-i18n="team.teamName">Название команды</label>
+            <input type="text" id="teamName" class="input" placeholder="Dream Team 🚀" />
+          </div>
+          <div class="form-group">
+            <label data-i18n="team.hackathonTheme">Тема хакатона</label>
+            <input type="text" id="hackathonTheme" class="input" placeholder="AI for Education / Smart City..." />
+          </div>
+          <button class="btn btn-primary" onclick="createTeam()">🚀 <span data-i18n="team.createTeam">Создать</span></button>
+        </div>
+
+        <!-- Add member -->
+        <div class="card">
+          <h3 class="card-title">👤 <span data-i18n="team.addMember">Добавить участника</span></h3>
+          <div class="form-group">
+            <label data-i18n="ui.selectTeam">Команда</label>
+            <select id="memberTeamId" class="input" onchange="loadTeamMembers(this.value)"></select>
+          </div>
+          <!-- Live user search -->
+          <div class="form-group">
+            <label>🔍 <span data-i18n="team.searchUser">Поиск пользователей</span></label>
+            <div class="user-search-wrap">
+              <input type="text" id="memberSearchInput" class="input" data-i18n-placeholder="team.searchPlaceholder" placeholder="Поиск по имени..." oninput="searchMembersLive(this.value)" autocomplete="off" />
+              <div class="user-search-dropdown hidden" id="memberSearchDropdown"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label data-i18n="team.memberName">Имя</label>
+            <input type="text" id="memberName" class="input" placeholder="Алибек / Aliya..." />
+          </div>
+          <div class="form-group">
+            <label data-i18n="team.skills">Навыки</label>
+            <input type="text" id="memberSkills" class="input" placeholder="Python, React, ML... (через запятую)" />
+          </div>
+          <div class="form-group">
+            <label data-i18n="team.level">Уровень</label>
+            <select id="memberLevel" class="input">
+              <option value="beginner" data-i18n="team.beginner">Новичок</option>
+              <option value="mid" data-i18n="team.mid">Средний</option>
+              <option value="senior" data-i18n="team.senior">Опытный</option>
+            </select>
+          </div>
+          <button class="btn btn-secondary" onclick="addMember()">➕ <span data-i18n="team.addMember">Добавить</span></button>
+        </div>
+      </div>
+
+      <!-- Team display -->
+      <div class="card" id="teamDisplay" style="display:none;">
+        <h3 class="card-title">👥 Состав команды</h3>
+        <!-- Invite code row -->
+        <div class="invite-code-row" id="inviteCodeRow" style="display:none;">
+          <span class="invite-code-label">🔗 Инвайт-код:</span>
+          <span class="invite-code-badge" id="teamInviteCode">——</span>
+          <button class="btn-icon" onclick="copyInviteCode()" title="Копировать код">📋</button>
+          <button class="btn-icon" onclick="regenerateCode()" title="Обновить код">🔄</button>
+        </div>
+        <div id="membersList" class="members-grid"></div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="analyzeTeam()">🔬 <span data-i18n="team.analyzeTeam">Анализ</span></button>
+          <button class="btn btn-secondary" onclick="openAssignTasks()">📋 <span data-i18n="team.assignTasks">Задачи</span></button>
+          <button class="btn btn-accent" onclick="openAgentDiscussion()">🤖 <span data-i18n="team.agentDiscussion">Агенты</span></button>
+        </div>
+      </div>
+
+      <!-- Join by invite code -->
+      <div class="card">
+        <h3 class="card-title">🔗 Вступить по инвайт-коду</h3>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Инвайт-код команды</label>
+            <input type="text" id="joinCode" class="input" placeholder="ABC123" style="text-transform:uppercase;" />
+          </div>
+          <div class="form-group">
+            <label>Твоё имя</label>
+            <input type="text" id="joinName" class="input" placeholder="Алибек / Aliya..." />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Навыки (через запятую)</label>
+          <input type="text" id="joinSkills" class="input" placeholder="Python, React, ML..." />
+        </div>
+        <button class="btn btn-primary" onclick="joinTeamByCode()">🚀 Вступить в команду</button>
+      </div>
+
+      <!-- Assign Tasks Modal -->
+      <div class="card" id="assignTasksCard" style="display:none;">
+        <h3 class="card-title">📋 <span data-i18n="team.assignTasks">Распределить задачи</span></h3>
+        <div class="form-group">
+          <label data-i18n="team.projectDesc">Описание проекта</label>
+          <textarea id="projectDesc" class="input textarea" placeholder="Мы делаем AI-платформу для..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="assignTasks()">🤖 Распределить</button>
+      </div>
+
+      <!-- Agent Discussion Input -->
+      <div class="card" id="agentDiscussionCard" style="display:none;">
+        <h3 class="card-title">🤖 Обсуждение агентов</h3>
+        <div class="form-group">
+          <label>Тема для обсуждения</label>
+          <input type="text" id="discussionTopic" class="input" placeholder="Выбор архитектуры backend / Как улучшить нашу идею..." />
+        </div>
+        <button class="btn btn-accent" onclick="runAgentDiscussion()">💬 Запустить</button>
+      </div>
+
+      <!-- AI Response -->
+      <div class="ai-response-card" id="teamAIResponse" style="display:none;">
+        <div class="ai-response-header">
+          <span>🧠 Акыл</span>
+          <div class="ai-actions">
+            <button class="icon-btn" onclick="copyText('teamAIContent')" title="Копировать">📋</button>
+            <button class="icon-btn" onclick="speakText('teamAIContent')" title="Озвучить">🔊</button>
+          </div>
+        </div>
+        <div id="teamAIContent" class="ai-content markdown-content"></div>
+      </div>
+
+      <!-- AI Insights Card -->
+      <div class="card">
+        <h3 class="card-title">🔮 AI-аналитика команды</h3>
+        <div class="btn-row" style="flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="predictFailure()">⚠️ Предсказать риски</button>
+          <button class="btn btn-secondary" onclick="openSkillMatch()">🎯 Skill Matching</button>
+          <button class="btn btn-accent" onclick="generateHackathonReport()">📊 Итоговый отчёт</button>
+        </div>
+        <div id="insightsResult" class="ai-content markdown-content" style="display:none;margin-top:16px;"></div>
+      </div>
+
+      <!-- Skill Match form (collapsible) -->
+      <div class="card" id="skillMatchCard" style="display:none;">
+        <h3 class="card-title">🎯 Поиск по навыкам</h3>
+        <div class="form-group">
+          <label>Что нужно команде?</label>
+          <textarea id="skillMatchNeeds" class="input" rows="2" placeholder="Нужен ML-инженер и UX-дизайнер..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="runSkillMatch()">🤖 Найти совместимость</button>
+      </div>
+    </section>
+
+    <!-- ── BURNOUT PAGE ── -->
+    <section class="page" id="page-burnout">
+      <div class="page-header">
+        <h1 data-i18n="burnout.title">Детектор выгорания</h1>
+        <p class="page-subtitle" data-i18n="burnout.subtitle">Проверь свой уровень стресса</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 class="card-title">👤 <span data-i18n="ui.selectMember">Выбери участника</span></h3>
+          <select id="burnoutMemberId" class="input">
+            <option value="">-- Выбери --</option>
+          </select>
+          <button class="btn btn-primary mt-2" onclick="loadBurnoutQuestions()">📋 Начать опрос</button>
+        </div>
+
+        <!-- Burnout score gauge -->
+        <div class="card" id="burnoutScoreCard" style="display:none;">
+          <h3 class="card-title" data-i18n="burnout.yourScore">Ваш индекс выгорания</h3>
+          <div class="gauge-container">
+            <div class="gauge" id="burnoutGauge">
+              <div class="gauge-fill" id="burnoutGaugeFill"></div>
+              <div class="gauge-text" id="burnoutGaugeText">0</div>
+            </div>
+          </div>
+          <div class="burnout-level" id="burnoutLevel"></div>
+        </div>
+      </div>
+
+      <!-- Questions -->
+      <div class="card" id="burnoutQuestionsCard" style="display:none;">
+        <h3 class="card-title">❓ Вопросы</h3>
+        <div id="burnoutQuestions"></div>
+        <button class="btn btn-primary mt-3" onclick="submitBurnout()">🔬 Проверить</button>
+      </div>
+
+      <!-- Results -->
+      <div class="ai-response-card" id="burnoutAIResponse" style="display:none;">
+        <div class="ai-response-header">
+          <span>💙 Акыл — Рекомендации</span>
+          <div class="ai-actions">
+            <button class="icon-btn" onclick="copyText('burnoutAIContent')">📋</button>
+            <button class="icon-btn" onclick="speakText('burnoutAIContent')">🔊</button>
+          </div>
+        </div>
+        <div id="burnoutAIContent" class="ai-content markdown-content"></div>
+      </div>
+
+      <!-- Schedule optimizer -->
+      <div class="card" id="scheduleOptCard" style="display:none;">
+        <h3 class="card-title">⏰ <span data-i18n="burnout.optimizeSchedule">Оптимизировать расписание</span></h3>
+        <div class="form-group">
+          <label>Оставшееся время (часов)</label>
+          <input type="number" id="remainingHours" class="input" value="12" min="1" max="48" />
+        </div>
+        <div class="form-group">
+          <label>Задачи (каждая с новой строки)</label>
+          <textarea id="scheduleTasks" class="input textarea" placeholder="Реализовать API&#10;Верстка дашборда&#10;Обучить модель"></textarea>
+        </div>
+        <button class="btn btn-accent" onclick="optimizeSchedule()">⚡ Оптимизировать</button>
+      </div>
+    </section>
+
+    <!-- ── TEACHER PAGE ── -->
+    <section class="page" id="page-teacher">
+      <div class="page-header">
+        <h1 data-i18n="teacher.title">AI-Учитель</h1>
+        <p class="page-subtitle" data-i18n="teacher.subtitle">Персональный наставник</p>
+      </div>
+
+      <div class="teacher-tabs">
+        <button class="tab-btn active" onclick="showTeacherTab('explain')">📖 Объяснить</button>
+        <button class="tab-btn" onclick="showTeacherTab('quiz')">🧩 Тест</button>
+        <button class="tab-btn" onclick="showTeacherTab('debug')">🐛 Debug</button>
+        <button class="tab-btn" onclick="showTeacherTab('roadmap')">🗺️ Роадмап</button>
+      </div>
+
+      <!-- Explain tab -->
+      <div class="teacher-tab-content active" id="tab-explain">
+        <div class="grid-2">
+          <div class="card">
+            <h3 class="card-title">📚 <span data-i18n="teacher.chooseTopic">Выбери тему</span></h3>
+            <div id="topicList" class="topic-grid"></div>
+            <div class="form-group mt-2">
+              <input type="text" id="customTopic" class="input" data-i18n-placeholder="teacher.customTopic" placeholder="Введи свою тему..." />
+            </div>
+            <div class="form-group">
+              <label>Уровень</label>
+              <select id="teacherLevel" class="input">
+                <option value="beginner">🌱 Новичок</option>
+                <option value="mid">⚡ Средний</option>
+                <option value="senior">🔥 Senior</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="explainTopic()">🚀 <span data-i18n="teacher.explain">Объяснить</span></button>
+          </div>
+          <div class="ai-response-card" id="teacherExplainResponse" style="display:none;">
+            <div class="ai-response-header">
+              <span>📚 Акыл-Учитель</span>
+              <div class="ai-actions">
+                <button class="icon-btn" onclick="copyText('teacherExplainContent')">📋</button>
+                <button class="icon-btn" onclick="speakText('teacherExplainContent')">🔊</button>
+              </div>
+            </div>
+            <div id="teacherExplainContent" class="ai-content markdown-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz tab -->
+      <div class="teacher-tab-content" id="tab-quiz">
+        <div class="card">
+          <h3 class="card-title">🧩 Генератор тестов</h3>
+          <div class="form-group">
+            <label>Тема теста</label>
+            <input type="text" id="quizTopic" class="input" placeholder="Python functions, REST API..." />
+          </div>
+          <div class="form-group">
+            <label>Количество вопросов</label>
+            <select id="quizCount" class="input">
+              <option value="3">3 вопроса</option>
+              <option value="5" selected>5 вопросов</option>
+              <option value="10">10 вопросов</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="generateQuiz()">🎯 <span data-i18n="teacher.generateQuiz">Создать тест</span></button>
+        </div>
+        <div class="ai-response-card" id="quizResponse" style="display:none;">
+          <div class="ai-response-header"><span>📝 Тест</span>
+            <div class="ai-actions">
+              <button class="icon-btn" onclick="copyText('quizContent')">📋</button>
+              <button class="icon-btn" onclick="speakText('quizContent')">🔊</button>
+            </div>
+          </div>
+          <div id="quizContent" class="ai-content markdown-content"></div>
+        </div>
+      </div>
+
+      <!-- Debug tab -->
+      <div class="teacher-tab-content" id="tab-debug">
+        <div class="card">
+          <h3 class="card-title">🐛 <span data-i18n="teacher.debugHelper">Помощь с багом</span></h3>
+          <div class="form-group">
+            <label data-i18n="teacher.yourCode">Код</label>
+            <textarea id="debugCode" class="input textarea code-area" placeholder="def hello():&#10;    pritn('Hello')  # тут баг"></textarea>
+          </div>
+          <div class="form-group">
+            <label data-i18n="teacher.errorMessage">Ошибка</label>
+            <input type="text" id="debugError" class="input" placeholder="NameError: name 'pritn' is not defined" />
+          </div>
+          <button class="btn btn-primary" onclick="debugHelp()">🔧 Исправить</button>
+        </div>
+        <div class="ai-response-card" id="debugResponse" style="display:none;">
+          <div class="ai-response-header"><span>🐛 Debug Helper</span>
+            <div class="ai-actions"><button class="icon-btn" onclick="copyText('debugContent')">📋</button></div>
+          </div>
+          <div id="debugContent" class="ai-content markdown-content"></div>
+        </div>
+      </div>
+
+      <!-- Roadmap tab -->
+      <div class="teacher-tab-content" id="tab-roadmap">
+        <div class="card">
+          <h3 class="card-title">🗺️ <span data-i18n="teacher.roadmap">Роадмап обучения</span></h3>
+          <div class="form-group">
+            <label>Ваша цель</label>
+            <input type="text" id="roadmapGoal" class="input" placeholder="Стать fullstack разработчиком за 3 месяца" />
+          </div>
+          <div class="form-group">
+            <label>Текущие навыки</label>
+            <input type="text" id="roadmapSkills" class="input" placeholder="HTML, базовый Python..." />
+          </div>
+          <div class="form-group">
+            <label>Доступное время (часов/день)</label>
+            <input type="number" id="roadmapHours" class="input" value="3" min="1" max="12" />
+          </div>
+          <button class="btn btn-primary" onclick="generateRoadmap()">🚀 Создать роадмап</button>
+        </div>
+        <div class="ai-response-card" id="roadmapResponse" style="display:none;">
+          <div class="ai-response-header"><span>🗺️ Персональный роадмап</span>
+            <div class="ai-actions">
+              <button class="icon-btn" onclick="copyText('roadmapContent')">📋</button>
+              <button class="icon-btn" onclick="speakText('roadmapContent')">🔊</button>
+            </div>
+          </div>
+          <div id="roadmapContent" class="ai-content markdown-content"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── IDEAS PAGE ── -->
+    <section class="page" id="page-ideas">
+      <div class="page-header">
+        <h1 data-i18n="ideas.title">Генератор идей</h1>
+        <p class="page-subtitle" data-i18n="ideas.subtitle">AI генерирует уникальные идеи</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3 class="card-title">💡 Генерация</h3>
+          <div class="form-group">
+            <label data-i18n="ideas.hackathonTheme">Тема хакатона</label>
+            <input type="text" id="ideasTheme" class="input" placeholder="AI for Healthcare / Smart Agriculture..." />
+          </div>
+          <div class="form-group">
+            <label>Команда (ID)</label>
+            <select id="ideasTeamId" class="input"></select>
+          </div>
+          <div class="form-group">
+            <label data-i18n="ideas.constraints">Ограничения</label>
+            <input type="text" id="ideasConstraints" class="input" placeholder="Только веб, без мобилки..." />
+          </div>
+          <button class="btn btn-primary" onclick="generateIdeas()">✨ <span data-i18n="ideas.generate">Генерировать</span></button>
+        </div>
+        <div class="card">
+          <h3 class="card-title">✅ Проверка идеи</h3>
+          <div class="form-group">
+            <label data-i18n="ideas.yourIdea">Ваша идея</label>
+            <textarea id="validateIdea" class="input textarea" placeholder="AI платформа для..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Навыки команды</label>
+            <input type="text" id="validateSkills" class="input" placeholder="Python, React, ML" />
+          </div>
+          <button class="btn btn-secondary" onclick="validateIdea()">🔬 <span data-i18n="ideas.validate">Проверить</span></button>
+        </div>
+      </div>
+      <div class="ai-response-card" id="ideasAIResponse" style="display:none;">
+        <div class="ai-response-header">
+          <span>💡 Идеи от Акыл</span>
+          <div class="ai-actions">
+            <button class="icon-btn" onclick="copyText('ideasAIContent')">📋</button>
+            <button class="icon-btn" onclick="speakText('ideasAIContent')">🔊</button>
+          </div>
+        </div>
+        <div id="ideasAIContent" class="ai-content markdown-content"></div>
+      </div>
+    </section>
+
+    <!-- ── CODE REVIEW PAGE ── -->
+    <section class="page" id="page-codereview">
+      <div class="page-header">
+        <h1 data-i18n="codeReview.title">AI Код-ревью</h1>
+        <p class="page-subtitle" data-i18n="codeReview.subtitle">Senior-разработчик проверит код</p>
+      </div>
+      <div class="card">
+        <div class="form-group">
+          <label data-i18n="codeReview.language">Язык</label>
+          <select id="codeLanguage" class="input" style="max-width:200px;">
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="typescript">TypeScript</option>
+            <option value="html">HTML/CSS</option>
+            <option value="sql">SQL</option>
+            <option value="java">Java</option>
+            <option value="cpp">C++</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label data-i18n="codeReview.pasteCode">Код</label>
+          <textarea id="codeInput" class="input textarea code-area" rows="12" placeholder="# Вставьте ваш код здесь..."></textarea>
+        </div>
+        <div class="form-group">
+          <label data-i18n="codeReview.context">Контекст</label>
+          <input type="text" id="codeContext" class="input" placeholder="Это API endpoint для авторизации..." />
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="reviewCode()">🔍 <span data-i18n="codeReview.review">Проверить</span></button>
+          <!-- Voice input -->
+          <button class="btn btn-secondary" id="voiceInputBtn" onclick="toggleVoiceInput()">🎙️ Голос</button>
+        </div>
+      </div>
+      <div class="ai-response-card" id="codeAIResponse" style="display:none;">
+        <div class="ai-response-header">
+          <span>⚙️ Code Review</span>
+          <div class="ai-actions">
+            <button class="icon-btn" onclick="copyText('codeAIContent')">📋</button>
+          </div>
+        </div>
+        <div id="codeAIContent" class="ai-content markdown-content"></div>
+      </div>
+    </section>
+
+    <!-- ── PITCH PAGE ── -->
+    <section class="page" id="page-pitch">
+      <div class="page-header">
+        <h1 data-i18n="pitch.title">Создатель питча</h1>
+        <p class="page-subtitle" data-i18n="pitch.subtitle">Убедительная презентация для жюри</p>
+      </div>
+      <div class="card">
+        <div class="grid-2">
+          <div>
+            <div class="form-group">
+              <label data-i18n="pitch.projectName">Название проекта</label>
+              <input type="text" id="pitchName" class="input" placeholder="AkylTeam" />
+            </div>
+            <div class="form-group">
+              <label data-i18n="pitch.problem">Проблема</label>
+              <textarea id="pitchProblem" class="input textarea" rows="3" placeholder="Команды на хакатонах не знают как..."></textarea>
+            </div>
+          </div>
+          <div>
+            <div class="form-group">
+              <label data-i18n="pitch.description">Описание</label>
+              <textarea id="pitchDesc" class="input textarea" rows="3" placeholder="AI-платформа, которая..."></textarea>
+            </div>
+            <div class="form-group">
+              <label data-i18n="pitch.solution">Решение</label>
+              <textarea id="pitchSolution" class="input textarea" rows="3" placeholder="Мы используем AI для..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Команда (ID)</label>
+          <select id="pitchTeamId" class="input" style="max-width:200px;"></select>
+        </div>
+        <button class="btn btn-primary" onclick="buildPitch()">🎤 <span data-i18n="pitch.generate">Создать питч</span></button>
+      </div>
+      <div class="ai-response-card" id="pitchAIResponse" style="display:none;">
+        <div class="ai-response-header">
+          <span>🎤 Ваш питч</span>
+          <div class="ai-actions">
+            <button class="icon-btn" onclick="copyText('pitchAIContent')">📋</button>
+            <button class="icon-btn" onclick="speakText('pitchAIContent')">🔊</button>
+          </div>
+        </div>
+        <div id="pitchAIContent" class="ai-content markdown-content"></div>
+      </div>
+    </section>
+
+    <!-- ── CHAT PAGE ── -->
+    <section class="page" id="page-chat">
+      <div class="page-header">
+        <h1 data-i18n="chat.title">Командный чат</h1>
+        <p class="page-subtitle" data-i18n="chat.subtitle">Общение с командой и AI-агентами</p>
+      </div>
+      <div class="chat-layout">
+        <div class="chat-sidebar">
+          <div class="card" style="margin-bottom:12px;">
+            <label>Команда</label>
+            <select id="chatTeamId" class="input mt-1" onchange="loadChatHistory()"></select>
+            <label class="mt-2">Ваше имя</label>
+            <input type="text" id="chatUsername" class="input mt-1" placeholder="Алибек / Aibek..." />
+          </div>
+          <div class="card">
+            <h4>🤖 AI Агенты</h4>
+            <div class="agents-list">
+              <div class="agent-item" title="Ставит цели, распределяет приоритеты, ведёт команду к победе">👑 TeamLead</div>
+              <div class="agent-item" title="Поднимает энергию и мотивацию команды в трудные моменты">🔥 Motivator</div>
+              <div class="agent-item" title="Ищет слабые места в плане, задаёт неудобные вопросы">🔍 Critic</div>
+              <div class="agent-item" title="Создаёт детальные планы, спринты и дедлайны">📋 Planner</div>
+              <div class="agent-item" title="Советует по архитектуре, стеку технологий и коду">⚙️ TechGuru</div>
+            </div>
+            <button class="btn btn-accent mt-2 w-full" onclick="getAgentFeedback()">💬 Получить фидбек</button>
+            <details class="agent-info mt-2">
+              <summary style="cursor:pointer;font-size:12px;opacity:.7">❓ Как работают агенты?</summary>
+              <p style="font-size:12px;margin-top:8px;line-height:1.5;opacity:.8">Когда ты нажимаешь «Получить фидбек», все 5 AI-агентов анализируют ситуацию команды с разных ролевых позиций и дают коллективный совет. Ты также можешь написать сообщение в чат и нажать 🤖 — AI ответит в контексте командного прогресса.</p>
+            </details>
+          </div>
+        </div>
+
+        <div class="chat-main">
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-welcome">
+              <span>💬</span>
+              <p>Выбери команду и начни общение!</p>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <div class="chat-input-row">
+              <button class="icon-btn" id="voiceChatBtn" onclick="toggleVoiceChat()" title="Голосовой ввод">🎙️</button>
+              <input type="text" id="chatInput" class="input" data-i18n-placeholder="chat.typeMessage" placeholder="Написать сообщение..." onkeydown="chatKeyDown(event)" />
+              <button class="btn btn-primary" onclick="sendChatMessage()">
+                <span data-i18n="chat.send">Отправить</span>
+              </button>
+              <button class="btn btn-secondary" onclick="sendAIMessage()" title="Спросить AI">🤖</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CHANNELS PAGE ── -->
+    <section class="page" id="page-channels">
+      <div class="page-header">
+        <h1># Каналы команды</h1>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <select id="channelTeamSelect" class="input" style="width:200px;" onchange="loadChannels()">
+            <option value="">— Выберите команду —</option>
+          </select>
+          <button class="btn btn-primary" onclick="openCreateChannel()"># Новый канал</button>
+        </div>
+      </div>
+
+      <div class="channels-layout">
+        <!-- Sidebar: list of channels -->
+        <div class="channels-sidebar">
+          <div id="channelsList" class="channels-list"></div>
+        </div>
+
+        <!-- Main chat area -->
+        <div class="channels-main">
+          <div class="channels-header" id="channelHeader" style="display:none;">
+            <div class="channel-title-row">
+              <h2 id="channelTitle">#general</h2>
+              <div class="channel-actions">
+                <button class="btn btn-sm" id="channelAiToggleBtn" onclick="toggleChannelAI()" title="Вкл/выкл AI">🤖 AI: Вкл</button>
+                <button class="btn btn-sm btn-secondary" onclick="requestChannelSummary()">📝 Саммари</button>
+              </div>
+            </div>
+            <div class="channel-desc" id="channelDesc"></div>
+          </div>
+
+          <div class="chat-messages" id="channelMessages" style="flex:1;">
+            <div class="chat-welcome">
+              <span>#</span>
+              <p>Выберите команду и канал</p>
+            </div>
+          </div>
+
+          <!-- AI Summary panel -->
+          <div class="ai-response-card" id="channelSummaryCard" style="display:none;">
+            <div class="ai-response-header">
+              <span>📝 Саммари канала</span>
+              <button class="icon-btn" onclick="document.getElementById('channelSummaryCard').style.display='none'">✕</button>
+            </div>
+            <div id="channelSummaryContent" class="ai-content markdown-content"></div>
+          </div>
+
+          <div class="chat-input-area">
+            <div class="chat-input-row">
+              <input type="text" id="channelSender" class="input" placeholder="Ваше имя" style="width:120px;flex-shrink:0;" />
+              <input type="text" id="channelInput" class="input" placeholder="Напиши сообщение..." onkeydown="channelKeyDown(event)" />
+              <button class="btn btn-primary" onclick="sendChannelMessage()">→</button>
+              <button class="btn btn-secondary" id="channelAskAIBtn" onclick="askChannelAI()" title="Спросить AI">🤖</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create Channel Modal -->
+      <div class="modal-overlay" id="createChannelModal" style="display:none;">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3># Новый канал</h3>
+            <button class="modal-close" onclick="closeModal('createChannelModal')">&#10005;</button>
+          </div>
+          <div class="form-group">
+            <label>Название (без #)</label>
+            <input type="text" id="newChannelName" class="input" placeholder="dev, design, random..." />
+          </div>
+          <div class="form-group">
+            <label>Описание</label>
+            <input type="text" id="newChannelDesc" class="input" placeholder="О чём этот канал..." />
+          </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="newChannelAI" checked />
+              <span>AI отвечает в этом канале</span>
+            </label>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal('createChannelModal')">.Отмена</button>
+            <button class="btn btn-primary" onclick="createChannel()"># Создать</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PERSONAL AI CHAT PAGE ── -->
+    <section class="page" id="page-personal-chat">
+      <div class="page-header">
+        <h1>🤖 <span data-i18n="personalChat.title">Личный AI-ассистент</span></h1>
+        <p class="page-subtitle" data-i18n="personalChat.subtitle">Твой персональный AI на все случаи жизни</p>
+      </div>
+
+      <div class="pchat-layout">
+        <!-- Sidebar with modes -->
+        <div class="pchat-sidebar">
+          <div class="card">
+            <h4 data-i18n="personalChat.mode">Режим AI</h4>
+            <div class="pchat-modes">
+              <button class="pchat-mode-btn active" data-mode="assistant" onclick="setPchatMode('assistant')">
+                <span>🤖</span>
+                <span data-i18n="personalChat.modeAssistant">Ассистент</span>
+              </button>
+              <button class="pchat-mode-btn" data-mode="mentor" onclick="setPchatMode('mentor')">
+                <span>🧠</span>
+                <span data-i18n="personalChat.modeMentor">Ментор</span>
+              </button>
+              <button class="pchat-mode-btn" data-mode="teacher" onclick="setPchatMode('teacher')">
+                <span>📚</span>
+                <span data-i18n="personalChat.modeTeacher">Учитель</span>
+              </button>
+              <button class="pchat-mode-btn" data-mode="motivator" onclick="setPchatMode('motivator')">
+                <span>🔥</span>
+                <span data-i18n="personalChat.modeMotivator">Мотиватор</span>
+              </button>
+            </div>
+            <div class="pchat-mode-desc" id="pchatModeDesc"></div>
+          </div>
+          <div class="card mt-2">
+            <button class="btn btn-outline w-full" onclick="clearPchatHistory()" style="font-size:13px">🗑️ <span data-i18n="personalChat.clearHistory">Очистить историю</span></button>
+          </div>
+        </div>
+
+        <!-- Chat area -->
+        <div class="pchat-main">
+          <div class="chat-messages" id="pchatMessages">
+            <div class="chat-welcome" id="pchatWelcome">
+              <span>🤖</span>
+              <p data-i18n="personalChat.welcome">Привет! Я твой личный AI-ассистент. Спрашивай что угодно!</p>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <div class="chat-input-row">
+              <button class="icon-btn" id="voicePchatBtn" onclick="toggleVoicePchat()" title="Голосовой ввод">🎙️</button>
+              <textarea id="pchatInput" class="input" placeholder="Напиши что-нибудь..." rows="1" onkeydown="pchatKeyDown(event)" style="resize:none;flex:1"></textarea>
+              <button class="btn btn-primary" onclick="sendPersonalMessage()">➤</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── DASHBOARD PAGE ── -->
+    <section class="page" id="page-dashboard">
+      <div class="page-header">
+        <h1>📈 <span data-i18n="nav.dashboard">Дашборд команды</span></h1>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <select id="dashboardTeamSelect" class="input" style="width:200px;" onchange="loadDashboard()">
+            <option value="">— Выберите команду —</option>
+          </select>
+          <button class="btn btn-secondary" onclick="loadDashboard()">🔄 Обновить</button>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="dash-stats" id="dashStats">
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon">👥</div>
+          <div class="dash-stat-value" id="dashMembersCount">—</div>
+          <div class="dash-stat-label">Участников</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon">🟢</div>
+          <div class="dash-stat-value" id="dashOnlineCount">—</div>
+          <div class="dash-stat-label">Онлайн</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon">✅</div>
+          <div class="dash-stat-value" id="dashTasksDone">—</div>
+          <div class="dash-stat-label">Задач выполнено</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon">🔥</div>
+          <div class="dash-stat-value" id="dashBurnoutAvg">—</div>
+          <div class="dash-stat-label">Avg выгорание</div>
+        </div>
+      </div>
+
+      <!-- Two-column content -->
+      <div class="dash-grid">
+        <!-- Kanban breakdown -->
+        <div class="card">
+          <h3 class="card-title">📋 Задачи по статусам</h3>
+          <div id="dashKanbanBreakdown" class="dash-kanban-breakdown"></div>
+        </div>
+
+        <!-- Members list -->
+        <div class="card">
+          <h3 class="card-title">👥 Участники команды</h3>
+          <div id="dashMembersList" class="dash-members-list"></div>
+        </div>
+      </div>
+
+      <!-- Activity feed -->
+      <div class="card" style="margin-top:20px;">
+        <h3 class="card-title">💬 Последние сообщения чата</h3>
+        <div id="dashRecentMessages" class="dash-recent-messages"></div>
+      </div>
+    </section>
+
+    <!-- ── KANBAN PAGE ── -->
+    <section class="page" id="page-kanban">
+      <div class="page-header">
+        <h1 class="page-title">📋 <span data-i18n="kanban.title">Канбан-доска</span></h1>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <select id="kanbanTeamFilter" class="input" style="width:200px;" onchange="loadKanban()">
+            <option value="">— Личные задачи —</option>
+          </select>
+          <div class="kanban-search-wrap" style="position:relative;">
+            <span class="kanban-search-icon">🔍</span>
+            <input type="text" class="input" id="kanbanSearch" placeholder="Поиск задач..." style="padding-left:36px;width:200px;" oninput="filterKanban(this.value)" />
+          </div>
+          <button class="btn btn-primary" onclick="openAddKanbanTask()">+ <span data-i18n="kanban.addTask">Задача</span></button>
+          <button class="btn btn-secondary" onclick="exportKanbanCSV()" title="Экспорт в CSV">📥 CSV</button>
+        </div>
+      </div>
+
+      <!-- Kanban columns -->
+      <div class="kanban-board" id="kanbanBoard">
+        <div class="kanban-col" data-status="backlog">
+          <div class="kanban-col-header kanban-backlog">📦 <span data-i18n="kanban.backlog">Бэклог</span> <span class="kanban-count" id="count-backlog">0</span></div>
+          <div class="kanban-tasks" id="col-backlog" ondragover="kanbanDragOver(event)" ondrop="kanbanDrop(event,'backlog')"></div>
+        </div>
+        <div class="kanban-col" data-status="todo">
+          <div class="kanban-col-header kanban-todo">📝 <span data-i18n="kanban.todo">К выполнению</span> <span class="kanban-count" id="count-todo">0</span></div>
+          <div class="kanban-tasks" id="col-todo" ondragover="kanbanDragOver(event)" ondrop="kanbanDrop(event,'todo')"></div>
+        </div>
+        <div class="kanban-col" data-status="doing">
+          <div class="kanban-col-header kanban-doing">⚡ <span data-i18n="kanban.doing">В работе</span> <span class="kanban-count" id="count-doing">0</span></div>
+          <div class="kanban-tasks" id="col-doing" ondragover="kanbanDragOver(event)" ondrop="kanbanDrop(event,'doing')"></div>
+        </div>
+        <div class="kanban-col" data-status="review">
+          <div class="kanban-col-header kanban-review">👁️ <span data-i18n="kanban.review">Ревью</span> <span class="kanban-count" id="count-review">0</span></div>
+          <div class="kanban-tasks" id="col-review" ondragover="kanbanDragOver(event)" ondrop="kanbanDrop(event,'review')"></div>
+        </div>
+        <div class="kanban-col" data-status="done">
+          <div class="kanban-col-header kanban-done">✅ <span data-i18n="kanban.done">Готово</span> <span class="kanban-count" id="count-done">0</span></div>
+          <div class="kanban-tasks" id="col-done" ondragover="kanbanDragOver(event)" ondrop="kanbanDrop(event,'done')"></div>
+        </div>
+      </div>
+
+      <!-- Add Task Modal -->
+      <div class="modal-overlay" id="addKanbanTaskModal" style="display:none;">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3>📋 <span data-i18n="kanban.addTask">Новая задача</span></h3>
+            <button class="modal-close" onclick="closeModal('addKanbanTaskModal')">&#10005;</button>
+          </div>
+          <div class="form-group">
+            <label data-i18n="kanban.taskTitle">Название *</label>
+            <input type="text" id="ktTitle" class="input" placeholder="Написать API endpoint..." />
+          </div>
+          <div class="form-group">
+            <label data-i18n="kanban.taskDesc">Описание</label>
+            <textarea id="ktDesc" class="input" rows="2" placeholder="Детали задачи..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="kanban.priority">Приоритет</label>
+              <select id="ktPriority" class="input">
+                <option value="low">🟢 Низкий</option>
+                <option value="medium" selected>🟡 Средний</option>
+                <option value="high">🔴 Высокий</option>
+                <option value="critical">🚨 Критический</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label data-i18n="kanban.assignee">Исполнитель</label>
+              <input type="text" id="ktAssignee" class="input" placeholder="Алибек..." />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>📅 Дедлайн (необязательно)</label>
+            <input type="date" id="ktDueDate" class="input" />
+          </div>
+          <div class="form-group">
+            <label>Цвет</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;" id="ktColorPicker">
+              <span class="color-dot active" data-color="#7c3aed" style="background:#7c3aed;" onclick="selectKtColor(this,'#7c3aed')"></span>
+              <span class="color-dot" data-color="#3ecfcf" style="background:#3ecfcf;" onclick="selectKtColor(this,'#3ecfcf')"></span>
+              <span class="color-dot" data-color="#f59e0b" style="background:#f59e0b;" onclick="selectKtColor(this,'#f59e0b')"></span>
+              <span class="color-dot" data-color="#ef4444" style="background:#ef4444;" onclick="selectKtColor(this,'#ef4444')"></span>
+              <span class="color-dot" data-color="#22c55e" style="background:#22c55e;" onclick="selectKtColor(this,'#22c55e')"></span>
+              <span class="color-dot" data-color="#f97316" style="background:#f97316;" onclick="selectKtColor(this,'#f97316')"></span>
+              <span class="color-dot" data-color="#ec4899" style="background:#ec4899;" onclick="selectKtColor(this,'#ec4899')"></span>
+            </div>
+          </div>
+          <button id="ktSubmitBtn" class="btn btn-primary" onclick="submitKanbanTask()">✅ Создать</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TOURNAMENTS PAGE ── -->
+    <section class="page" id="page-tournaments">
+      <div class="page-header">
+        <h1 class="page-title">🏆 <span data-i18n="tournaments.title">Турниры</span></h1>
+        <button class="btn btn-primary" onclick="openCreateTournament()">+ <span data-i18n="tournaments.create">Создать турнир</span></button>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <button class="filter-btn active" data-status="" onclick="loadTournaments('')" data-i18n="tournaments.all">Все</button>
+        <button class="filter-btn" data-status="open" onclick="loadTournaments('open')" data-i18n="tournaments.open">Открытые</button>
+        <button class="filter-btn" data-status="ongoing" onclick="loadTournaments('ongoing')" data-i18n="tournaments.ongoing">Идут</button>
+        <button class="filter-btn" data-status="voting" onclick="loadTournaments('voting')" data-i18n="tournaments.voting">Голосование</button>
+        <button class="filter-btn" data-status="finished" onclick="loadTournaments('finished')" data-i18n="tournaments.finished">Завершены</button>
+      </div>
+
+      <!-- Tournament list -->
+      <div class="tournaments-grid" id="tournamentsList">
+        <div class="empty-state">Загрузка турниров...</div>
+      </div>
+
+      <!-- Create Tournament Modal -->
+      <div class="modal-overlay" id="createTournamentModal" style="display:none;">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3 data-i18n="tournaments.create">Создать турнир</h3>
+            <button class="modal-close" onclick="closeModal('createTournamentModal')">&#10005;</button>
+          </div>
+          <div class="form-group">
+            <label data-i18n="tournaments.formTitle">Название *</label>
+            <input type="text" id="tTitle" class="input" placeholder="AI Hackathon 2026" />
+          </div>
+          <div class="form-group">
+            <label data-i18n="tournaments.formTheme">Тема / Track</label>
+            <input type="text" id="tTheme" class="input" placeholder="Искусственный интеллект в образовании" />
+          </div>
+          <div class="form-group">
+            <label data-i18n="tournaments.formDesc">Описание</label>
+            <textarea id="tDesc" class="input" rows="3" placeholder="О чём этот турнир?"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="tournaments.formPrize">Призы</label>
+              <input type="text" id="tPrize" class="input" placeholder="1 место: 100,000 тг" />
+            </div>
+            <div class="form-group">
+              <label data-i18n="tournaments.formMaxTeam">Макс. размер команды</label>
+              <input type="number" id="tMaxTeam" class="input" value="5" min="2" max="10" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="tournaments.formStartDate">Дата начала</label>
+              <input type="datetime-local" id="tStartDate" class="input" />
+            </div>
+            <div class="form-group">
+              <label data-i18n="tournaments.formEndDate">Дата конца</label>
+              <input type="datetime-local" id="tEndDate" class="input" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label data-i18n="tournaments.formTags">Теги (через запятую)</label>
+            <input type="text" id="tTags" class="input" placeholder="AI, Web, Mobile, Gamedev" />
+          </div>
+          <div class="form-group">
+            <label data-i18n="tournaments.formRules">Правила</label>
+            <textarea id="tRules" class="input" rows="2" placeholder="Условия участия..."></textarea>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal('createTournamentModal')" data-i18n="tournaments.cancel">Отмена</button>
+            <button class="btn btn-primary" onclick="createTournament()" data-i18n="tournaments.createBtn">Создать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tournament Detail Modal -->
+      <div class="modal-overlay" id="tournamentDetailModal" style="display:none;">
+        <div class="modal-box modal-lg">
+          <div class="modal-header">
+            <h3 id="detailTournamentTitle">Турнир</h3>
+            <button class="modal-close" onclick="closeModal('tournamentDetailModal')">✕</button>
+          </div>
+          <div id="tournamentDetailContent"></div>
+        </div>
+      </div>
+
+      <!-- Submit Project Modal -->
+      <div class="modal-overlay" id="submitProjectModal" style="display:none;">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3 data-i18n="tournaments.submitProject">Подать проект</h3>
+            <button class="modal-close" onclick="closeModal('submitProjectModal')">&#10005;</button>
+          </div>
+          <input type="hidden" id="submitTournamentId" />
+          <div class="form-group">
+            <label data-i18n="tournaments.projTitle">Название проекта *</label>
+            <input type="text" id="pTitle" class="input" placeholder="MindMap AI" />
+          </div>
+          <div class="form-group">
+            <label data-i18n="tournaments.projTagline">Слоган (1 строчка)</label>
+            <input type="text" id="pTagline" class="input" placeholder="AI который учит учиться" />
+          </div>
+          <div class="form-group">
+            <label data-i18n="tournaments.projProblem">Проблема</label>
+            <textarea id="pProblem" class="input" rows="2" placeholder="Какую проблему решает?" ></textarea>
+          </div>
+          <div class="form-group">
+            <label data-i18n="tournaments.projSolution">Решение</label>
+            <textarea id="pSolution" class="input" rows="2" placeholder="Как решает?"></textarea>
+          </div>
+          <div class="form-group">
+            <label data-i18n="tournaments.projStack">Стек технологий</label>
+            <input type="text" id="pStack" class="input" placeholder="Python, FastAPI, React, PostgreSQL" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="tournaments.projDemo">Demo URL</label>
+              <input type="text" id="pDemo" class="input" placeholder="https://..." />
+            </div>
+            <div class="form-group">
+              <label data-i18n="tournaments.projGithub">GitHub</label>
+              <input type="text" id="pGithub" class="input" placeholder="https://github.com/..." />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal('submitProjectModal')" data-i18n="tournaments.cancel">Отмена</button>
+            <button class="btn btn-primary" onclick="submitProject()" data-i18n="tournaments.submitBtn">Подать проект</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FIND TEAM PAGE ── -->
+    <section class="page" id="page-find-team">
+      <div class="page-header">
+        <h1 class="page-title">🔎 <span data-i18n="findTeam.title">Найти команду / тиммейта</span></h1>
+      </div>
+
+      <!-- Search -->
+      <div class="search-bar">
+        <input type="text" id="searchSkills" class="input" data-i18n-placeholder="findTeam.skillsPlaceholder" placeholder="Навыки: Python, React, ML..." />
+        <select id="searchRole" class="input select-sm">
+          <option value="" data-i18n="findTeam.anyRole">Любая роль</option>
+          <option value="backend">Backend</option>
+          <option value="frontend">Frontend</option>
+          <option value="ml">ML/AI</option>
+          <option value="design">Design</option>
+          <option value="manager">Manager</option>
+          <option value="mobile">Mobile</option>
+        </select>
+        <label class="checkbox-label">
+          <input type="checkbox" id="searchLooking" onchange="searchUsers()" />
+          <span data-i18n="findTeam.onlyLooking">Только ищущие команду</span>
+        </label>
+        <button class="btn btn-primary" onclick="searchUsers()" data-i18n="findTeam.find">Найти</button>
+      </div>
+
+      <div class="users-grid" id="usersGrid">
+        <div class="empty-state" data-i18n="findTeam.initialHint">Используй поиск выше</div>
+      </div>
+    </section>
+
+    <!-- ── LEADERBOARD PAGE ── -->
+    <section class="page" id="page-leaderboard">
+      <div class="page-header">
+        <h1 class="page-title">📊 <span data-i18n="leaderboard.title">Лидерборд</span></h1>
+      </div>
+      <div class="leaderboard-table" id="leaderboardTable">
+        <div class="empty-state" data-i18n="leaderboard.loading">Загрузка...</div>
+      </div>
+    </section>
+
+    <!-- ── PROFILE PAGE ── -->
+    <section class="page" id="page-profile">
+      <!-- Not logged in state -->
+      <div id="profileNotLoggedIn">
+        <div class="hero" style="padding:60px 0;">
+          <div class="hero-badge">👤 <span data-i18n="profile.title">Аккаунт</span></div>
+          <h2 data-i18n="profile.loginPrompt">Войди или зарегистрируйся</h2>
+          <p style="color:var(--text-dim);margin:12px 0 24px;" data-i18n="profile.loginSubtitle">Получай XP, бейджи, участвуй в турнирах!</p>
+          <button class="btn btn-primary btn-lg" onclick="openAuth()" data-i18n="profile.loginBtn">Войти / Регистрация</button>
+        </div>
+      </div>
+
+      <!-- Logged in state -->
+      <div id="profileLoggedIn" style="display:none;">
+        <div class="profile-hero">
+          <div class="profile-avatar-lg" id="profileAvatarLg">?</div>
+          <div class="profile-hero-info">
+            <h1 class="profile-name" id="profileName"></h1>
+            <div class="profile-rank" id="profileRankBadge"></div>
+            <p class="profile-bio" id="profileBio"></p>
+            <div class="profile-meta">
+              <span id="profileGithub"></span>
+            </div>
+          </div>
+          <div class="profile-stats">
+            <div class="stat-box">
+              <div class="stat-val" id="statXP">0</div>
+              <div class="stat-lbl">XP</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" id="statLevel">1</div>
+              <div class="stat-lbl" data-i18n="profile.statLevel">Уровень</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" id="statStreak">0</div>
+              <div class="stat-lbl" data-i18n="profile.statStreak">Стрик</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" id="statBadges">0</div>
+              <div class="stat-lbl" data-i18n="profile.statBadges">Бейджей</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- XP Bar -->
+        <div class="xp-progress-wrap">
+          <div class="xp-progress-bar">
+            <div class="xp-fill" id="xpFill" style="width:0%"></div>
+          </div>
+          <div class="xp-progress-labels">
+            <span id="xpCurrent">0 XP</span>
+            <span id="xpNext">200 XP до след. уровня</span>
+          </div>
+        </div>
+
+        <!-- Skills -->
+        <div class="profile-section">
+          <h3 data-i18n="profile.skills">Навыки</h3>
+          <div class="skill-chips" id="profileSkills"></div>
+        </div>
+
+        <!-- Badges -->
+        <div class="profile-section">
+          <h3 data-i18n="profile.badges">Бейджи</h3>
+          <div class="badges-grid" id="profileBadges">
+            <div class="empty-state" data-i18n="profile.noBadges">Пока нет бейджей — начни активничать!</div>
+          </div>
+        </div>
+
+        <!-- XP Log -->
+        <div class="profile-section">
+          <h3 data-i18n="profile.xpHistory">История XP</h3>
+          <div class="xp-log" id="xpLog"></div>
+        </div>
+
+        <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="openEditProfile()">✏️ <span data-i18n="profile.editProfile">Редактировать профиль</span></button>
+          <button class="btn btn-danger" onclick="doLogout()" data-i18n="profile.logout">Выйти</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TEAM NOTES PAGE ── -->
+    <section class="page" id="page-notes">
+      <div class="page-header">
+        <h1>🗒️ Командные заметки</h1>
+        <p class="page-subtitle">Общий блокнот: идеи, ссылки, задачи — прямо в браузере</p>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+          <select id="notesTeamSelect" class="input" style="max-width:240px;" onchange="initNotesPage()">
+            <option value="">— Выберите команду —</option>
+          </select>
+          <button class="btn btn-primary" onclick="addNote()">➕ Новая заметка</button>
+          <button class="btn btn-secondary" onclick="exportNotesMarkdown()">📤 Экспорт</button>
+        </div>
+      </div>
+      <!-- Add note form -->
+      <div class="card" id="addNoteCard" style="display:none;margin-bottom:20px;">
+        <h4 style="margin-bottom:14px;">✏️ Новая заметка</h4>
+        <div class="form-row">
+          <div class="form-group" style="flex:2;">
+            <label>Заголовок</label>
+            <input type="text" id="noteTitle" class="input" placeholder="Идея, ссылка, напоминание..." />
+          </div>
+          <div class="form-group">
+            <label>Цвет</label>
+            <input type="color" id="noteColor" value="#7c3aed" class="input" style="height:42px;padding:4px;cursor:pointer;" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Содержание (поддерживается Markdown)</label>
+          <textarea id="noteContent" class="input textarea" placeholder="# Заголовок&#10;- Пункт 1&#10;- Пункт 2&#10;&#10;**Важно!** Текст заметки..." style="min-height:140px;"></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveNote()">💾 Сохранить</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('addNoteCard').style.display='none'">Отмена</button>
+        </div>
+      </div>
+      <!-- Notes grid -->
+      <div class="notes-grid" id="notesGrid">
+        <div class="notes-empty">
+          <div style="font-size:48px;margin-bottom:12px;">🗒️</div>
+          <p>Выберите команду и добавьте первую заметку!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── AI INSIGHTS PAGE ────────────────────────────────────── -->
+    <section class="page" id="page-ai-insights">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">🤖 AI-Аналитика</h1>
+          <p class="page-subtitle">AI оценивает риски, навыки и даёт персональные рекомендации вашей команде</p>
+        </div>
+      </div>
+
+      <div class="form-group" style="max-width:400px;">
+        <label>Выбери команду</label>
+        <select id="insightsTeamSelect" class="input">
+          <option value="">— Выбрать команду —</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;">
+        <button class="btn btn-primary" onclick="runInsights('failure')">🔮 Анализ рисков</button>
+        <button class="btn btn-secondary" onclick="runInsights('skills')">🎯 Навыки и роли</button>
+        <button class="btn btn-outline" onclick="runInsights('report')">📄 Итоговый отчёт</button>
+      </div>
+      <div id="insightsResult" class="ai-content-body" style="max-width:740px;min-height:60px;"></div>
+    </section>
+
+    <!-- ── TEAMS HUB PAGE ──────────────────────────────────────── -->
+    <section class="page" id="page-teams">
+      <!-- Team list view -->
+      <div id="teamsListView">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">👥 Команды</h1>
+            <p class="page-subtitle">Создай или вступи в команду для совместной работы на хакатоне</p>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="openModal('createTeamModal')">+ Создать</button>
+            <button class="btn btn-secondary" onclick="openJoinModal()">🔗 Вступить</button>
+            <button class="btn btn-outline"    onclick="openModal('soloModeModal')">🧑 Я один</button>
+          </div>
+        </div>
+        <div class="teams-grid" id="myTeamsGrid">
+          <div class="teams-empty">
+            <span class="empty-icon">👥</span>
+            <p>Загрузка команд...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team inner view -->
+      <div id="teamInnerView" style="display:none">
+        <div class="team-inner-header">
+          <button class="team-back-btn" onclick="backToTeamsList()">← Назад</button>
+          <h2 class="team-inner-name" id="teamInnerName">Команда</h2>
+          <span class="team-inner-badge" id="teamInnerCode"></span>
+        </div>
+        <div class="team-tabs-strip">
+          <button class="team-tab-btn active" onclick="switchTeamTab('overview',this)">📊 Обзор</button>
+          <button class="team-tab-btn" onclick="switchTeamTab('chat',this)">💬 Чат</button>
+          <button class="team-tab-btn" onclick="switchTeamTab('kanban',this)">📋 Доска</button>
+          <button class="team-tab-btn" onclick="switchTeamTab('plan',this)">🗺️ План</button>
+          <button class="team-tab-btn" onclick="switchTeamTab('council',this)">🤖 AI Совет</button>
+          <button class="team-tab-btn" onclick="switchTeamTab('notes',this)">🗒️ Заметки</button>
+          <button class="team-tab-btn" onclick="switchTeamTab('files',this)">📁 Файлы</button>
+        </div>
+        <div id="teamTabContent"></div>
+      </div>
+
+      <!-- Join team modal -->
+      <div class="modal-overlay" id="joinTeamModal" style="display:none;">
+        <div class="modal-box" style="max-width:380px;">
+          <div class="modal-header">
+            <h3>🔗 Вступить в команду</h3>
+            <button class="modal-close" onclick="closeModal('joinTeamModal')">✕</button>
+          </div>
+          <div class="form-group">
+            <label>Код приглашения (6 символов)</label>
+            <input type="text" id="joinInviteCode" class="input"
+              placeholder="ABC123"
+              style="text-transform:uppercase;letter-spacing:4px;font-size:22px;text-align:center;"
+              maxlength="6" oninput="this.value=this.value.toUpperCase()" />
+          </div>
+          <div class="form-group">
+            <label>Ваше имя в команде</label>
+            <input type="text" id="joinMemberName" class="input" placeholder="Айбек Дарменов" />
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:4px;" onclick="joinTeamByCode()">✅ Вступить</button>
+        </div>
+      </div>
+
+      <!-- Create team modal -->
+      <div class="modal-overlay" id="createTeamModal" style="display:none;">
+        <div class="modal-box" style="max-width:420px;">
+          <div class="modal-header">
+            <h3>🚀 Создать команду</h3>
+            <button class="modal-close" onclick="closeModal('createTeamModal')">✕</button>
+          </div>
+          <div class="form-group">
+            <label>Название команды *</label>
+            <input type="text" id="newTeamName" class="input" placeholder="Team Rocket, ByteSquad..." maxlength="60" />
+          </div>
+          <div class="form-group">
+            <label>Тема хакатона / олимпиады</label>
+            <input type="text" id="newTeamTheme" class="input" placeholder="AI для здравоохранения, Web3..." maxlength="120" />
+          </div>
+          <div style="display:flex;gap:10px;margin-top:8px;">
+            <button class="btn btn-secondary" style="flex:1;" onclick="closeModal('createTeamModal')">Отмена</button>
+            <button class="btn btn-primary" style="flex:2;" onclick="createTeam()">✅ Создать команду</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── LEARNING PAGE ──────────────────────────────────────── -->
+    <section class="page" id="page-learn">
+
+      <!-- Phase 1: Setup -->
+      <div id="learnSetupView">
+        <div class="learn-hero">
+          <span class="learn-hero-icon">🎓</span>
+          <h1>AI-Обучение</h1>
+          <p>Укажи тему и уровень — AI составит курс из 5 уроков с тестами и XP-наградой</p>
+        </div>
+        <div class="learn-form-card">
+          <div class="form-group">
+            <label>📌 Что хочешь изучить?</label>
+            <input type="text" id="learnTopic" class="input"
+              placeholder="React, Machine Learning, SQL, UI/UX, FastAPI..." />
+          </div>
+          <div class="form-group">
+            <label>⚡ Твой уровень</label>
+            <select id="learnLevel" class="input">
+              <option value="beginner">🌱 Новичок — объясни с нуля</option>
+              <option value="intermediate" selected>🔥 Средний — знаю основы</option>
+              <option value="advanced">⚡ Продвинутый — хочу глубже</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>🌏 Язык объяснений</label>
+            <select id="learnLang" class="input">
+              <option value="ru">Русский</option>
+              <option value="kz">Қазақша</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="startLearnBtn" style="width:100%;margin-top:4px;" onclick="startLearning()">🚀 Начать обучение</button>
+        </div>
+        <div id="pastCoursesWrap" style="margin-top:32px;max-width:500px;margin-left:auto;margin-right:auto;display:none;">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--text-dim);">⏱️ Недавние курсы</h3>
+          <div id="pastCoursesList"></div>
+        </div>
+      </div>
+
+      <!-- Phase 2: Course outline -->
+      <div id="learnCourseView" style="display:none;">
+        <button class="back-btn" onclick="backToLearnSetup()">← Назад к настройке</button>
+        <h2 id="learnCourseTitle" style="margin-bottom:6px;font-size:1.4rem;font-weight:800;"></h2>
+        <p id="learnCourseDesc" style="font-size:13px;color:var(--text-dim);margin-bottom:20px;"></p>
+        <div id="learnLessonsList" style="max-width:600px;"></div>
+      </div>
+
+      <!-- Phase 3: Lesson content -->
+      <div id="learnLessonView" style="display:none;">
+        <button class="back-btn" onclick="backToCourse()">← К программе курса</button>
+        <h2 id="learnLessonTitle" style="margin-bottom:20px;font-size:1.2rem;font-weight:700;"></h2>
+        <div class="learn-lesson-content-wrap">
+          <div id="learnLessonContent" class="ai-content-body"></div>
+          <div class="learn-lesson-actions" id="lessonActions">
+            <button class="btn btn-primary" onclick="startQuiz()" id="startQuizBtn">📝 Пройти тест (5 вопросов)</button>
+            <button class="btn btn-secondary" onclick="backToCourse()">← Другой урок</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 4: Quiz -->
+      <div id="learnQuizView" style="display:none;">
+        <button class="back-btn" onclick="backToLesson()">← К уроку</button>
+        <h2 style="margin-bottom:4px;font-size:1.1rem;font-weight:700;">📝 Тест на закрепление</h2>
+        <p class="quiz-progress" id="quizProgress" style="margin-bottom:16px;font-size:12px;color:var(--text-dim);">5 вопросов</p>
+        <div class="quiz-container" id="quizQuestions"></div>
+        <button class="btn btn-primary" style="margin-top:16px;width:100%;max-width:680px;" onclick="submitQuiz()">✅ Сдать тест</button>
+      </div>
+
+      <!-- Phase 5: Results -->
+      <div id="learnResultsView" style="display:none;">
+        <div class="result-card">
+          <div id="learnResultContent"></div>
+          <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap;">
+            <button class="btn btn-outline" onclick="retryQuiz()">🔄 Сдать снова</button>
+            <button class="btn btn-secondary" onclick="backToCourse()">📚 Следующий урок</button>
+            <button class="btn btn-primary" onclick="backToLearnSetup()">🆕 Новый курс</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ROLE TEST PAGE ────────────────────────────────────── -->
+    <section class="page" id="page-role-test">
+      <div class="learn-hero" style="padding-bottom:16px;">
+        <span class="learn-hero-icon">🧭</span>
+        <h1>Найди свою роль</h1>
+        <p>6 вопросов — узнаешь, кто ты в команде хакатона</p>
+      </div>
+
+      <!-- Quiz view -->
+      <div id="roleQuizView" style="max-width:580px;margin:0 auto;">
+        <div id="roleProgress" style="height:4px;background:var(--bg-hover);border-radius:2px;margin-bottom:24px;">
+          <div id="roleProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:2px;transition:width .4s;"></div>
+        </div>
+        <div id="roleQuestionWrap"></div>
+        <div style="display:flex;gap:10px;margin-top:20px;">
+          <button class="btn btn-secondary" id="rolePrevBtn" onclick="roleNavQ(-1)" style="display:none;">← Назад</button>
+          <button class="btn btn-primary" id="roleNextBtn" onclick="roleNavQ(1)" style="flex:1;">Далее →</button>
+        </div>
+      </div>
+
+      <!-- Result view -->
+      <div id="roleResultView" style="display:none;max-width:540px;margin:0 auto;text-align:center;">
+        <div id="roleResultCard" class="result-card" style="max-width:100%;">
+          <div id="roleResultIcon" style="font-size:72px;margin-bottom:16px;"></div>
+          <h2 id="roleResultTitle" style="font-size:1.8rem;font-weight:800;margin-bottom:8px;"></h2>
+          <p id="roleResultSubtitle" style="color:var(--primary);font-size:14px;font-weight:600;margin-bottom:16px;"></p>
+          <p id="roleResultDesc" style="color:var(--text-dim);font-size:13px;line-height:1.7;margin-bottom:20px;"></p>
+          <div id="roleResultSkills" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:24px;"></div>
+          <button class="btn btn-primary" onclick="showPage('teams')">👥 Найти команду</button>
+          <button class="btn btn-secondary" style="margin-left:8px;" onclick="initRoleTest()">🔄 Пройти снова</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HACKATHON CATALOG PAGE ──────────────────────────────── -->
+    <section class="page" id="page-hackathon-catalog">
+      <div class="page-header">
+        <div>
+          <h1>🔍 Каталог хакатонов</h1>
+          <p class="page-subtitle">Найди подходящий хакатон, получи идеи с учётом трендов 2025-2026</p>
+        </div>
+        <button class="btn btn-primary" onclick="openCatalogMatch()">🎯 AI подберёт для меня</button>
+      </div>
+
+      <!-- Search + filters -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+        <input type="text" id="catalogSearch" class="input" placeholder="🔍 Поиск: AI, blockchain, казахстан..."
+          style="flex:1;min-width:200px;" oninput="debounceSearch()" />
+        <select id="catalogCategory" class="input" style="width:200px;" onchange="searchCatalog()">
+          <option value="">Все категории</option>
+          <option value="AI / Kazakhstan">🤖 AI / Казахстан</option>
+          <option value="Science & Space">🚀 Наука и космос</option>
+          <option value="Social Impact">🌍 Social Impact</option>
+          <option value="General Tech">⚡ General Tech</option>
+          <option value="GovTech / Kazakhstan">🇰🇿 GovTech / Казахстан</option>
+          <option value="Student / Kazakhstan">🎓 Студенческие / КЗ</option>
+          <option value="Healthcare">🏥 Healthcare</option>
+          <option value="Finance">💸 FinTech</option>
+          <option value="Web3 / Blockchain">⛓️ Web3 / Blockchain</option>
+          <option value="Climate & Environment">🌱 Климат</option>
+        </select>
+        <button class="btn btn-secondary" onclick="searchCatalog()">🔍 Найти</button>
+        <button class="btn btn-outline"    onclick="loadAllCatalog()">📋 Все</button>
+      </div>
+
+      <!-- Results grid -->
+      <div id="catalogGrid" class="catalog-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim);">⏳ Загрузка каталога...</div>
+      </div>
+
+      <!-- AI Match Modal -->
+      <div class="modal-overlay" id="catalogMatchModal" style="display:none;">
+        <div class="modal-box" style="max-width:480px;">
+          <div class="modal-header">
+            <h3>🎯 AI подберёт хакатон</h3>
+            <button class="modal-close" onclick="closeModal('catalogMatchModal')">✕</button>
+          </div>
+          <p style="color:var(--text-dim);font-size:13px;margin-bottom:16px;">
+            Укажи свои навыки и интересы — AI сравнит со всеми хакатонами в каталоге.
+          </p>
+          <div class="form-group">
+            <label>💡 Твои навыки</label>
+            <input type="text" id="matchSkills" class="input" placeholder="Python, React, ML, Figma..." />
+          </div>
+          <div class="form-group">
+            <label>🎯 Интерес / тема</label>
+            <input type="text" id="matchInterest" class="input" placeholder="AI, healthcare, blockchain..." />
+          </div>
+          <div class="form-group">
+            <label>Имя / команда (опционально)</label>
+            <input type="text" id="matchTeamName" class="input" placeholder="ByteSquad, или своё имя..." />
+          </div>
+          <div style="display:flex;gap:10px;margin-top:8px;">
+            <button class="btn btn-secondary" style="flex:1;" onclick="closeModal('catalogMatchModal')">Отмена</button>
+            <button class="btn btn-primary" style="flex:2;" onclick="runCatalogMatch()">🤖 Подобрать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hackathon detail drawer (slide-in panel) -->
+      <div class="catalog-detail-overlay" id="catalogDetailOverlay" onclick="closeCatalogDetail()"></div>
+      <div class="catalog-detail-panel" id="catalogDetailPanel">
+        <div id="catalogDetailContent"></div>
+      </div>
+
+      <!-- AI Match result -->
+      <div id="catalogMatchResult" style="display:none;margin-top:24px;">
+        <div class="card">
+          <h3 class="card-title">🎯 AI рекомендации</h3>
+          <div id="catalogMatchContent" class="markdown-content" style="font-size:13px;line-height:1.7;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PROJECT AI PAGE ────────────────────────────────────── -->
+    <section class="page" id="page-project">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">🗺️ AI Планировщик проекта</h1>
+          <p class="page-subtitle">Опиши проект — AI сгенерирует пошаговый план + найдёт ресурсы в интернете</p>
+        </div>
+      </div>
+
+      <!-- Web Search Bar -->
+      <div class="card proj-search-card">
+        <div style="display:flex;gap:10px;align-items:center;">
+          <span style="font-size:20px;">🔍</span>
+          <input type="text" id="projSearchInput" class="input" placeholder="Поиск: как сделать REST API на FastAPI, алгоритм Дейкстры, React хуки..."
+            style="flex:1;" onkeydown="if(event.key==='Enter') projSearch()" />
+          <button class="btn btn-primary" onclick="projSearch()" id="projSearchBtn">Найти</button>
+        </div>
+        <div id="projSearchResult" style="display:none;margin-top:16px;"></div>
+      </div>
+
+      <!-- Plan Templates -->
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <p style="font-size:13px;color:var(--text-dim);margin:0;">⚡ Быстрый старт — выбери шаблон:</p>
+        </div>
+        <div class="proj-templates-row" id="projTemplateRow">
+          <button class="proj-tmpl-btn" onclick="applyTemplate('mvp-48h')">⚡ MVP 48ч</button>
+          <button class="proj-tmpl-btn" onclick="applyTemplate('olympiad-1month')">📐 Олимпиада</button>
+          <button class="proj-tmpl-btn" onclick="applyTemplate('fullstack-app')">🌐 Full-stack</button>
+          <button class="proj-tmpl-btn" onclick="applyTemplate('ml-project')">🤖 ML-проект</button>
+          <button class="proj-tmpl-btn" onclick="applyTemplate('mobile-app')">📱 Мобилка</button>
+          <button class="proj-tmpl-btn" onclick="applyTemplate('work-feature')">💼 Рабочая фича</button>
+        </div>
+      </div>
+
+      <!-- Project Type Tabs + Generator -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="proj-type-tabs" id="projTypeTabs">
+          <button class="proj-type-tab active" data-type="personal" onclick="selectProjType(this)">💻 Личный</button>
+          <button class="proj-type-tab" data-type="hackathon" onclick="selectProjType(this)">🏆 Хакатон</button>
+          <button class="proj-type-tab" data-type="olympiad" onclick="selectProjType(this)">📐 Олимпиада</button>
+          <button class="proj-type-tab" data-type="work" onclick="selectProjType(this)">💼 Работа</button>
+        </div>
+
+        <div class="form-group" style="margin-top:16px;">
+          <label>Название проекта</label>
+          <input type="text" id="projTitle" class="input" placeholder="Например: AI-чатбот для поддержки студентов" />
+        </div>
+        <div class="form-group">
+          <label>Описание / цель</label>
+          <textarea id="projDesc" class="input textarea" style="min-height:90px;"
+            placeholder="Что должен делать проект? Какую проблему решает? Для кого?"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="flex:2;">
+            <label>Технологии (через запятую)</label>
+            <input type="text" id="projTech" class="input" placeholder="Python, FastAPI, React, PostgreSQL..." />
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label>Срок (дней)</label>
+            <input type="number" id="projDays" class="input" value="30" min="1" max="365" />
+          </div>
+        </div>
+        <button class="btn btn-primary" id="projGenBtn" onclick="generateRoadmap()" style="width:100%;">
+          🤖 Сгенерировать план проекта
+        </button>
+      </div>
+
+      <!-- Saved Roadmaps List -->
+      <div id="projSavedWrap" style="display:none;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <h3 style="margin:0;font-size:15px;">📂 Мои планы</h3>
+          <button class="btn btn-outline" style="font-size:12px;padding:4px 12px;" onclick="loadRoadmapList()">↻ Обновить</button>
+        </div>
+        <div id="projSavedList" class="proj-saved-list"></div>
+      </div>
+
+      <!-- Active Roadmap -->
+      <div id="projRoadmapWrap" style="display:none;">
+        <div class="card proj-roadmap-card">
+          <div class="proj-roadmap-header" id="projRoadmapHeader">
+            <div>
+              <h2 id="projRoadmapTitle" style="margin:0 0 4px 0;font-size:18px;"></h2>
+              <span id="projRoadmapBadge" class="proj-type-badge"></span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+              <button class="btn btn-secondary" id="pushKanbanBtn" onclick="pushRoadmapToKanban()"
+                style="font-size:12px;padding:5px 14px;">📋 Добавить в Kanban</button>
+              <div class="proj-progress-text" id="projProgressText">0 / 0 шагов</div>
+              <div class="proj-progress-bar-wrap">
+                <div class="proj-progress-bar-fill" id="projProgressFill" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+          <div id="projStepsList" class="proj-steps-list"></div>
+        </div>
+      </div>
+
+      <!-- AI Hint Modal -->
+      <div class="modal-overlay" id="projHintModal" style="display:none;">
+        <div class="modal-box" style="max-width:640px;max-height:80vh;overflow-y:auto;">
+          <div class="modal-header">
+            <h3 id="projHintTitle">💡 Совет от AI</h3>
+            <button class="modal-close" onclick="closeModal('projHintModal')">✕</button>
+          </div>
+          <div id="projHintBody" class="proj-hint-body">
+            <div class="ai-typing">⏳ AI анализирует шаг и ищет ресурсы в интернете...</div>
+          </div>
+          <div id="projHintSources" style="margin-top:12px;display:none;">
+            <p style="font-size:12px;color:var(--text-dim);margin-bottom:6px;">🔍 Найдено в интернете:</p>
+            <div id="projHintSourceList"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ── OLYMPIAD PAGE ──────────────────────────────────────── -->
+    <section class="page" id="page-olympiad">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">📐 Олимпиадный тренажёр</h1>
+          <p class="page-subtitle">Алгоритмы, структуры данных, математика — с AI-разбором и практическими задачами</p>
+        </div>
+      </div>
+
+      <!-- Level selector -->
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <span style="font-size:13px;color:var(--text-dim);flex-shrink:0;">Уровень:</span>
+          <div id="olymLevelTabs" style="display:flex;gap:8px;">
+            <button class="proj-type-tab active" data-level="beginner" onclick="selectOlymLevel(this)">🌱 Новичок</button>
+            <button class="proj-type-tab" data-level="mid" onclick="selectOlymLevel(this)">⚡ Средний</button>
+            <button class="proj-type-tab" data-level="advanced" onclick="selectOlymLevel(this)">🔥 Продвинутый</button>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-dim);margin-left:auto;">
+            <input type="checkbox" id="olymWithCode" checked style="cursor:pointer;"> С кодом
+          </label>
+        </div>
+      </div>
+
+      <!-- Topics grid -->
+      <div id="olymTopicsWrap">
+        <div id="olymTopicGrid" class="olym-topic-grid">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+
+      <!-- "Решить задачу" panel -->
+      <div class="card" style="margin-top:16px;">
+        <h3 style="margin-bottom:12px;font-size:15px;">🧠 Решение своей задачи</h3>
+        <textarea id="olymUserProblem" class="input textarea" style="min-height:100px;"
+          placeholder="Вставь условие задачи сюда — с ограничениями, примерами..."></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="olymSolveProblem('hint')">💡 Получить подсказку</button>
+          <button class="btn btn-secondary" onclick="olymSolveProblem('full')">✅ Полное решение</button>
+        </div>
+        <div id="olymSolveResult" style="display:none;margin-top:14px;"></div>
+      </div>
+
+      <!-- Topic detail modal -->
+      <div class="modal-overlay" id="olymTopicModal" style="display:none;">
+        <div class="modal-box" style="max-width:700px;max-height:85vh;overflow-y:auto;">
+          <div class="modal-header">
+            <h3 id="olymModalTitle">📚 Тема</h3>
+            <button class="modal-close" onclick="closeModal('olymTopicModal')">✕</button>
+          </div>
+          <!-- Sub-actions -->
+          <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;" id="olymModalActions">
+            <button class="btn btn-primary" onclick="olymExplain()">🧠 Объяснить</button>
+            <button class="btn btn-secondary" onclick="olymGenerateProblem('easy')">🟢 Лёгкая задача</button>
+            <button class="btn btn-secondary" onclick="olymGenerateProblem('medium')">🟡 Средняя</button>
+            <button class="btn btn-secondary" onclick="olymGenerateProblem('hard')">🔴 Сложная</button>
+          </div>
+          <div id="olymModalBody" class="proj-hint-body">
+            <div class="olym-placeholder">
+              <div style="font-size:48px;margin-bottom:8px;">📐</div>
+              <p style="color:var(--text-dim);">Нажми «Объяснить» или выбери сложность задачи</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── BOTTOM NAV ──────────────────────────────────────────── -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="bnav-item" data-page="personal-chat" onclick="showPage('personal-chat')">
+      <span class="bnav-icon">🤖</span>
+      <span class="bnav-label">AI Чат</span>
+    </button>
+    <button class="bnav-item" data-page="teams" onclick="showPage('teams')">
+      <span class="bnav-icon">👥</span>
+      <span class="bnav-label">Команды</span>
+    </button>
+    <button class="bnav-item" data-page="learn" onclick="showPage('learn')">
+      <span class="bnav-icon">📚</span>
+      <span class="bnav-label">Учёба</span>
+    </button>
+    <button class="bnav-item" data-page="burnout" onclick="showPage('burnout')">
+      <span class="bnav-icon">🔥</span>
+      <span class="bnav-label">Burnout</span>
+    </button>
+    <button class="bnav-item" data-page="profile" onclick="showPage('profile')">
+      <span class="bnav-icon">👤</span>
+      <span class="bnav-label">Я</span>
+    </button>
+  </nav>
+
+  <!-- ── HACKATHON COUNTDOWN WIDGET ─────────────────────────── -->
+  <div class="countdown-widget" id="countdownWidget" style="display:none;">
+    <div class="countdown-header">
+      <span>⏳ До конца хакатона</span>
+      <button onclick="openCountdownSettings()" title="Настроить" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--text-dim);">⚙️</button>
+      <button onclick="hideCountdown()" title="Скрыть" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--text-dim);">✕</button>
+    </div>
+    <div class="countdown-display" id="countdownDisplay">
+      <div class="countdown-unit"><span id="cdDays">--</span><small>д</small></div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-unit"><span id="cdHours">--</span><small>ч</small></div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-unit"><span id="cdMinutes">--</span><small>м</small></div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-unit"><span id="cdSeconds">--</span><small>с</small></div>
+    </div>
+    <div id="countdownDone" style="display:none;color:var(--success);font-weight:700;text-align:center;font-size:13px;padding:4px 0;">🎉 Время вышло!</div>
+  </div>
+  <!-- Countdown FAB (bottom-right show button) -->
+  <button class="countdown-fab" id="countdownFab" onclick="toggleCountdown()" title="Таймер хакатона">⏳</button>
+
+  <!-- ── COUNTDOWN SETTINGS MODAL ──────────────────────────── -->
+  <div class="modal-overlay" id="countdownModal" style="display:none;">
+    <div class="modal-box" style="max-width:380px;">
+      <div class="modal-header">
+        <h3>⏳ Таймер хакатона</h3>
+        <button class="modal-close" onclick="closeModal('countdownModal')">✕</button>
+      </div>
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">Установи дедлайн — счётчик покажет сколько времени осталось.</p>
+      <div class="form-group">
+        <label>Дата и время окончания</label>
+        <input type="datetime-local" id="cdDeadlineInput" class="input" />
+      </div>
+      <div class="form-group">
+        <label>Название события (необязательно)</label>
+        <input type="text" id="cdEventName" class="input" placeholder="Hackathon 2026" />
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="setCountdown()">✅ Запустить</button>
+        <button class="btn btn-secondary" onclick="clearCountdown()">🗑️ Сбросить</button>
+      </div>
+    </div>
+  </div>
+  <!-- ── EDIT PROFILE MODAL ─────────────────────────────────── -->
+  <!-- ── SOLO MODE MODAL ─────────────────────────────────────── -->
+  <div class="modal-overlay" id="soloModeModal" style="display:none;">
+    <div class="modal-box" style="max-width:440px;">
+      <div class="modal-header">
+        <h3>🧑 Режим соло</h3>
+        <button class="modal-close" onclick="closeModal('soloModeModal')">✕</button>
+      </div>
+      <p style="color:var(--text-dim);font-size:13px;margin-bottom:16px;">
+        AI станет твоим личным ментором и составит персональный план подготовки к соревнованию.
+      </p>
+      <div class="form-group">
+        <label>🏆 Название соревнования / хакатона / олимпиады *</label>
+        <input type="text" id="soloCompName" class="input" placeholder="ML Олимпиада 2026, Qazatom Hackathon..." />
+      </div>
+      <div class="form-group">
+        <label>📅 Дедлайн (до какой даты)</label>
+        <input type="date" id="soloDeadline" class="input" />
+      </div>
+      <div class="form-group">
+        <label>💡 Твои навыки</label>
+        <input type="text" id="soloSkills" class="input" placeholder="Python, React, ML, дизайн..." />
+      </div>
+      <div class="form-group">
+        <label>🎯 Чего хочешь достичь?</label>
+        <textarea id="soloGoal" class="input textarea" rows="2" placeholder="Хочу войти в топ-10, освоить FastAPI, получить приз..."></textarea>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn btn-secondary" style="flex:1;" onclick="closeModal('soloModeModal')">Отмена</button>
+        <button class="btn btn-primary" style="flex:2;" onclick="startSoloMode()">🚀 Начать подготовку</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="editProfileModal" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>✏️ <span data-i18n="auth.editTitle">Редактировать профиль</span></h3>
+        <button class="modal-close" onclick="closeModal('editProfileModal')">✕</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label data-i18n="auth.fullNameLbl">Имя</label>
+          <input type="text" id="editFullName" class="input" placeholder="Айбек Дарменов" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="auth.roleLbl">Роль</label>
+          <select id="editRole" class="input">
+            <option value="" data-i18n="auth.roleNone">Не указана</option>
+            <option value="backend">Backend</option>
+            <option value="frontend">Frontend</option>
+            <option value="fullstack">Fullstack</option>
+            <option value="ml">ML / AI</option>
+            <option value="design">Design</option>
+            <option value="manager">Manager / PM</option>
+            <option value="mobile">Mobile</option>
+            <option value="devops">DevOps</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label data-i18n="auth.skillsEditLbl">Навыки (через запятую)</label>
+        <input type="text" id="editSkills" class="input" placeholder="Python, React, ML, Figma" />
+      </div>
+      <div class="form-group">
+        <label data-i18n="auth.bioEditLbl">О себе</label>
+        <textarea id="editBio" class="input" rows="2" placeholder="Кратко о себе..."></textarea>
+      </div>
+      <div class="form-group">
+        <label data-i18n="auth.githubLbl">GitHub URL</label>
+        <input type="text" id="editGithub" class="input" placeholder="https://github.com/username" />
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="editLooking" />
+          <span data-i18n="auth.lookingEditLbl">Ищу команду</span>
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('editProfileModal')" data-i18n="auth.cancelBtn">Отмена</button>
+        <button class="btn btn-primary" onclick="saveProfile()" data-i18n="auth.saveBtn">Сохранить</button>
+      </div>
+    </div>
+  </div>
+  <!-- ── AUTH MODAL ────────────────────────────────────────────── -->
+  <div class="auth-overlay" id="authOverlay" style="display:none;">
+    <div class="auth-modal">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login" id="tabLogin" onclick="switchAuthTab('login')" data-i18n="auth.loginTab">Войти</button>
+        <button class="auth-tab" data-tab="register" id="tabRegister" onclick="switchAuthTab('register')" data-i18n="auth.registerTab">Регистрация</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="loginForm">
+        <div class="form-group">
+          <label data-i18n="auth.loginLabel">Логин или Email</label>
+          <input type="text" id="loginUsername" class="input" placeholder="your_login" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="auth.passwordLabel">Пароль</label>
+          <input type="password" id="loginPassword" class="input" placeholder="••••••••" />
+        </div>
+        <button class="btn btn-primary w-full" onclick="doLogin()" data-i18n="auth.loginBtn">Войти</button>
+        <div class="auth-divider"><span>или</span></div>
+        <button class="btn btn-outline w-full" onclick="doGuestLogin()" style="margin-top:4px;">👻 Войти как гость</button>
+        <p class="auth-hint"><span data-i18n="auth.noAccount">Нет аккаунта?</span> <a href="#" onclick="switchAuthTab('register')" data-i18n="auth.registerLink">Зарегистрируйся</a></p>
+      </div>
+
+      <!-- Register Form -->
+      <div id="registerForm" style="display:none;">
+        <div class="form-row">
+          <div class="form-group">
+            <label data-i18n="auth.usernameLbl">Логин *</label>
+            <input type="text" id="regUsername" class="input" placeholder="cool_hacker" />
+          </div>
+          <div class="form-group">
+            <label data-i18n="auth.emailLbl">Email *</label>
+            <input type="email" id="regEmail" class="input" placeholder="you@example.com" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label data-i18n="auth.passwordLbl">Пароль *</label>
+            <input type="password" id="regPassword" class="input" placeholder="••••••••" />
+          </div>
+          <div class="form-group">
+            <label data-i18n="auth.fullNameLbl">Имя</label>
+            <input type="text" id="regFullName" class="input" placeholder="Айбек Дарменов" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label data-i18n="auth.skillsLbl">Навыки (через запятую)</label>
+          <input type="text" id="regSkills" class="input" placeholder="Python, React, ML, Design" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="auth.bioLbl">О себе</label>
+          <textarea id="regBio" class="input" rows="2" placeholder="Краткое описание о себе..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="regLooking" /> <span data-i18n="auth.lookingLbl">Ищу команду</span>
+          </label>
+        </div>
+        <button class="btn btn-primary w-full" onclick="doRegister()" data-i18n="auth.registerBtn">Зарегистрироваться</button>
+        <p class="auth-hint"><span data-i18n="auth.hasAccount">Уже есть аккаунт?</span> <a href="#" onclick="switchAuthTab('login')" data-i18n="auth.loginLink">Войти</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── LOADER ────────────────────────────────────────────────── -->
+  <div class="loader-overlay" id="loaderOverlay" style="display:none;">
+    <div class="loader-box">
+      <div class="spinner"></div>
+      <p class="loader-text" id="loaderText" data-i18n="ui.thinking">Акыл думает...</p>
+    </div>
+  </div>
+
+  <!-- ── TOAST ─────────────────────────────────────────────────── -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ── ONBOARDING MODAL ─────────────────────────────────────── -->
+  <div class="modal-overlay" id="onboardingModal" style="display:none;">
+    <div class="modal-box" style="max-width:500px;padding:32px;">
+      <div id="onboardStep1">
+        <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:8px;">🎉 Добро пожаловать!</h2>
+        <p style="color:var(--text-dim);margin-bottom:24px;">Расскажи о себе — AI настроится под тебя</p>
+        <div class="form-group">
+          <label style="font-weight:600;margin-bottom:10px;display:block;">Твоя роль в команде:</label>
+          <div class="onboard-roles" id="onboardRoles">
+            <button class="onboard-role-btn" data-role="frontend" data-skills="React,HTML,CSS,JavaScript,TypeScript">⚛️ Frontend</button>
+            <button class="onboard-role-btn" data-role="backend" data-skills="Python,FastAPI,Node.js,PostgreSQL,Docker">🔧 Backend</button>
+            <button class="onboard-role-btn" data-role="ml" data-skills="Python,TensorFlow,PyTorch,Pandas,Scikit-learn">🤖 ML/AI</button>
+            <button class="onboard-role-btn" data-role="designer" data-skills="Figma,UX Design,Photoshop,Prototyping">🎨 Дизайн</button>
+            <button class="onboard-role-btn" data-role="pm" data-skills="Agile,Scrum,Notion,Product Management">📋 PM</button>
+            <button class="onboard-role-btn" data-role="data" data-skills="Python,SQL,PowerBI,Tableau,Data Analysis">📊 Data</button>
+            <button class="onboard-role-btn" data-role="devops" data-skills="Docker,Kubernetes,CI/CD,Linux,AWS">☁️ DevOps</button>
+            <button class="onboard-role-btn" data-role="fullstack" data-skills="React,Python,Node.js,PostgreSQL,Docker">🌐 Fullstack</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:18px;">
+          <label style="font-weight:600;margin-bottom:10px;display:block;">Уровень опыта:</label>
+          <div style="display:flex;gap:10px;">
+            <button class="onboard-level-btn active" data-level="beginner">🌱 Новичок</button>
+            <button class="onboard-level-btn" data-level="mid">⚡ Средний</button>
+            <button class="onboard-level-btn" data-level="senior">🏆 Опытный</button>
+          </div>
+        </div>
+        <button class="btn btn-primary w-full" style="margin-top:24px;" onclick="submitOnboarding()">🚀 Начать работу</button>
+        <button class="btn btn-outline" style="width:100%;margin-top:8px;" onclick="skipOnboarding()">Пропустить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COMMAND PALETTE (Ctrl+K) ─────────────────────────────── -->  <div class="cmd-overlay" id="cmdPalette" style="display:none;" onclick="closeCmdPalette(event)">
+    <div class="cmd-box">
+      <div class="cmd-search-wrap">
+        <span class="cmd-search-icon">⌘</span>
+        <input type="text" class="cmd-input" id="cmdInput" placeholder="Поиск страниц и команд..." oninput="filterCmdItems(this.value)" onkeydown="cmdKeyDown(event)" autocomplete="off" />
+        <kbd class="cmd-esc" onclick="closeCmdPalette()">ESC</kbd>
+      </div>
+      <div class="cmd-list" id="cmdList"></div>
+      <div class="cmd-footer">
+        <span>↑↓ навигация</span>
+        <span>↵ открыть</span>
+        <span>ESC закрыть</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backdrop for mobile sidebar -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="/static/js/i18n.js"></script>
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/voice.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script src="/static/js/app.js"></script>
+
+  <!-- ── FLOATING WIDGETS ─────────────────────────────────── -->
+
+  <!-- Pomodoro Timer -->
+  <div id="pomodoroWidget" class="pomodoro-widget" style="display:none;">
+    <div class="pomo-header">
+      <span class="pomo-mode" id="pomoMode">🍅 Фокус</span>
+      <div style="display:flex;gap:6px;">
+        <button class="pomo-icon-btn" onclick="resetPomodoro()" title="Сброс">🔄</button>
+        <button class="pomo-icon-btn" onclick="closePomodoro()" title="Свернуть">−</button>
+      </div>
+    </div>
+    <div class="pomo-time" id="pomoTime">25:00</div>
+    <div class="pomo-progress-wrap"><div class="pomo-progress-bar" id="pomoBar"></div></div>
+    <div class="pomo-controls">
+      <button class="btn btn-primary" id="pomoBtnStart" onclick="togglePomodoro()">&#9654; Старт</button>
+    </div>
+    <div class="pomo-sessions" id="pomoSessions"></div>
+  </div>
+
+  <!-- Hackathon Countdown -->
+  <div id="countdownWidget" class="countdown-widget" style="display:none;">
+    <div class="cdw-header">
+      <span>⏰ Обратный отсчёт</span>
+      <button class="pomo-icon-btn" onclick="closeCountdown()">×</button>
+    </div>
+    <div id="cdwName" class="cdw-name">Нет хакатона</div>
+    <div class="cdw-display" id="cdwDisplay">
+      <div class="cdw-unit"><span id="cdwD">--</span><small>Дней</small></div>
+      <div class="cdw-sep">:</div>
+      <div class="cdw-unit"><span id="cdwH">--</span><small>Часов</small></div>
+      <div class="cdw-sep">:</div>
+      <div class="cdw-unit"><span id="cdwM">--</span><small>Мин</small></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <input type="text" id="cdwNameInput"   class="input" style="flex:2;font-size:11px;padding:4px 8px;" placeholder="Название хакатона" />
+      <input type="datetime-local" id="cdwDate" class="input" style="flex:3;font-size:11px;padding:4px 8px;" />
+      <button class="btn btn-primary" style="font-size:11px;padding:4px 10px;" onclick="setCountdown()">OK</button>
+    </div>
+  </div>
+
+  <!-- Quick Note FAB -->
+  <div class="fab-group" id="fabGroup">
+    <div class="fab-menu" id="fabMenu" style="display:none;">
+      <button class="fab-item" onclick="openPomodoro()" title="Pomodoro">⏱️</button>
+      <button class="fab-item" onclick="openCountdown()" title="Отсчёт">⏰</button>
+      <button class="fab-item" onclick="openQuickNote()" title="Быстрая заметка">📝</button>
+    </div>
+    <button class="fab-main" id="fabMain" onclick="toggleFab()">⭐</button>
+  </div>
+
+  <!-- Quick Note modal -->
+  <div class="modal-overlay" id="quickNoteModal" onclick="if(event.target===this)closeModal('quickNoteModal')">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-header">
+        <h3>📝 Быстрая заметка</h3>
+        <button class="modal-close" onclick="closeModal('quickNoteModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <input type="text" id="qnTitle" class="input" placeholder="Заголовок..." />
+        </div>
+        <div class="form-group">
+          <textarea id="qnContent" class="input" rows="5" placeholder="Заметка (Markdown поддерживается)..."></textarea>
+        </div>
+        <div class="form-group">
+          <select id="qnTeam" class="input"><option value="">— Команда (опционально) —</option></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('quickNoteModal')">Отмена</button>
+        <button class="btn btn-primary" onclick="saveQuickNote()">Сохранить заметку</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COMMAND PALETTE (Ctrl+K) ─────────────────────────────── -->
+  <div class="cmd-overlay" id="cmdOverlay" onclick="closeCmdPalette()">
+    <div class="cmd-palette" onclick="event.stopPropagation()">
+      <input type="text" id="cmdInput" placeholder="🔍 Перейти к разделу..." oninput="filterCmd()" onkeydown="cmdKeyDown(event)" autocomplete="off" />
+      <div id="cmdList"></div>
+    </div>
+  </div>
+</body>
+</html>
