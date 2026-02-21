@@ -3679,16 +3679,21 @@ function closePomodoro() {
   document.getElementById('pomodoroWidget').style.display = 'none';
 }
 function _renderPomodoro() {
+  const timeEl = document.getElementById('pomoTime');
+  if (!timeEl) return; // DOM not ready yet
   const m = Math.floor(_pomoState.secondsLeft / 60).toString().padStart(2,'0');
   const s = (_pomoState.secondsLeft % 60).toString().padStart(2,'0');
-  document.getElementById('pomoTime').textContent = `${m}:${s}`;
+  timeEl.textContent = `${m}:${s}`;
   const pct = (_pomoState.secondsLeft / _pomoState.total) * 100;
-  document.getElementById('pomoBar').style.width = `${pct}%`;
+  const barEl = document.getElementById('pomoBar');
+  if (barEl) barEl.style.width = `${pct}%`;
   const modeMap = { work: '🍅 Фокус', short: '☕ Короткий перерыв', long: '🛋️ Длинный перерыв' };
-  document.getElementById('pomoMode').textContent = modeMap[_pomoState.mode] || 'Pomodoro';
+  const modeEl = document.getElementById('pomoMode');
+  if (modeEl) modeEl.textContent = modeMap[_pomoState.mode] || 'Pomodoro';
   const btn = document.getElementById('pomoBtnStart');
-  btn.innerHTML = _pomoState.running ? '⏸ Пауза' : '▶ Старт';
-  document.getElementById('pomoSessions').textContent = `🍅 × ${_pomoState.sessions}`;
+  if (btn) btn.innerHTML = _pomoState.running ? '⏸ Пауза' : '▶ Старт';
+  const sessEl = document.getElementById('pomoSessions');
+  if (sessEl) sessEl.textContent = `🍅 × ${_pomoState.sessions}`;
 }
 function togglePomodoro() {
   if (_pomoState.running) {
@@ -4469,8 +4474,10 @@ async function olymSolveProblem(hintLevel) {
   if (saved) {
     try {
       const { name, date } = JSON.parse(saved);
-      document.getElementById('cdwNameInput').value = name;
-      document.getElementById('cdwDate').value = date;
+      const nameEl = document.getElementById('cdwNameInput');
+      const dateEl = document.getElementById('cdwDate');
+      if (nameEl) nameEl.value = name;
+      if (dateEl) dateEl.value = date;
     } catch (_) {}
   }
   // Close notif panel on outside click
