@@ -1,7 +1,37 @@
 import httpx
 import json
+import asyncio
 from typing import List, Dict, Optional, AsyncGenerator
 from backend.config import OPENROUTER_API_KEY, OPENROUTER_BASE_URL, DEFAULT_MODEL, SMART_MODEL, FAST_MODEL
+
+# All free models to try in order when rate limited
+FREE_MODELS_FALLBACK = [
+    "z-ai/glm-4.5-air:free",
+    "openai/gpt-oss-20b:free",
+    "deepseek/deepseek-r1-0528:free",
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "mistralai/mistral-small-3.1-24b-instruct:free",
+    "google/gemini-2.0-flash-exp:free",
+    "qwen/qwen3-14b:free",
+    "microsoft/phi-4-reasoning-plus:free",
+]
+
+
+async def _call_model(client: httpx.AsyncClient, model: str, messages, temperature, max_tokens, headers) -> str:
+    payload = {
+        "model": model,
+        "messages": messages,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+    }
+    response = await client.post(
+        f"{OPENROUTER_BASE_URL}/chat/completions",
+        headers=headers,
+        json=payload,
+    )
+    response.raise_for_status()
+    data = response.json()
+    return data["choices"][0]["message"]["content"]
 
 
 async def chat_completion(
@@ -10,28 +40,28 @@ async def chat_completion(
     temperature: float = 0.7,
     max_tokens: int = 2048,
 ) -> str:
-    """Call OpenRouter API for chat completion."""
+    """Call OpenRouter API with automatic fallback on 429."""
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
         "HTTP-Referer": "http://localhost:8000",
         "X-Title": "AkylTeam Hackathon AI",
     }
-    payload = {
-        "model": model,
-        "messages": messages,
-        "temperature": temperature,
-        "max_tokens": max_tokens,
-    }
+    # Build list: requested model first, then all fallbacks (skip duplicates)
+    models_to_try = [model] + [m for m in FREE_MODELS_FALLBACK if m != model]
+
     async with httpx.AsyncClient(timeout=60.0) as client:
-        response = await client.post(
-            f"{OPENROUTER_BASE_URL}/chat/completions",
-            headers=headers,
-            json=payload,
-        )
-        response.raise_for_status()
-        data = response.json()
-        return data["choices"][0]["message"]["content"]
+        last_error = None
+        for m in models_to_try:
+            try:
+                return await _call_model(client, m, messages, temperature, max_tokens, headers)
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code == 429:
+                    last_error = e
+                    await asyncio.sleep(0.5)
+                    continue  # try next model
+                raise
+        raise last_error
 
 
 async def stream_chat_completion(
@@ -40,43 +70,56 @@ async def stream_chat_completion(
     temperature: float = 0.7,
     max_tokens: int = 2048,
 ) -> AsyncGenerator[str, None]:
-    """Stream chat completion as SSE tokens."""
+    """Stream chat completion with fallback on 429."""
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
         "HTTP-Referer": "http://localhost:8000",
         "X-Title": "AkylTeam Hackathon AI",
     }
-    payload = {
-        "model": model,
-        "messages": messages,
-        "temperature": temperature,
-        "max_tokens": max_tokens,
-        "stream": True,
-    }
-    async with httpx.AsyncClient(timeout=120.0) as client:
-        async with client.stream(
-            "POST",
-            f"{OPENROUTER_BASE_URL}/chat/completions",
-            headers=headers,
-            json=payload,
-        ) as response:
-            response.raise_for_status()
-            async for line in response.aiter_lines():
-                if not line.strip():
-                    continue
-                if line.startswith("data: "):
-                    line = line[6:]
-                if line == "[DONE]":
-                    break
-                try:
-                    chunk = json.loads(line)
-                    delta = chunk["choices"][0].get("delta", {})
-                    text = delta.get("content", "")
-                    if text:
-                        yield text
-                except (json.JSONDecodeError, KeyError, IndexError):
-                    continue
+    models_to_try = [model] + [m for m in FREE_MODELS_FALLBACK if m != model]
+
+    for m in models_to_try:
+        payload = {
+            "model": m,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "stream": True,
+        }
+        try:
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                async with client.stream(
+                    "POST",
+                    f"{OPENROUTER_BASE_URL}/chat/completions",
+                    headers=headers,
+                    json=payload,
+                ) as response:
+                    if response.status_code == 429:
+                        await asyncio.sleep(0.5)
+                        continue  # try next model
+                    response.raise_for_status()
+                    async for line in response.aiter_lines():
+                        if not line.strip():
+                            continue
+                        if line.startswith("data: "):
+                            line = line[6:]
+                        if line == "[DONE]":
+                            return
+                        try:
+                            chunk = json.loads(line)
+                            delta = chunk["choices"][0].get("delta", {})
+                            text = delta.get("content", "")
+                            if text:
+                                yield text
+                        except (json.JSONDecodeError, KeyError, IndexError):
+                            continue
+                    return  # success — stop trying other models
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 429:
+                await asyncio.sleep(0.5)
+                continue
+            raise
 
 
 async def get_available_models() -> List[Dict]:
