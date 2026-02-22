@@ -4,16 +4,20 @@ import asyncio
 from typing import List, Dict, Optional, AsyncGenerator
 from backend.config import OPENROUTER_API_KEY, OPENROUTER_BASE_URL, DEFAULT_MODEL, SMART_MODEL, FAST_MODEL
 
-# All free models to try in order when rate limited
+# All free models to try in order when rate limited (sorted by weekly token volume)
 FREE_MODELS_FALLBACK = [
-    "z-ai/glm-4.5-air:free",
-    "openai/gpt-oss-20b:free",
-    "deepseek/deepseek-r1-0528:free",
-    "meta-llama/llama-3.3-70b-instruct:free",
-    "mistralai/mistral-small-3.1-24b-instruct:free",
-    "google/gemini-2.0-flash-exp:free",
-    "qwen/qwen3-14b:free",
-    "microsoft/phi-4-reasoning-plus:free",
+    "z-ai/glm-4.5-air:free",                          # 59.5B tokens/week, 131K ctx
+    "deepseek/deepseek-r1-0528:free",                  # 27.4B tokens/week, 163K ctx
+    "nvidia/nemotron-3-nano-30b-a3b:free",             # 22.5B tokens/week, 256K ctx
+    "openai/gpt-oss-120b:free",                        # 5.11B tokens/week, 131K ctx
+    "upstage/solar-pro-3:free",                        # 4.98B tokens/week, 128K ctx
+    "arcee-ai/trinity-mini:free",                      # 4.13B tokens/week, 131K ctx
+    "nvidia/nemotron-nano-12b-2-vl:free",              # 4B tokens/week, 128K ctx
+    "meta-llama/llama-3.3-70b-instruct:free",          # 2.15B tokens/week, 128K ctx
+    "openai/gpt-oss-20b:free",                         # 873M tokens/week, 131K ctx
+    "google/gemma-3-27b-it:free",                      # 608M tokens/week, 131K ctx
+    "mistralai/mistral-small-3.1-24b-instruct:free",   # 168M tokens/week, 128K ctx
+    "google/gemma-3-12b-it:free",                      # 58.8M tokens/week, 32K ctx
 ]
 
 
