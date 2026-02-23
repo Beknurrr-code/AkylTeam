@@ -162,8 +162,8 @@
       <li><a class="nav-link" data-page="channels" href="#"><span class="nav-icon">#</span><span>Каналы</span></a></li>
       <li><a class="nav-link" data-page="personal-chat" href="#"><span class="nav-icon">🤖</span><span data-i18n="nav.personalChat">Личный AI</span></a></li>
       <li><a class="nav-link" data-page="kanban" href="#"><span class="nav-icon">📋</span><span data-i18n="nav.kanban">Канбан</span></a></li>
-      <li><a class="nav-link" data-page="project" href="#"><span class="nav-icon">🗺️</span><span>Планировщик AI</span></a></li>
-      <li><a class="nav-link" data-page="olympiad" href="#"><span class="nav-icon">📐</span><span>Олимпиада</span></a></li>
+      <li><a class="nav-link" data-page="project" href="#"><span class="nav-icon">🗺️</span><span data-i18n="nav.project">Планнировщик AI</span></a></li>
+      <li><a class="nav-link" data-page="olympiad" href="#"><span class="nav-icon">📐</span><span data-i18n="nav.olympiad">Олимпиада</span></a></li>
       <li><a class="nav-link" data-page="dashboard" href="#"><span class="nav-icon">📈</span><span data-i18n="nav.dashboard">Дашборд</span></a></li>
       <li><a class="nav-link" data-page="notes" href="#"><span class="nav-icon">🗒️</span><span>Заметки</span></a></li>
       <li class="nav-separator"></li>
@@ -222,8 +222,8 @@
       <button class="drawer-link" data-page="home" onclick="goPage('home')"><span class="dl-icon">🏠</span> Главная</button>
       <button class="drawer-link" data-page="dashboard" onclick="goPage('dashboard')"><span class="dl-icon">📈</span> Дашборд</button>
       <button class="drawer-link" data-page="kanban" onclick="goPage('kanban')"><span class="dl-icon">📋</span> Канбан-доска</button>
-      <button class="drawer-link" data-page="project" onclick="goPage('project')"><span class="dl-icon">🗺️</span> Планировщик AI</button>
-      <button class="drawer-link" data-page="olympiad" onclick="goPage('olympiad')"><span class="dl-icon">📐</span> Олимпиадный тренажёр</button>
+      <button class="drawer-link" data-page="project" onclick="goPage('project')"><span class="dl-icon">🗺️</span> <span data-i18n="project.title">AI Планировщик проекта</span></button>
+      <button class="drawer-link" data-page="olympiad" onclick="goPage('olympiad')"><span class="dl-icon">📐</span> <span data-i18n="olympiad.title">Олимпиадный тренажёр</span></button>
       <button class="drawer-link" data-page="notes" onclick="goPage('notes')"><span class="dl-icon">🗒️</span> Заметки</button>
       <button class="drawer-link" data-page="channels" onclick="goPage('channels')"><span class="dl-icon">#</span> Каналы</button>
       <button class="drawer-link" data-page="chat" onclick="goPage('chat')"><span class="dl-icon">💬</span> Командный чат</button>
@@ -1948,8 +1948,8 @@
     <section class="page" id="page-project">
       <div class="page-header">
         <div>
-          <h1 class="page-title">🗺️ AI Планировщик проекта</h1>
-          <p class="page-subtitle">Опиши проект — AI сгенерирует пошаговый план + найдёт ресурсы в интернете</p>
+          <h1 class="page-title" data-i18n="project.title">🗺️ AI Планировщик проекта</h1>
+          <p class="page-subtitle" data-i18n="project.subtitle">Опиши проект — AI сгенерирует пошаговый план + найдёт ресурсы в интернете</p>
         </div>
       </div>
 
@@ -1957,9 +1957,9 @@
       <div class="card proj-search-card">
         <div style="display:flex;gap:10px;align-items:center;">
           <span style="font-size:20px;">🔍</span>
-          <input type="text" id="projSearchInput" class="input" placeholder="Поиск: как сделать REST API на FastAPI, алгоритм Дейкстры, React хуки..."
+          <input type="text" id="projSearchInput" class="input" data-i18n-placeholder="project.searchPlaceholder" placeholder="Поиск: как сделать REST API на FastAPI, алгоритм Дейкстры, React хуки..."
             style="flex:1;" onkeydown="if(event.key==='Enter') projSearch()" />
-          <button class="btn btn-primary" onclick="projSearch()" id="projSearchBtn">Найти</button>
+          <button class="btn btn-primary" onclick="projSearch()" id="projSearchBtn" data-i18n="project.searchBtn">Найти</button>
         </div>
         <div id="projSearchResult" style="display:none;margin-top:16px;"></div>
       </div>
@@ -1967,47 +1967,47 @@
       <!-- Plan Templates -->
       <div style="margin-bottom:16px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <p style="font-size:13px;color:var(--text-dim);margin:0;">⚡ Быстрый старт — выбери шаблон:</p>
+          <p style="font-size:13px;color:var(--text-dim);margin:0;" data-i18n="project.quickStart">⚡ Быстрый старт — выбери шаблон:</p>
         </div>
         <div class="proj-templates-row" id="projTemplateRow">
-          <button class="proj-tmpl-btn" onclick="applyTemplate('mvp-48h')">⚡ MVP 48ч</button>
-          <button class="proj-tmpl-btn" onclick="applyTemplate('olympiad-1month')">📐 Олимпиада</button>
-          <button class="proj-tmpl-btn" onclick="applyTemplate('fullstack-app')">🌐 Full-stack</button>
-          <button class="proj-tmpl-btn" onclick="applyTemplate('ml-project')">🤖 ML-проект</button>
-          <button class="proj-tmpl-btn" onclick="applyTemplate('mobile-app')">📱 Мобилка</button>
-          <button class="proj-tmpl-btn" onclick="applyTemplate('work-feature')">💼 Рабочая фича</button>
+          <button class="proj-tmpl-btn" onclick="applyTemplate('mvp-48h')" data-i18n="project.tmplMvp">⚡ MVP 48ч</button>
+          <button class="proj-tmpl-btn" onclick="applyTemplate('olympiad-1month')" data-i18n="project.tmplOlympiad">📐 Олимпиада</button>
+          <button class="proj-tmpl-btn" onclick="applyTemplate('fullstack-app')" data-i18n="project.tmplFullstack">🌐 Full-stack</button>
+          <button class="proj-tmpl-btn" onclick="applyTemplate('ml-project')" data-i18n="project.tmplMl">🤖 ML-проект</button>
+          <button class="proj-tmpl-btn" onclick="applyTemplate('mobile-app')" data-i18n="project.tmplMobile">📱 Мобилка</button>
+          <button class="proj-tmpl-btn" onclick="applyTemplate('work-feature')" data-i18n="project.tmplWork">💼 Рабочая фича</button>
         </div>
       </div>
 
       <!-- Project Type Tabs + Generator -->
       <div class="card" style="margin-bottom:16px;">
         <div class="proj-type-tabs" id="projTypeTabs">
-          <button class="proj-type-tab active" data-type="personal" onclick="selectProjType(this)">💻 Личный</button>
-          <button class="proj-type-tab" data-type="hackathon" onclick="selectProjType(this)">🏆 Хакатон</button>
-          <button class="proj-type-tab" data-type="olympiad" onclick="selectProjType(this)">📐 Олимпиада</button>
-          <button class="proj-type-tab" data-type="work" onclick="selectProjType(this)">💼 Работа</button>
+          <button class="proj-type-tab active" data-type="personal" onclick="selectProjType(this)" data-i18n="project.typePersonal">💻 Личный</button>
+          <button class="proj-type-tab" data-type="hackathon" onclick="selectProjType(this)" data-i18n="project.typeHackathon">🏆 Хакатон</button>
+          <button class="proj-type-tab" data-type="olympiad" onclick="selectProjType(this)" data-i18n="project.typeOlympiad">📐 Олимпиада</button>
+          <button class="proj-type-tab" data-type="work" onclick="selectProjType(this)" data-i18n="project.typeWork">💼 Работа</button>
         </div>
 
         <div class="form-group" style="margin-top:16px;">
-          <label>Название проекта</label>
-          <input type="text" id="projTitle" class="input" placeholder="Например: AI-чатбот для поддержки студентов" />
+          <label data-i18n="project.nameLabel">Название проекта</label>
+          <input type="text" id="projTitle" class="input" data-i18n-placeholder="project.namePlaceholder" placeholder="Например: AI-чатбот для поддержки студентов" />
         </div>
         <div class="form-group">
-          <label>Описание / цель</label>
+          <label data-i18n="project.descLabel">Описание / цель</label>
           <textarea id="projDesc" class="input textarea" style="min-height:90px;"
-            placeholder="Что должен делать проект? Какую проблему решает? Для кого?"></textarea>
+            data-i18n-placeholder="project.descPlaceholder" placeholder="Что должен делать проект? Какую проблему решает? Для кого?"></textarea>
         </div>
         <div class="form-row">
           <div class="form-group" style="flex:2;">
-            <label>Технологии (через запятую)</label>
+            <label data-i18n="project.techLabel">Технологии (через запятую)</label>
             <input type="text" id="projTech" class="input" placeholder="Python, FastAPI, React, PostgreSQL..." />
           </div>
           <div class="form-group" style="flex:1;">
-            <label>Срок (дней)</label>
+            <label data-i18n="project.daysLabel">Срок (дней)</label>
             <input type="number" id="projDays" class="input" value="30" min="1" max="365" />
           </div>
         </div>
-        <button class="btn btn-primary" id="projGenBtn" onclick="generateRoadmap()" style="width:100%;">
+        <button class="btn btn-primary" id="projGenBtn" onclick="generateRoadmap()" style="width:100%;" data-i18n="project.generateBtn">
           🤖 Сгенерировать план проекта
         </button>
       </div>
@@ -2015,8 +2015,8 @@
       <!-- Saved Roadmaps List -->
       <div id="projSavedWrap" style="display:none;margin-bottom:16px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <h3 style="margin:0;font-size:15px;">📂 Мои планы</h3>
-          <button class="btn btn-outline" style="font-size:12px;padding:4px 12px;" onclick="loadRoadmapList()">↻ Обновить</button>
+          <h3 style="margin:0;font-size:15px;" data-i18n="project.myPlans">📂 Мои планы</h3>
+          <button class="btn btn-outline" style="font-size:12px;padding:4px 12px;" onclick="loadRoadmapList()" data-i18n="project.refresh">↻ Обновить</button>
         </div>
         <div id="projSavedList" class="proj-saved-list"></div>
       </div>
@@ -2031,7 +2031,7 @@
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
               <button class="btn btn-secondary" id="pushKanbanBtn" onclick="pushRoadmapToKanban()"
-                style="font-size:12px;padding:5px 14px;">📋 Добавить в Kanban</button>
+                style="font-size:12px;padding:5px 14px;" data-i18n="project.pushKanban">📋 Добавить в Kanban</button>
               <div class="proj-progress-text" id="projProgressText">0 / 0 шагов</div>
               <div class="proj-progress-bar-wrap">
                 <div class="proj-progress-bar-fill" id="projProgressFill" style="width:0%"></div>
@@ -2046,14 +2046,14 @@
       <div class="modal-overlay" id="projHintModal" style="display:none;">
         <div class="modal-box" style="max-width:640px;max-height:80vh;overflow-y:auto;">
           <div class="modal-header">
-            <h3 id="projHintTitle">💡 Совет от AI</h3>
+            <h3 id="projHintTitle" data-i18n="project.aiHintTitle">💡 Совет от AI</h3>
             <button class="modal-close" onclick="closeModal('projHintModal')">✕</button>
           </div>
           <div id="projHintBody" class="proj-hint-body">
-            <div class="ai-typing">⏳ AI анализирует шаг и ищет ресурсы в интернете...</div>
+            <div class="ai-typing" data-i18n="project.hintLoading">⏳ AI анализирует шаг и ищет ресурсы в интернете...</div>
           </div>
           <div id="projHintSources" style="margin-top:12px;display:none;">
-            <p style="font-size:12px;color:var(--text-dim);margin-bottom:6px;">🔍 Найдено в интернете:</p>
+            <p style="font-size:12px;color:var(--text-dim);margin-bottom:6px;" data-i18n="project.hintSourcesLabel">🔍 Найдено в интернете:</p>
             <div id="projHintSourceList"></div>
           </div>
         </div>
@@ -2065,22 +2065,22 @@
     <section class="page" id="page-olympiad">
       <div class="page-header">
         <div>
-          <h1 class="page-title">📐 Олимпиадный тренажёр</h1>
-          <p class="page-subtitle">Алгоритмы, структуры данных, математика — с AI-разбором и практическими задачами</p>
+          <h1 class="page-title" data-i18n="olympiad.title">📐 Олимпиадный тренажёр</h1>
+          <p class="page-subtitle" data-i18n="olympiad.subtitle">Алгоритмы, структуры данных, математика — с AI-разбором и практическими задачами</p>
         </div>
       </div>
 
       <!-- Level selector -->
       <div class="card" style="margin-bottom:16px;">
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <span style="font-size:13px;color:var(--text-dim);flex-shrink:0;">Уровень:</span>
+          <span style="font-size:13px;color:var(--text-dim);flex-shrink:0;" data-i18n="olympiad.levelLabel">Уровень:</span>
           <div id="olymLevelTabs" style="display:flex;gap:8px;">
-            <button class="proj-type-tab active" data-level="beginner" onclick="selectOlymLevel(this)">🌱 Новичок</button>
-            <button class="proj-type-tab" data-level="mid" onclick="selectOlymLevel(this)">⚡ Средний</button>
-            <button class="proj-type-tab" data-level="advanced" onclick="selectOlymLevel(this)">🔥 Продвинутый</button>
+            <button class="proj-type-tab active" data-level="beginner" onclick="selectOlymLevel(this)" data-i18n="olympiad.levelBeginner">🌱 Новичок</button>
+            <button class="proj-type-tab" data-level="mid" onclick="selectOlymLevel(this)" data-i18n="olympiad.levelMid">⚡ Средний</button>
+            <button class="proj-type-tab" data-level="advanced" onclick="selectOlymLevel(this)" data-i18n="olympiad.levelAdvanced">🔥 Продвинутый</button>
           </div>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-dim);margin-left:auto;">
-            <input type="checkbox" id="olymWithCode" checked style="cursor:pointer;"> С кодом
+            <input type="checkbox" id="olymWithCode" checked style="cursor:pointer;"> <span data-i18n="olympiad.withCode">С кодом</span>
           </label>
         </div>
       </div>
@@ -2094,12 +2094,12 @@
 
       <!-- "Решить задачу" panel -->
       <div class="card" style="margin-top:16px;">
-        <h3 style="margin-bottom:12px;font-size:15px;">🧠 Решение своей задачи</h3>
+        <h3 style="margin-bottom:12px;font-size:15px;" data-i18n="olympiad.myProblemTitle">🧠 Решение своей задачи</h3>
         <textarea id="olymUserProblem" class="input textarea" style="min-height:100px;"
-          placeholder="Вставь условие задачи сюда — с ограничениями, примерами..."></textarea>
+          data-i18n-placeholder="olympiad.myProblemPlaceholder" placeholder="Вставь условие задачи сюда — с ограничениями, примерами..."></textarea>
         <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="olymSolveProblem('hint')">💡 Получить подсказку</button>
-          <button class="btn btn-secondary" onclick="olymSolveProblem('full')">✅ Полное решение</button>
+          <button class="btn btn-primary" onclick="olymSolveProblem('hint')" data-i18n="olympiad.hintBtn">💡 Получить подсказку</button>
+          <button class="btn btn-secondary" onclick="olymSolveProblem('full')" data-i18n="olympiad.fullSolutionBtn">✅ Полное решение</button>
         </div>
         <div id="olymSolveResult" style="display:none;margin-top:14px;"></div>
       </div>
@@ -2108,20 +2108,20 @@
       <div class="modal-overlay" id="olymTopicModal" style="display:none;">
         <div class="modal-box" style="max-width:700px;max-height:85vh;overflow-y:auto;">
           <div class="modal-header">
-            <h3 id="olymModalTitle">📚 Тема</h3>
+            <h3 id="olymModalTitle" data-i18n="olympiad.modalTopicTitle">📚 Тема</h3>
             <button class="modal-close" onclick="closeModal('olymTopicModal')">✕</button>
           </div>
           <!-- Sub-actions -->
           <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;" id="olymModalActions">
-            <button class="btn btn-primary" onclick="olymExplain()">🧠 Объяснить</button>
-            <button class="btn btn-secondary" onclick="olymGenerateProblem('easy')">🟢 Лёгкая задача</button>
-            <button class="btn btn-secondary" onclick="olymGenerateProblem('medium')">🟡 Средняя</button>
-            <button class="btn btn-secondary" onclick="olymGenerateProblem('hard')">🔴 Сложная</button>
+            <button class="btn btn-primary" onclick="olymExplain()" data-i18n="olympiad.explainBtn">🧠 Объяснить</button>
+            <button class="btn btn-secondary" onclick="olymGenerateProblem('easy')" data-i18n="olympiad.easyBtn">🟢 Лёгкая задача</button>
+            <button class="btn btn-secondary" onclick="olymGenerateProblem('medium')" data-i18n="olympiad.mediumBtn">🟡 Средняя</button>
+            <button class="btn btn-secondary" onclick="olymGenerateProblem('hard')" data-i18n="olympiad.hardBtn">🔴 Сложная</button>
           </div>
           <div id="olymModalBody" class="proj-hint-body">
             <div class="olym-placeholder">
               <div style="font-size:48px;margin-bottom:8px;">📐</div>
-              <p style="color:var(--text-dim);">Нажми «Объяснить» или выбери сложность задачи</p>
+              <p style="color:var(--text-dim);" data-i18n="olympiad.placeholder">Нажми «Объяснить» или выбери сложность задачи</p>
             </div>
           </div>
         </div>
