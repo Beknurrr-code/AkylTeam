@@ -14,6 +14,61 @@
   <link rel="stylesheet" href="/static/css/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Monaco Editor -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+  <style>
+    /* ── Twin layout (README generator) ────────────────────── */
+    .twin-layout { display:grid; grid-template-columns:1fr 1fr; gap:20px; min-height:600px; }
+    @media(max-width:800px) { .twin-layout { grid-template-columns:1fr; } }
+    .twin-left,.twin-right { display:flex; flex-direction:column; }
+    .rm-lang-btn.active { background:var(--primary)!important; color:#fff!important; }
+    .markdown-body { line-height:1.7; }
+    .markdown-body h1,.markdown-body h2,.markdown-body h3 { color:var(--text); margin:16px 0 8px; }
+    .markdown-body code { background:var(--card-border); padding:2px 6px; border-radius:4px; font-family:monospace; font-size:12px; }
+    .markdown-body pre { background:var(--card-bg); border:1px solid var(--card-border); border-radius:8px; padding:12px; overflow:auto; margin:8px 0; }
+    .markdown-body pre code { background:none; padding:0; }
+    .markdown-body table { border-collapse:collapse; width:100%; margin:8px 0; }
+    .markdown-body th,.markdown-body td { border:1px solid var(--card-border); padding:6px 12px; text-align:left; }
+    .markdown-body th { background:var(--card-border); }
+    .markdown-body blockquote { border-left:3px solid var(--primary); padding-left:12px; color:var(--text-dim); margin:8px 0; }
+    /* ── CodeSpace layout ──────────────────────────────────── */
+    .codespace-layout { display:flex; flex-direction:column; gap:8px; height:calc(100vh - 200px); min-height:500px; }
+    .codespace-toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; padding:8px 0; }
+    .cs-lang-select { width:160px; min-width:120px; }
+    .cs-prompt { flex:1; min-width:180px; }
+    .codespace-main { display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-height:0; }
+    @media(max-width:800px) { .codespace-main { grid-template-columns:1fr; } }
+    .cs-editor-wrap { border:1px solid var(--card-border); border-radius:10px; overflow:hidden; background:#1e1e1e; min-height:300px; height:100%; }
+    .cs-fallback { width:100%; height:100%; background:#1e1e1e; color:#d4d4d4; border:none; padding:12px; font-family:'Fira Code',monospace; font-size:13px; resize:none; }
+    .cs-output-wrap { display:flex; flex-direction:column; gap:8px; overflow:auto; }
+    .cs-output-header,.cs-ai-output-header { display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:600; color:var(--text-dim); padding:4px 0; }
+    .cs-output { background:var(--card-bg); border:1px solid var(--card-border); border-radius:8px; padding:12px; font-family:monospace; font-size:12px; overflow:auto; white-space:pre-wrap; flex:1; min-height:120px; }
+    .cs-ai-resp { font-family:inherit; font-size:13px; white-space:normal; }
+    /* ── Project Space ─────────────────────────────────────── */
+    .pspace-controls { display:flex; flex-wrap:wrap; gap:8px; padding:12px 0; align-items:center; }
+    .pspace-divider { width:1px; height:28px; background:var(--card-border); margin:0 4px; }
+    .pspace-board-wrap { border:1px solid var(--card-border); border-radius:12px; overflow:auto; background:var(--card-bg); position:relative; height:60vh; min-height:400px; }
+    .pspace-board { position:relative; width:2000px; height:1400px; background-image:radial-gradient(circle, var(--card-border) 1px, transparent 1px); background-size:24px 24px; }
+    .pspace-empty-hint { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; pointer-events:none; }
+    .pspace-note { position:absolute; border-radius:8px; padding:12px; box-shadow:0 4px 16px rgba(0,0,0,.25); cursor:move; user-select:none; min-width:160px; max-width:280px; word-break:break-word; font-size:13px; transition:box-shadow .15s; }
+    .pspace-note:hover { box-shadow:0 8px 28px rgba(0,0,0,.35); z-index:10; }
+    .pspace-note-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+    .pspace-note-type { font-size:16px; }
+    .pspace-note-del { cursor:pointer; opacity:.5; font-size:14px; padding:2px 4px; border-radius:4px; }
+    .pspace-note-del:hover { opacity:1; background:rgba(0,0,0,.15); }
+    .pspace-note[contenteditable="true"]:focus { outline:2px solid rgba(255,255,255,.4); box-shadow:0 8px 32px rgba(0,0,0,.4); }
+    /* Note type colors */
+    .pnote-note   { background:#fef08a; color:#1a1a1a; }
+    .pnote-idea   { background:#bbf7d0; color:#1a1a1a; }
+    .pnote-task   { background:#bfdbfe; color:#1a1a1a; }
+    .pnote-warning{ background:#fed7aa; color:#1a1a1a; }
+    /* page hero */
+    .page-hero { margin-bottom:20px; }
+    .page-hero-title { font-size:1.8rem; font-weight:700; margin:0 0 6px; }
+    .page-hero-sub { font-size:14px; color:var(--text-dim); margin:0; }
+  </style>
 </head>
 <body>
   <!-- ══════════════════════════════════════════════════════════
@@ -224,6 +279,9 @@
       <button class="drawer-link" data-page="kanban" onclick="goPage('kanban')"><span class="dl-icon">📋</span> Канбан-доска</button>
       <button class="drawer-link" data-page="project" onclick="goPage('project')"><span class="dl-icon">🗺️</span> <span data-i18n="project.title">AI Планировщик проекта</span></button>
       <button class="drawer-link" data-page="olympiad" onclick="goPage('olympiad')"><span class="dl-icon">📐</span> <span data-i18n="olympiad.title">Олимпиадный тренажёр</span></button>
+      <button class="drawer-link" data-page="readme" onclick="goPage('readme')"><span class="dl-icon">📄</span> README Generator</button>
+      <button class="drawer-link" data-page="codespace" onclick="goPage('codespace')"><span class="dl-icon">⌨️</span> CodeSpace</button>
+      <button class="drawer-link" data-page="project-space" onclick="goPage('project-space')"><span class="dl-icon">🗂️</span> Project Space</button>
       <button class="drawer-link" data-page="notes" onclick="goPage('notes')"><span class="dl-icon">🗒️</span> Заметки</button>
       <button class="drawer-link" data-page="channels" onclick="goPage('channels')"><span class="dl-icon">#</span> Каналы</button>
       <button class="drawer-link" data-page="chat" onclick="goPage('chat')"><span class="dl-icon">💬</span> Командный чат</button>
@@ -343,6 +401,21 @@
           <div class="module-icon">🧭</div>
           <h3>Найди свою роль</h3>
           <p>6 вопросов — узнай, кто ты в команде: PM, Developer, Designer или ML-инженер.</p>
+        </div>
+        <div class="module-card" onclick="showPage('readme')">
+          <div class="module-icon">📄</div>
+          <h3>README Generator</h3>
+          <p>Опиши проект — AI напишет профессиональный README.md с бейджами и разделами.</p>
+        </div>
+        <div class="module-card" onclick="showPage('codespace')">
+          <div class="module-icon">⌨️</div>
+          <h3>CodeSpace</h3>
+          <p>Monaco-редактор с AI-автодополнением, запуском кода в 10+ языках и AI-дебаггером.</p>
+        </div>
+        <div class="module-card" onclick="showPage('project-space')">
+          <div class="module-icon">🗂️</div>
+          <h3>Project Space</h3>
+          <p>Визуальная доска со стикерами, идеями и AI-мозговым штурмом — как Miro, но умнее.</p>
         </div>
       </div>
 
@@ -1259,6 +1332,8 @@
           </div>
           <button class="btn btn-primary" onclick="openAddKanbanTask()">+ <span data-i18n="kanban.addTask">Задача</span></button>
           <button class="btn btn-secondary" onclick="exportKanbanCSV()" title="Экспорт в CSV">📥 CSV</button>
+          <button class="btn btn-secondary" onclick="exportKanbanPDF()" title="Экспорт в PDF">⬇️ PDF</button>
+          <span id="kanbanWsStatus" style="font-size:11px;color:var(--text-dim);" title="Real-time sync">🟢</span>
         </div>
       </div>
 
@@ -2030,8 +2105,14 @@
               <span id="projRoadmapBadge" class="proj-type-badge"></span>
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-              <button class="btn btn-secondary" id="pushKanbanBtn" onclick="pushRoadmapToKanban()"
-                style="font-size:12px;padding:5px 14px;" data-i18n="project.pushKanban">📋 Добавить в Kanban</button>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+                <button class="btn btn-secondary" id="pushKanbanBtn" onclick="pushRoadmapToKanban()"
+                  style="font-size:12px;padding:5px 14px;" data-i18n="project.pushKanban">📋 Добавить в Kanban</button>
+                <button class="btn btn-secondary" onclick="exportRoadmapPDF()"
+                  style="font-size:12px;padding:5px 14px;">⬇️ PDF</button>
+                <button class="btn btn-secondary" onclick="shareRoadmap()"
+                  style="font-size:12px;padding:5px 14px;">🔗 Поделиться</button>
+              </div>
               <div class="proj-progress-text" id="projProgressText">0 / 0 шагов</div>
               <div class="proj-progress-bar-wrap">
                 <div class="proj-progress-bar-fill" id="projProgressFill" style="width:0%"></div>
@@ -2123,6 +2204,199 @@
               <div style="font-size:48px;margin-bottom:8px;">📐</div>
               <p style="color:var(--text-dim);" data-i18n="olympiad.placeholder">Нажми «Объяснить» или выбери сложность задачи</p>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         README GENERATOR
+         ══════════════════════════════════════════════════════════ -->
+    <section class="page" id="page-readme">
+      <div class="page-hero">
+        <h1 class="page-hero-title">📄 README Generator</h1>
+        <p class="page-hero-sub">Опиши проект — AI напишет полный профессиональный README.md</p>
+      </div>
+
+      <div class="twin-layout">
+        <!-- Left: form -->
+        <div class="twin-left">
+          <div class="card">
+            <div class="card-header"><span class="card-icon">📝</span> Информация о проекте</div>
+            <div class="card-body">
+              <div class="form-group">
+                <label>Название проекта *</label>
+                <input type="text" id="rmProjectName" class="input" placeholder="AkylTeam" />
+              </div>
+              <div class="form-group">
+                <label>Описание / цель *</label>
+                <textarea id="rmDescription" class="input" rows="3" placeholder="AI-платформа для хакатонных команд..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Тип проекта</label>
+                <select id="rmProjectType" class="input">
+                  <option value="hackathon">🏆 Хакатон</option>
+                  <option value="personal">💻 Личный проект</option>
+                  <option value="work">💼 Работа</option>
+                  <option value="open-source">🌐 Open source</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Технологии (через запятую)</label>
+                <input type="text" id="rmTechStack" class="input" placeholder="Python, FastAPI, React, SQLite" />
+              </div>
+              <div class="form-group">
+                <label>Ключевые функции (по одной на строку)</label>
+                <textarea id="rmFeatures" class="input" rows="4" placeholder="AI-ментор для разработчиков&#10;Детектор выгорания&#10;Канбан-доска в реальном времени"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Члены команды (через запятую)</label>
+                <input type="text" id="rmTeamMembers" class="input" placeholder="Aibek (Backend), Daniyar (Frontend)" />
+              </div>
+              <div class="form-row" style="display:flex;gap:10px;">
+                <div class="form-group" style="flex:1;">
+                  <label>GitHub URL</label>
+                  <input type="text" id="rmGithubUrl" class="input" placeholder="https://github.com/..." />
+                </div>
+                <div class="form-group" style="flex:1;">
+                  <label>Demo URL</label>
+                  <input type="text" id="rmDemoUrl" class="input" placeholder="https://..." />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Язык README</label>
+                <div style="display:flex;gap:8px;">
+                  <button class="btn btn-secondary rm-lang-btn active" data-lang="ru" onclick="rmSetLang('ru')">RU</button>
+                  <button class="btn btn-secondary rm-lang-btn" data-lang="kz" onclick="rmSetLang('kz')">KZ</button>
+                  <button class="btn btn-secondary rm-lang-btn" data-lang="en" onclick="rmSetLang('en')">EN</button>
+                </div>
+              </div>
+              <button class="btn btn-primary w-full" onclick="generateReadme()">🤖 Сгенерировать README</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: output -->
+        <div class="twin-right">
+          <div class="card" style="height:100%">
+            <div class="card-header">
+              <span class="card-icon">📄</span> README.md Preview
+              <div style="display:flex;gap:8px;margin-left:auto;">
+                <button class="btn btn-secondary btn-sm" onclick="rmToggleView()" id="rmViewBtn">🔡 Raw</button>
+                <button class="btn btn-secondary btn-sm" onclick="rmCopy()">📋 Копировать</button>
+                <button class="btn btn-secondary btn-sm" onclick="rmDownload()">⬇️ Скачать .md</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding:0;overflow:auto;">
+              <div id="rmPreview" style="padding:20px;min-height:400px;" class="markdown-body">
+                <div style="text-align:center;padding:60px 20px;color:var(--text-dim);">
+                  <div style="font-size:48px;margin-bottom:12px;">📄</div>
+                  <p>Заполни форму и нажми «Сгенерировать README»</p>
+                </div>
+              </div>
+              <textarea id="rmRaw" style="display:none;width:100%;height:100%;min-height:400px;padding:16px;background:var(--card-bg);border:none;resize:none;font-family:monospace;font-size:13px;color:var(--text);" spellcheck="false" readonly></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         CODESPACE — Monaco Editor + AI + Code Runner
+         ══════════════════════════════════════════════════════════ -->
+    <section class="page" id="page-codespace">
+      <div class="page-hero">
+        <h1 class="page-hero-title">⌨️ CodeSpace</h1>
+        <p class="page-hero-sub">Редактор кода с AI-помощником и запуском в браузере</p>
+      </div>
+
+      <div class="codespace-layout">
+        <!-- Toolbar -->
+        <div class="codespace-toolbar">
+          <select id="csLang" class="input cs-lang-select" onchange="csLangChanged()">
+            <option value="python">🐍 Python</option>
+            <option value="javascript">🌐 JavaScript</option>
+            <option value="typescript">📘 TypeScript</option>
+            <option value="java">☕ Java</option>
+            <option value="cpp">⚙️ C++</option>
+            <option value="c">🔧 C</option>
+            <option value="go">🐹 Go</option>
+            <option value="rust">🦀 Rust</option>
+            <option value="ruby">💎 Ruby</option>
+            <option value="php">🐘 PHP</option>
+          </select>
+          <button class="btn btn-success" onclick="csRunCode()" title="Запустить (Ctrl+Enter)">▶ Запустить</button>
+          <button class="btn btn-primary" onclick="csAiComplete()" title="AI докончит или улучшит код">🤖 AI Complete</button>
+          <button class="btn btn-secondary" onclick="csAiExplain()">🧠 Объяснить</button>
+          <button class="btn btn-secondary" onclick="csAiFormat()">✨ Форматировать</button>
+          <input type="text" id="csPrompt" class="input cs-prompt" placeholder="Скажи AI что сделать (опционально)..." />
+          <button class="btn btn-outline" onclick="csClearOutput()">🗑️ Очистить</button>
+        </div>
+
+        <!-- Editor + Output -->
+        <div class="codespace-main">
+          <!-- Monaco editor mount point -->
+          <div class="cs-editor-wrap">
+            <div id="csMonacoEditor" style="width:100%;height:100%;"></div>
+            <!-- Fallback textarea if Monaco doesn't load -->
+            <textarea id="csFallbackEditor" class="cs-fallback" style="display:none;" spellcheck="false" placeholder="// Напиши код здесь..."></textarea>
+          </div>
+
+          <!-- Output panel -->
+          <div class="cs-output-wrap">
+            <div class="cs-output-header">
+              <span>📤 Вывод</span>
+              <button class="btn btn-sm btn-outline" onclick="csClearOutput()">✕</button>
+            </div>
+            <div id="csOutput" class="cs-output">
+              <span style="color:var(--text-dim);">Нажми ▶ Запустить чтобы увидеть результат</span>
+            </div>
+            <div class="cs-ai-output-header" style="margin-top:8px;">
+              <span>🤖 AI-ответ</span>
+            </div>
+            <div id="csAiOutput" class="cs-output cs-ai-resp markdown-content" style="min-height:100px;">
+              <span style="color:var(--text-dim);">AI-ответ появится здесь</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stdin input -->
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 0;">
+          <label style="white-space:nowrap;font-size:12px;color:var(--text-dim);">Stdin (ввод):</label>
+          <input type="text" id="csStdin" class="input" placeholder="Необязательный ввод данных для программы..." />
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         PROJECT SPACE — Visual Sticky-Note Board (like Miro/Mural)
+         ══════════════════════════════════════════════════════════ -->
+    <section class="page" id="page-project-space">
+      <div class="page-hero">
+        <h1 class="page-hero-title">🗂️ Project Space</h1>
+        <p class="page-hero-sub">Визуальная доска: стикеры, идеи, mind-map — всё на одном холсте</p>
+      </div>
+
+      <div class="pspace-controls">
+        <button class="btn btn-primary" onclick="psAddNote()">➕ Стикер</button>
+        <button class="btn btn-secondary" onclick="psAddNote('idea')">💡 Идея</button>
+        <button class="btn btn-secondary" onclick="psAddNote('task')">✅ Задача</button>
+        <button class="btn btn-secondary" onclick="psAddNote('warning')">⚠️ Риск</button>
+        <div class="pspace-divider"></div>
+        <button class="btn btn-secondary" onclick="psAskAI()">🤖 AI мозговой штурм</button>
+        <button class="btn btn-outline" onclick="psClearBoard()">🗑️ Очистить</button>
+        <button class="btn btn-outline" onclick="psExportPNG()">📸 PNG</button>
+        <div class="pspace-divider"></div>
+        <input type="text" id="psContext" class="input" style="max-width:280px;" placeholder="Тема / хакатон / проект..." />
+      </div>
+
+      <!-- Canvas board -->
+      <div class="pspace-board-wrap" id="psBoardWrap">
+        <div class="pspace-board" id="psBoard">
+          <!-- Sticky notes rendered here by JS -->
+          <div class="pspace-empty-hint" id="psEmptyHint">
+            <div style="font-size:48px;">🗂️</div>
+            <p style="color:var(--text-dim);margin-top:8px;">Нажми «➕ Стикер» чтобы добавить первую карточку</p>
           </div>
         </div>
       </div>

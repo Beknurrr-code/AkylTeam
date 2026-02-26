@@ -1,12 +1,47 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
-from typing import Optional, List
+from typing import Optional, List, Dict, Set
 from pydantic import BaseModel
 from datetime import datetime
+import json
 from backend.models.database import get_db, KanbanTask, User
 from backend.routes.auth import award_xp
 
 router = APIRouter(prefix="/api/kanban", tags=["Kanban Board"])
+
+
+# ── WebSocket Connection Manager ─────────────────────────────────────────────
+
+class KanbanConnectionManager:
+    """Manages WebSocket connections for real-time Kanban sync."""
+
+    def __init__(self):
+        # room_id (team_id or user_id as string) → set of WebSocket connections
+        self._rooms: Dict[str, Set[WebSocket]] = {}
+
+    async def connect(self, room: str, ws: WebSocket):
+        await ws.accept()
+        self._rooms.setdefault(room, set()).add(ws)
+
+    def disconnect(self, room: str, ws: WebSocket):
+        if room in self._rooms:
+            self._rooms[room].discard(ws)
+
+    async def broadcast(self, room: str, message: dict, sender: WebSocket = None):
+        """Send message to all connections in a room except the sender."""
+        dead = set()
+        for ws in list(self._rooms.get(room, [])):
+            if ws is sender:
+                continue
+            try:
+                await ws.send_text(json.dumps(message))
+            except Exception:
+                dead.add(ws)
+        for ws in dead:
+            self._rooms.get(room, set()).discard(ws)
+
+
+_kanban_mgr = KanbanConnectionManager()
 
 VALID_STATUSES = {"backlog", "todo", "doing", "review", "done"}
 VALID_PRIORITIES = {"low", "medium", "high", "critical"}
@@ -64,7 +99,10 @@ async def create_task(data: KanbanTaskCreate, db: Session = Depends(get_db)):
     db.add(task)
     db.commit()
     db.refresh(task)
-    return task_dict(task)
+    result = task_dict(task)
+    room = str(task.team_id or f"u{task.user_id}")
+    await _kanban_mgr.broadcast(room, {"type": "task_created", "task": result})
+    return result
 
 
 @router.get("/tasks")
@@ -103,7 +141,10 @@ async def update_task(task_id: int, data: KanbanTaskUpdate, db: Session = Depend
             pass
     db.commit()
     db.refresh(task)
-    return task_dict(task)
+    result = task_dict(task)
+    room = str(task.team_id or f"u{task.user_id}")
+    await _kanban_mgr.broadcast(room, {"type": "task_updated", "task": result})
+    return result
 
 
 @router.patch("/tasks/{task_id}/status")
@@ -122,6 +163,8 @@ async def move_task(task_id: int, status: str, db: Session = Depends(get_db)):
         user = db.query(User).filter(User.id == task.user_id).first()
         if user:
             award_xp(db, user, 15, f"Задача завершена: {task.title[:40]}")
+    room = str(task.team_id or f"u{task.user_id}")
+    await _kanban_mgr.broadcast(room, {"type": "task_moved", "id": task.id, "status": task.status})
     return {"success": True, "id": task.id, "status": task.status}
 
 
@@ -131,6 +174,44 @@ async def delete_task(task_id: int, db: Session = Depends(get_db)):
     task = db.query(KanbanTask).filter(KanbanTask.id == task_id).first()
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
+    room = str(task.team_id or f"u{task.user_id}")
     db.delete(task)
     db.commit()
+    # Notify all clients in the room
+    await _kanban_mgr.broadcast(room, {"type": "task_deleted", "id": task_id})
     return {"success": True}
+
+
+# ── WebSocket Endpoint ───────────────────────────────────────────────────────
+
+@router.websocket("/ws/{room_id}")
+async def kanban_websocket(websocket: WebSocket, room_id: str):
+    """
+    WebSocket for real-time Kanban sync.
+    room_id: team_{team_id}  or  user_{user_id}
+    Messages sent by clients:
+      {"type": "task_created", "task": {...}}
+      {"type": "task_updated", "task": {...}}
+      {"type": "task_deleted", "id": N}
+      {"type": "ping"}
+    Server broadcasts the same message to all other clients in the room.
+    """
+    await _kanban_mgr.connect(room_id, websocket)
+    try:
+        while True:
+            raw = await websocket.receive_text()
+            try:
+                msg = json.loads(raw)
+            except Exception:
+                continue
+            if msg.get("type") == "ping":
+                await websocket.send_text(json.dumps({"type": "pong"}))
+                continue
+            await _kanban_mgr.broadcast(room_id, msg, sender=websocket)
+    except WebSocketDisconnect:
+        _kanban_mgr.disconnect(room_id, websocket)
+
+
+async def notify_kanban(room: str, msg: dict):
+    """Helper for other routes to broadcast kanban events."""
+    await _kanban_mgr.broadcast(room, msg)

@@ -11,6 +11,7 @@ Endpoints:
 """
 import json
 import re
+import secrets
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
@@ -390,6 +391,57 @@ async def delete_roadmap(roadmap_id: int, db: Session = Depends(get_db)):
     db.delete(r)
     db.commit()
     return {"ok": True}
+
+
+# ── Share Links ──────────────────────────────────────────────────────────────
+
+@router.post("/{roadmap_id}/share")
+async def create_share_link(roadmap_id: int, db: Session = Depends(get_db)):
+    """Generate (or return existing) shareable read-only link for a roadmap."""
+    r = db.query(ProjectRoadmap).filter(ProjectRoadmap.id == roadmap_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="Roadmap not found")
+    # Generate token if not yet set
+    share_token = getattr(r, "share_token", None)
+    if not share_token:
+        share_token = secrets.token_urlsafe(16)
+        try:
+            r.share_token = share_token  # type: ignore
+            db.commit()
+        except Exception:
+            db.rollback()
+            # Column may not exist yet (migration pending) — return temporary token
+            share_token = secrets.token_urlsafe(16)
+    return {"share_token": share_token, "roadmap_id": roadmap_id}
+
+
+@router.get("/share/{token}")
+async def get_shared_roadmap(token: str, db: Session = Depends(get_db)):
+    """Public read-only view of a shared roadmap by share token."""
+    from sqlalchemy import text
+    # Try to query with share_token column
+    try:
+        r = db.query(ProjectRoadmap).filter(  # type: ignore
+            ProjectRoadmap.share_token == token  # type: ignore
+        ).first()
+    except Exception:
+        raise HTTPException(status_code=404, detail="Shared roadmap not found")
+    if not r:
+        raise HTTPException(status_code=404, detail="Shared roadmap not found")
+    return {
+        "id": r.id,
+        "title": r.title,
+        "description": r.description,
+        "project_type": r.project_type,
+        "tech_stack": r.tech_stack,
+        "steps": r.steps,
+        "total_steps": r.total_steps,
+        "done_steps": r.done_steps,
+        "progress_pct": round(r.done_steps / r.total_steps * 100) if r.total_steps else 0,
+        "language": r.language,
+        "created_at": r.created_at.isoformat(),
+        "readonly": True,
+    }
 
 
 # ─── Push roadmap steps → Kanban ────────────────────────────────────────────

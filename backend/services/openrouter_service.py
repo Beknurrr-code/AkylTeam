@@ -60,11 +60,13 @@ async def chat_completion(
             try:
                 return await _call_model(client, m, messages, temperature, max_tokens, headers)
             except httpx.HTTPStatusError as e:
-                if e.response.status_code == 429:
+                status = e.response.status_code
+                if status in (429, 503, 502, 404, 400):
+                    # 429 = rate limit, 503/502 = server error, 404/400 = model issues — try next
                     last_error = e
-                    await asyncio.sleep(0.5)
-                    continue  # try next model
-                raise
+                    await asyncio.sleep(0.3)
+                    continue
+                raise  # 401 = bad API key, let it propagate
         raise last_error
 
 
@@ -99,8 +101,8 @@ async def stream_chat_completion(
                     headers=headers,
                     json=payload,
                 ) as response:
-                    if response.status_code == 429:
-                        await asyncio.sleep(0.5)
+                    if response.status_code in (429, 503, 502, 404, 400):
+                        await asyncio.sleep(0.3)
                         continue  # try next model
                     response.raise_for_status()
                     async for line in response.aiter_lines():
@@ -120,8 +122,8 @@ async def stream_chat_completion(
                             continue
                     return  # success — stop trying other models
         except httpx.HTTPStatusError as e:
-            if e.response.status_code == 429:
-                await asyncio.sleep(0.5)
+            if e.response.status_code in (429, 503, 502, 404, 400):
+                await asyncio.sleep(0.3)
                 continue
             raise
 

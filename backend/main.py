@@ -16,6 +16,8 @@ from backend.routes.hackathon_catalog import router as catalog_router
 from backend.routes.daily import router as daily_router
 from backend.routes.project import router as project_router
 from backend.routes.olympiad import router as olympiad_router
+from backend.routes.readme import router as readme_router
+from backend.routes.codespace import router as codespace_router
 
 app = FastAPI(
     title="AkylTeam - AI Hackathon Platform",
@@ -51,6 +53,8 @@ app.include_router(catalog_router)
 app.include_router(daily_router)
 app.include_router(project_router)
 app.include_router(olympiad_router)
+app.include_router(readme_router)
+app.include_router(codespace_router)
 
 # Serve static frontend
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend")
@@ -80,6 +84,8 @@ async def startup():
         "ALTER TABLE users ADD COLUMN rank_title VARCHAR DEFAULT 'Новичок'",
         "ALTER TABLE users ADD COLUMN streak_days INTEGER DEFAULT 0",
         "ALTER TABLE users ADD COLUMN last_active DATETIME",
+        # project_roadmaps
+        "ALTER TABLE project_roadmaps ADD COLUMN share_token VARCHAR",
     ]
     with engine.connect() as conn:
         for sql in migrations:

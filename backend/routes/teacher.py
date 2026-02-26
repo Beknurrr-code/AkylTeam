@@ -39,6 +39,8 @@ async def explain_topic(request: TeacherRequest):
         "senior": {"ru": "опытного разработчика (глубокое погружение, Edge cases)", "kz": "тәжірибелі әзірлеуші", "en": "senior developer (deep dive, edge cases)"},
     }
     level_desc = level_map.get(request.level, level_map["beginner"]).get(request.language, "beginner")
+    lang_line = {"ru": "\nОтвечай полностью на РУССКОМ языке.", "kz": "\nТолығымен ҚАЗАҚ тілінде жауап бер.", "en": "\nRespond entirely in ENGLISH."}
+    lang_instr = lang_line.get(request.language, lang_line["en"])
 
     subtopic_text = f", конкретно: {request.subtopic}" if request.subtopic else ""
     prompt = f"""Обучи меня теме: {request.topic}{subtopic_text}
@@ -60,7 +62,7 @@ async def explain_topic(request: TeacherRequest):
 [Вопрос 3]
 
 ## 🔗 Что изучить дальше
-[2-3 следующие темы]"""
+[2-3 следующие темы]{lang_instr}"""
 
     system = get_system_prompt("teacher", request.language)
     messages = [{"role": "system", "content": system}, {"role": "user", "content": prompt}]

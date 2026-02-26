@@ -266,6 +266,8 @@ function showPage(pageId) {
   if (pageId === 'home') { loadDailyChallenge(); }
   if (pageId === 'project') { loadRoadmapList(); }
   if (pageId === 'olympiad') { initOlymPage(); }
+  if (pageId === 'codespace') { initCodeSpace(); }
+  if (pageId === 'project-space') { initProjectSpace(); }
 }
 
 // ── TEAMS ─────────────────────────────────────────────────────────
@@ -1299,6 +1301,11 @@ async function initKanbanPage() {
     sel.addEventListener('change', () => localStorage.setItem('akyl_kanban_team', sel.value), { once: false });
   }
   await loadKanban();
+  // Init real-time WebSocket sync
+  const user = AUTH.getUser();
+  const teamId = document.getElementById('kanbanTeamFilter')?.value || '';
+  const roomId = teamId ? `team_${teamId}` : (user?.id ? `user_${user.id}` : null);
+  if (roomId) initKanbanWS(roomId);
   // Remove duplicate change listeners from re-init calls
   if (sel) sel.onchange = () => { localStorage.setItem('akyl_kanban_team', sel.value); loadKanban(); };
 }
@@ -4506,3 +4513,537 @@ async function olymSolveProblem(hintLevel) {
   _hackDeadline('2026-02-24', 'mhd-nb-val');
   _hackDeadline('2026-03-26', 'mhd-cc-val');
 })();
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   README GENERATOR
+   ═══════════════════════════════════════════════════════════════════ */
+let _rmLang = 'ru';
+let _rmReadme = '';
+let _rmShowRaw = false;
+
+function rmSetLang(lang) {
+  _rmLang = lang;
+  document.querySelectorAll('.rm-lang-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.lang === lang));
+}
+
+async function generateReadme() {
+  const name = document.getElementById('rmProjectName')?.value.trim() || '';
+  const desc = document.getElementById('rmDescription')?.value.trim() || '';
+  if (!name || !desc) { showToast('Введи название и описание', 'error'); return; }
+  const tech  = document.getElementById('rmTechStack')?.value.split(',').map(s => s.trim()).filter(Boolean) || [];
+  const feats = document.getElementById('rmFeatures')?.value.split('\n').map(s => s.trim()).filter(Boolean) || [];
+  const team  = document.getElementById('rmTeamMembers')?.value.split(',').map(s => s.trim()).filter(Boolean) || [];
+  const type  = document.getElementById('rmProjectType')?.value || 'hackathon';
+  const github = document.getElementById('rmGithubUrl')?.value.trim() || '';
+  const demo   = document.getElementById('rmDemoUrl')?.value.trim()   || '';
+
+  showLoader('🤖 AI пишет README...');
+  try {
+    const res = await fetch('/api/readme/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ project_name: name, description: desc, tech_stack: tech,
+        features: feats, team_members: team, language: _rmLang, project_type: type,
+        github_url: github, demo_url: demo }),
+    });
+    const data = await res.json();
+    _rmReadme = data.readme || '';
+    _rmShowRaw = false;
+    const preview = document.getElementById('rmPreview');
+    const raw     = document.getElementById('rmRaw');
+    if (preview) { preview.innerHTML = marked.parse(_rmReadme); preview.style.display = 'block'; }
+    if (raw)     { raw.value = _rmReadme; raw.style.display = 'none'; }
+    document.getElementById('rmViewBtn').textContent = '🔡 Raw';
+    showToast('✅ README сгенерирован!', 'success');
+  } catch (e) {
+    showToast('Ошибка: ' + e.message, 'error');
+  } finally {
+    hideLoader();
+  }
+}
+
+function rmToggleView() {
+  _rmShowRaw = !_rmShowRaw;
+  const preview = document.getElementById('rmPreview');
+  const raw     = document.getElementById('rmRaw');
+  if (preview) preview.style.display = _rmShowRaw ? 'none'  : 'block';
+  if (raw)     raw.style.display     = _rmShowRaw ? 'block' : 'none';
+  document.getElementById('rmViewBtn').textContent = _rmShowRaw ? '👁️ Preview' : '🔡 Raw';
+}
+
+function rmCopy() {
+  if (!_rmReadme) { showToast('Сначала сгенерируй README', 'error'); return; }
+  navigator.clipboard.writeText(_rmReadme).then(() => showToast('📋 Скопировано!', 'success'));
+}
+
+function rmDownload() {
+  if (!_rmReadme) { showToast('Сначала сгенерируй README', 'error'); return; }
+  const blob = new Blob([_rmReadme], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'README.md';
+  a.click();
+  showToast('⬇️ README.md скачан', 'success');
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   CODESPACE — Monaco Editor + AI + Piston Runner
+   ═══════════════════════════════════════════════════════════════════ */
+let _csMonaco = null;
+let _csLangId = 'python';
+let _csMonacoLoaded = false;
+
+function initCodeSpace() {
+  if (_csMonacoLoaded) return;
+  _csMonacoLoaded = true;
+
+  if (typeof require === 'undefined') {
+    // No requirejs — fallback textarea
+    document.getElementById('csMonacoEditor').style.display = 'none';
+    document.getElementById('csFallbackEditor').style.display = 'block';
+    document.getElementById('csFallbackEditor').value = '# Напиши свой код здесь\nprint("Hello, AkylTeam!")';
+    return;
+  }
+
+  require.config({
+    paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.50.0/min/vs' },
+  });
+  require(['vs/editor/editor.main'], function () {
+    const container = document.getElementById('csMonacoEditor');
+    if (!container) return;
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    _csMonaco = monaco.editor.create(container, {
+      value: '# Напиши свой код здесь\nprint("Hello, AkylTeam!")',
+      language: 'python',
+      theme: isDark ? 'vs-dark' : 'vs',
+      fontSize: 13,
+      minimap: { enabled: false },
+      wordWrap: 'on',
+      scrollBeyondLastLine: false,
+      automaticLayout: true,
+    });
+    _csMonaco.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, csRunCode);
+    document.getElementById('csFallbackEditor').style.display = 'none';
+  }, function (err) {
+    console.warn('Monaco failed to load:', err);
+    document.getElementById('csMonacoEditor').style.display = 'none';
+    document.getElementById('csFallbackEditor').style.display = 'block';
+    document.getElementById('csFallbackEditor').value = '# Редактор\nprint("Hello!")';
+  });
+}
+
+function csGetCode() {
+  if (_csMonaco) return _csMonaco.getValue();
+  return document.getElementById('csFallbackEditor')?.value || '';
+}
+function csSetCode(code) {
+  if (_csMonaco) _csMonaco.setValue(code);
+  else if (document.getElementById('csFallbackEditor')) document.getElementById('csFallbackEditor').value = code;
+}
+function csLangChanged() {
+  _csLangId = document.getElementById('csLang')?.value || 'python';
+  if (_csMonaco && typeof monaco !== 'undefined') {
+    const model = _csMonaco.getModel();
+    if (model) monaco.editor.setModelLanguage(model, _csLangId === 'cpp' ? 'cpp' : _csLangId);
+  }
+}
+
+async function csRunCode() {
+  const code  = csGetCode();
+  const stdin = document.getElementById('csStdin')?.value || '';
+  const out   = document.getElementById('csOutput');
+  if (out) { out.textContent = '⏳ Запускаю...'; out.style.color = 'var(--text-dim)'; }
+  try {
+    const res  = await fetch('/api/codespace/run', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, language: _csLangId, stdin }),
+    });
+    const data = await res.json();
+    if (!out) return;
+    if (data.success) {
+      out.textContent = data.output || '(нет вывода)';
+      out.style.color = 'var(--text)';
+    } else {
+      out.textContent = data.stderr || data.output || 'Ошибка выполнения';
+      out.style.color = '#f87171';
+    }
+  } catch (e) {
+    if (out) { out.textContent = 'Ошибка: ' + e.message; out.style.color = '#f87171'; }
+  }
+}
+
+async function csAiComplete() {
+  const code     = csGetCode();
+  const prompt   = document.getElementById('csPrompt')?.value.trim() || '';
+  const aiOut    = document.getElementById('csAiOutput');
+  const lang     = (typeof currentLang !== 'undefined') ? currentLang : 'ru';
+  if (aiOut) aiOut.innerHTML = '<span style="color:var(--text-dim)">⏳ AI думает...</span>';
+  try {
+    const res  = await fetch('/api/codespace/complete', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, language: _csLangId, prompt, ui_language: lang }),
+    });
+    const data = await res.json();
+    if (!aiOut) return;
+    aiOut.innerHTML = marked.parse(data.result || '');
+    // Offer to inject first code block into editor
+    const codeMatch = (data.result || '').match(/```[\w]*\n([\s\S]*?)```/);
+    if (codeMatch && prompt) {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-primary btn-sm';
+      btn.style.marginTop = '8px';
+      btn.textContent = '⬆️ Вставить в редактор';
+      btn.onclick = () => { csSetCode(codeMatch[1]); showToast('Код вставлен!', 'success'); btn.remove(); };
+      aiOut.appendChild(btn);
+    }
+  } catch (e) { if (aiOut) aiOut.textContent = 'Ошибка: ' + e.message; }
+}
+
+async function csAiExplain() {
+  const code  = csGetCode();
+  const aiOut = document.getElementById('csAiOutput');
+  const lang  = (typeof currentLang !== 'undefined') ? currentLang : 'ru';
+  if (aiOut) aiOut.innerHTML = '<span style="color:var(--text-dim)">⏳ AI анализирует...</span>';
+  try {
+    const res  = await fetch('/api/codespace/explain', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, language: _csLangId, ui_language: lang }),
+    });
+    const data = await res.json();
+    if (aiOut) aiOut.innerHTML = marked.parse(data.explanation || '');
+  } catch (e) { if (aiOut) aiOut.textContent = 'Ошибка: ' + e.message; }
+}
+
+async function csAiFormat() {
+  const code = csGetCode();
+  const lang = (typeof currentLang !== 'undefined') ? currentLang : 'ru';
+  const aiOut = document.getElementById('csAiOutput');
+  if (aiOut) aiOut.innerHTML = '<span style="color:var(--text-dim)">⏳ Форматирую...</span>';
+  try {
+    const res  = await fetch('/api/codespace/complete', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, language: _csLangId,
+        prompt: 'Format and clean up this code following best practices. Return ONLY the formatted code, nothing else.',
+        ui_language: lang }),
+    });
+    const data = await res.json();
+    const match = (data.result || '').match(/```[\w]*\n([\s\S]*?)```/);
+    if (match) {
+      csSetCode(match[1]);
+      if (aiOut) aiOut.textContent = '✅ Код отформатирован!';
+      showToast('✅ Код отформатирован', 'success');
+    } else {
+      if (aiOut) aiOut.innerHTML = marked.parse(data.result || '');
+    }
+  } catch (e) { if (aiOut) aiOut.textContent = 'Ошибка: ' + e.message; }
+}
+
+function csClearOutput() {
+  const out   = document.getElementById('csOutput');
+  const aiOut = document.getElementById('csAiOutput');
+  if (out)   { out.textContent = 'Нажми ▶ Запустить чтобы увидеть результат'; out.style.color = 'var(--text)'; }
+  if (aiOut) aiOut.textContent = 'AI-ответ появится здесь';
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   PROJECT SPACE — Visual Sticky-Note Board
+   ═══════════════════════════════════════════════════════════════════ */
+let _psNotes   = [];
+let _psDragId  = null;
+let _psDragOX  = 0;
+let _psDragOY  = 0;
+const PS_TYPES = {
+  note:    { icon: '📝', cls: 'pnote-note',    label: 'Заметка'  },
+  idea:    { icon: '💡', cls: 'pnote-idea',    label: 'Идея'     },
+  task:    { icon: '✅', cls: 'pnote-task',    label: 'Задача'   },
+  warning: { icon: '⚠️', cls: 'pnote-warning', label: 'Риск'     },
+};
+
+function initProjectSpace() {
+  const board = document.getElementById('psBoard');
+  if (!board || board._psInited) return;
+  board._psInited = true;
+
+  const saved = localStorage.getItem('pspace_notes');
+  if (saved) {
+    try { _psNotes = JSON.parse(saved); _psNotes.forEach(_psRenderNote); } catch (_) { _psNotes = []; }
+  }
+
+  board.addEventListener('mousemove', _psBoardMove);
+  board.addEventListener('mouseup',   _psBoardUp);
+  _psHint();
+}
+
+function psAddNote(type = 'note') {
+  const note = { id: Date.now(), type, text: PS_TYPES[type]?.label || 'Заметка',
+    x: 60 + Math.random() * 300, y: 60 + Math.random() * 200, w: 190 };
+  _psNotes.push(note);
+  _psRenderNote(note);
+  _psSave();
+  _psHint();
+}
+
+function _psRenderNote(note) {
+  const board = document.getElementById('psBoard');
+  if (!board) return;
+  const t = PS_TYPES[note.type] || PS_TYPES.note;
+  const el = document.createElement('div');
+  el.className = `pspace-note ${t.cls}`;
+  el.id = `psnote-${note.id}`;
+  el.style.cssText = `left:${note.x}px;top:${note.y}px;width:${note.w}px;`;
+  el.innerHTML = `<div class="pspace-note-header" style="cursor:move;">
+    <span class="pspace-note-type">${t.icon}</span>
+    <span class="pspace-note-del" onclick="psDeleteNote(${note.id})">✕</span>
+  </div>
+  <div contenteditable="true" class="pspace-note-content"
+       oninput="_psTextChange(${note.id},this)"
+       style="min-height:60px;outline:none;">${note.text}</div>`;
+  el.querySelector('.pspace-note-header').addEventListener('mousedown', ev => {
+    if (ev.target.classList.contains('pspace-note-del')) return;
+    _psDragId = note.id;
+    const r = el.getBoundingClientRect();
+    _psDragOX = ev.clientX - r.left;
+    _psDragOY = ev.clientY - r.top;
+    el.style.zIndex = 999;
+    ev.preventDefault();
+  });
+  board.appendChild(el);
+  document.getElementById('psEmptyHint')?.remove();
+}
+
+function _psBoardMove(ev) {
+  if (!_psDragId) return;
+  const board = document.getElementById('psBoard');
+  const wrap  = board.parentElement;
+  const rect  = board.getBoundingClientRect();
+  const x = Math.max(0, ev.clientX - rect.left + wrap.scrollLeft - _psDragOX);
+  const y = Math.max(0, ev.clientY - rect.top  + wrap.scrollTop  - _psDragOY);
+  const el = document.getElementById(`psnote-${_psDragId}`);
+  if (el) { el.style.left = x + 'px'; el.style.top = y + 'px'; }
+  const note = _psNotes.find(n => n.id === _psDragId);
+  if (note) { note.x = x; note.y = y; }
+}
+
+function _psBoardUp() {
+  if (_psDragId) {
+    const el = document.getElementById(`psnote-${_psDragId}`);
+    if (el) el.style.zIndex = '';
+    _psDragId = null;
+    _psSave();
+  }
+}
+
+function _psTextChange(id, el) {
+  const note = _psNotes.find(n => n.id === id);
+  if (note) note.text = el.textContent;
+  clearTimeout(el._st);
+  el._st = setTimeout(_psSave, 800);
+}
+
+function psDeleteNote(id) {
+  _psNotes = _psNotes.filter(n => n.id !== id);
+  document.getElementById(`psnote-${id}`)?.remove();
+  _psHint();
+  _psSave();
+}
+
+function _psSave() {
+  localStorage.setItem('pspace_notes', JSON.stringify(_psNotes));
+}
+
+function _psHint() {
+  const board = document.getElementById('psBoard');
+  if (!board) return;
+  if (_psNotes.length === 0 && !document.getElementById('psEmptyHint')) {
+    const h = document.createElement('div');
+    h.className = 'pspace-empty-hint'; h.id = 'psEmptyHint';
+    h.innerHTML = '<div style="font-size:48px">🗂️</div><p style="color:var(--text-dim);margin-top:8px">Нажми «➕ Стикер» чтобы добавить первую карточку</p>';
+    board.appendChild(h);
+  } else if (_psNotes.length > 0) {
+    document.getElementById('psEmptyHint')?.remove();
+  }
+}
+
+function psClearBoard() {
+  if (!confirm('Очистить всю доску?')) return;
+  _psNotes = [];
+  const board = document.getElementById('psBoard');
+  if (board) {
+    board.querySelectorAll('.pspace-note').forEach(el => el.remove());
+    board._psInited = false;
+    _psHint();
+    board._psInited = true;
+  }
+  _psSave();
+}
+
+async function psAskAI() {
+  const ctx  = document.getElementById('psContext')?.value.trim() || '';
+  if (!ctx) { showToast('Введи тему или описание хакатона', 'error'); document.getElementById('psContext')?.focus(); return; }
+  const lang = (typeof currentLang !== 'undefined') ? currentLang : 'ru';
+  showLoader('🤖 AI генерирует идеи...');
+  try {
+    const res = await fetch('/api/personal-chat/message', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: `Мозговой штурм для: "${ctx}". Дай 6-8 конкретных идей, функций или рисков хакатонного проекта. Каждая идея — одно короткое предложение, на новой строке.`,
+        language: lang, mode: 'assistant',
+      }),
+    });
+    const data = await res.json();
+    const text  = data.response || data.content || '';
+    const lines = text.split('\n').filter(l => l.trim() && l.trim().length > 5).slice(0, 8);
+    const types = ['idea','idea','task','note','warning','idea','task','note'];
+    lines.forEach((line, i) => {
+      const clean = line.replace(/^[\d\.\-\*•]+\s*/, '').trim();
+      const note  = {
+        id: Date.now() + i, type: types[i] || 'idea', text: clean,
+        x: 60 + (i % 3) * 230, y: 40 + Math.floor(i / 3) * 200, w: 200,
+      };
+      _psNotes.push(note);
+      _psRenderNote(note);
+    });
+    _psSave();
+    showToast(`✅ ${lines.length} идей добавлено на доску!`, 'success');
+  } catch (e) {
+    showToast('Ошибка: ' + e.message, 'error');
+  } finally {
+    hideLoader();
+  }
+}
+
+function psExportPNG() {
+  showToast('Используй Ctrl+Shift+S (ShareX) или Win+Shift+S для скриншота', 'info');
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   KANBAN — Real-time WebSocket Sync
+   ═══════════════════════════════════════════════════════════════════ */
+let _kanbanWS     = null;
+let _kanbanWSRoom = null;
+let _kanbanWSPing = null;
+
+function initKanbanWS(roomId) {
+  if (_kanbanWS && _kanbanWSRoom === roomId && _kanbanWS.readyState < 2) return;
+  if (_kanbanWS) { _kanbanWS.close(); _kanbanWS = null; }
+  if (_kanbanWSPing) { clearInterval(_kanbanWSPing); _kanbanWSPing = null; }
+
+  _kanbanWSRoom = roomId;
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  _kanbanWS = new WebSocket(`${proto}://${location.host}/api/kanban/ws/${roomId}`);
+
+  _kanbanWS.onmessage = ev => {
+    try {
+      const msg = JSON.parse(ev.data);
+      if (msg.type === 'pong') return;
+      const isVisible = document.getElementById('page-kanban')?.classList.contains('active');
+      if (isVisible) initKanbanPage();
+      if (msg.type !== 'pong') showToast('🔄 Канбан обновлён', 'info');
+    } catch (_) {}
+  };
+
+  _kanbanWS.onclose = () => {
+    _kanbanWS = null;
+    setTimeout(() => { if (_kanbanWSRoom) initKanbanWS(_kanbanWSRoom); }, 5000);
+  };
+
+  _kanbanWSPing = setInterval(() => {
+    if (_kanbanWS?.readyState === WebSocket.OPEN) {
+      _kanbanWS.send(JSON.stringify({ type: 'ping' }));
+    }
+  }, 25000);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   PDF EXPORT
+   ═══════════════════════════════════════════════════════════════════ */
+function exportRoadmapPDF() {
+  const title = document.getElementById('projRoadmapTitle')?.textContent || 'Roadmap';
+  const stepEls = document.querySelectorAll('#projStepsList .proj-step');
+  if (!stepEls.length) { showToast('Нет шагов для экспорта', 'error'); return; }
+
+  if (!window.jspdf) { showToast('jsPDF не загружен', 'error'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+
+  let y = 20;
+  doc.setFontSize(18);
+  doc.setFont(undefined, 'bold');
+  doc.text(title, 15, y); y += 12;
+
+  stepEls.forEach((step, i) => {
+    const stepTitle = step.querySelector('.proj-step-title')?.textContent?.trim() || '';
+    const stepDesc  = step.querySelector('.proj-step-desc')?.textContent?.trim()  || '';
+    if (y > 265) { doc.addPage(); y = 20; }
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'bold');
+    const titleLines = doc.splitTextToSize(`${i + 1}. ${stepTitle}`, 175);
+    doc.text(titleLines, 15, y); y += titleLines.length * 6;
+    if (stepDesc) {
+      doc.setFont(undefined, 'normal');
+      doc.setFontSize(10);
+      const descLines = doc.splitTextToSize(stepDesc, 170);
+      doc.text(descLines, 20, y); y += descLines.length * 5 + 4;
+    }
+  });
+
+  doc.save(`${title.replace(/[^\w\s]/g, '').trim().replace(/\s+/g, '_')}_roadmap.pdf`);
+  showToast('⬇️ PDF скачан!', 'success');
+}
+
+function exportKanbanPDF() {
+  if (!window.jspdf) { showToast('jsPDF не загружен', 'error'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
+
+  const COLS   = ['backlog','todo','doing','review','done'];
+  const LABELS = ['📥 Backlog','📋 To Do','⚙️ In Progress','🔍 Review','✅ Done'];
+  const colW = 53;
+
+  doc.setFontSize(16); doc.setFont(undefined, 'bold');
+  doc.text('Kanban Board', 15, 14);
+  doc.setFont(undefined, 'normal');
+
+  COLS.forEach((col, i) => {
+    const x = 15 + i * colW;
+    doc.setFontSize(11); doc.setFont(undefined, 'bold');
+    doc.text(LABELS[i], x, 25);
+    doc.setFont(undefined, 'normal'); doc.setFontSize(9);
+    let ty = 33;
+    (_kanbanTasks || []).filter(t => t.status === col).forEach(t => {
+      const lines = doc.splitTextToSize(`• ${t.title}`, colW - 5);
+      doc.text(lines, x, ty); ty += lines.length * 4.5 + 2;
+    });
+  });
+
+  doc.save('kanban_board.pdf');
+  showToast('⬇️ Канбан PDF скачан!', 'success');
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   SHARE LINKS — Project Roadmap
+   ═══════════════════════════════════════════════════════════════════ */
+async function shareRoadmap() {
+  const id = (typeof _activeRoadmapId !== 'undefined') ? _activeRoadmapId : null;
+  if (!id) { showToast('Нет открытого плана для публикации', 'error'); return; }
+  showLoader('Создаю ссылку...');
+  try {
+    const res  = await fetch(`/api/project/${id}/share`, { method: 'POST' });
+    const data = await res.json();
+    const url  = `${location.origin}/api/project/share/${data.share_token}`;
+    navigator.clipboard.writeText(url)
+      .then(() => showToast('🔗 Ссылка скопирована в буфер! Поделись с командой.', 'success'))
+      .catch(() => { prompt('Скопируй ссылку для шаринга:', url); });
+  } catch (e) {
+    showToast('Ошибка: ' + e.message, 'error');
+  } finally {
+    hideLoader();
+  }
+}

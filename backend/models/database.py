@@ -336,6 +336,7 @@ class ProjectRoadmap(Base):
     total_steps = Column(Integer, default=0)
     done_steps = Column(Integer, default=0)
     language = Column(String, default="ru")
+    share_token = Column(String, unique=True, nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
