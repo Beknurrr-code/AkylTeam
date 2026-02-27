@@ -2759,3 +2759,253 @@ input[type=range]::-webkit-slider-thumb {
   border-radius: var(--radius-sm);
   border: 1px dashed var(--card-border);
 }
+
+/* ══════════════════════════════════════════════════════════════
+   THEME SYSTEM — 10 Visual Themes
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 1. LIGHT ☀️ ── */
+[data-theme="light"] {
+  --bg: #f0f2f5; --bg2: #ffffff; --bg3: #f8f9fc;
+  --bg-main: #f0f2f5; --bg-card: #ffffff; --bg-hover: rgba(124,58,237,0.06);
+  --card: #ffffff; --card-border: rgba(0,0,0,0.09); --card-border-hover: rgba(124,58,237,0.35);
+  --primary: #7c3aed; --primary-dark: #6d28d9; --primary-glow: rgba(124,58,237,0.2);
+  --secondary: #0ea5e9; --secondary-glow: rgba(14,165,233,0.2);
+  --text: #1e1b4b; --text-dim: #64748b; --text-dimmer: #94a3b8;
+  --shadow: 0 4px 24px rgba(0,0,0,0.1); --shadow-glow: 0 0 30px rgba(124,58,237,0.1);
+}
+
+/* ── 2. OCEAN 🌊 ── */
+[data-theme="ocean"] {
+  --bg: #010a14; --bg2: #01121f; --bg3: #011828;
+  --bg-main: #010a14; --bg-card: #01121f; --bg-hover: rgba(6,182,212,0.08);
+  --card: #01121f; --card-border: rgba(6,182,212,0.12); --card-border-hover: rgba(6,182,212,0.45);
+  --primary: #06b6d4; --primary-dark: #0891b2; --primary-glow: rgba(6,182,212,0.25);
+  --secondary: #38bdf8; --secondary-glow: rgba(56,189,248,0.2);
+  --text: #e0f7ff; --text-dim: #4a9ab5; --text-dimmer: #1a5570;
+  --shadow: 0 4px 32px rgba(0,0,0,0.7); --shadow-glow: 0 0 40px rgba(6,182,212,0.15);
+}
+
+/* ── 3. FOREST 🌿 ── */
+[data-theme="forest"] {
+  --bg: #020d06; --bg2: #05150a; --bg3: #071b0d;
+  --bg-main: #020d06; --bg-card: #05150a; --bg-hover: rgba(34,197,94,0.07);
+  --card: #05150a; --card-border: rgba(34,197,94,0.1); --card-border-hover: rgba(34,197,94,0.4);
+  --primary: #22c55e; --primary-dark: #16a34a; --primary-glow: rgba(34,197,94,0.22);
+  --secondary: #10b981; --secondary-glow: rgba(16,185,129,0.2);
+  --text: #d1fae5; --text-dim: #3d8a57; --text-dimmer: #1a4030;
+  --shadow: 0 4px 32px rgba(0,0,0,0.7); --shadow-glow: 0 0 40px rgba(34,197,94,0.12);
+}
+
+/* ── 4. SUNSET 🌅 ── */
+[data-theme="sunset"] {
+  --bg: #0f0500; --bg2: #180b02; --bg3: #200e03;
+  --bg-main: #0f0500; --bg-card: #180b02; --bg-hover: rgba(249,115,22,0.08);
+  --card: #180b02; --card-border: rgba(249,115,22,0.12); --card-border-hover: rgba(249,115,22,0.45);
+  --primary: #f97316; --primary-dark: #ea580c; --primary-glow: rgba(249,115,22,0.25);
+  --secondary: #ec4899; --secondary-glow: rgba(236,72,153,0.2);
+  --text: #fff1e6; --text-dim: #a06030; --text-dimmer: #5c2e10;
+  --shadow: 0 4px 32px rgba(0,0,0,0.7); --shadow-glow: 0 0 40px rgba(249,115,22,0.15);
+}
+
+/* ── 5. NEON ⚡ ── */
+[data-theme="neon"] {
+  --bg: #000005; --bg2: #000510; --bg3: #000815;
+  --bg-main: #000005; --bg-card: #010210; --bg-hover: rgba(0,255,224,0.05);
+  --card: #010210; --card-border: rgba(0,255,224,0.1); --card-border-hover: rgba(0,255,224,0.4);
+  --primary: #00ffe0; --primary-dark: #00ccb5; --primary-glow: rgba(0,255,224,0.25);
+  --secondary: #bf00ff; --secondary-glow: rgba(191,0,255,0.2);
+  --text: #ccfffa; --text-dim: #006e68; --text-dimmer: #003d38;
+  --shadow: 0 4px 32px rgba(0,0,0,0.8); --shadow-glow: 0 0 40px rgba(0,255,224,0.15);
+}
+/* Neon scanlines */
+body[data-theme="neon"]::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,200,0.015) 2px, rgba(0,255,200,0.015) 4px);
+}
+/* Neon text glow on primary elements */
+[data-theme="neon"] .nav-link.active,
+[data-theme="neon"] .brand-name { text-shadow: 0 0 12px currentColor; }
+[data-theme="neon"] .btn-primary { box-shadow: 0 0 20px rgba(0,255,224,0.35); }
+
+/* ── 6. AURORA 🌌 ── */
+[data-theme="aurora"] {
+  --bg: #03021a; --bg2: #05031e; --bg3: #070425;
+  --bg-main: #03021a; --bg-card: rgba(8,4,35,0.75); --bg-hover: rgba(0,255,180,0.07);
+  --card: rgba(8,4,35,0.75); --card-border: rgba(0,255,180,0.12); --card-border-hover: rgba(0,255,180,0.4);
+  --primary: #00ffb4; --primary-dark: #00cc90; --primary-glow: rgba(0,255,180,0.25);
+  --secondary: #7800ff; --secondary-glow: rgba(120,0,255,0.2);
+  --text: #e0fff8; --text-dim: #3a9e80; --text-dimmer: #1a4a38;
+  --shadow: 0 4px 32px rgba(0,0,0,0.8); --shadow-glow: 0 0 40px rgba(0,255,180,0.12);
+}
+body[data-theme="aurora"]::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 35%, rgba(0,255,180,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 70% at 85% 20%, rgba(120,0,255,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 50% 85%, rgba(0,120,255,0.1) 0%, transparent 60%);
+  animation: aurora-bg 8s ease-in-out infinite alternate;
+  filter: blur(25px);
+}
+@keyframes aurora-bg {
+  0%   { transform: translate(0,0)     scale(1);    opacity: 0.6; }
+  33%  { transform: translate(-20px,15px) scale(1.08); opacity: 0.9; }
+  66%  { transform: translate(15px,-20px) scale(0.95); opacity: 0.7; }
+  100% { transform: translate(-8px,8px)   scale(1.03); opacity: 0.8; }
+}
+[data-theme="aurora"] .sidebar,
+[data-theme="aurora"] .card,
+[data-theme="aurora"] .top-bar {
+  backdrop-filter: blur(16px);
+}
+
+/* ── 7. SPACE 🚀 ── */
+[data-theme="space"] {
+  --bg: #000010; --bg2: #050018; --bg3: #080022;
+  --bg-main: #000010; --bg-card: rgba(12,4,42,0.88); --bg-hover: rgba(180,120,255,0.07);
+  --card: rgba(12,4,42,0.88); --card-border: rgba(150,100,255,0.15); --card-border-hover: rgba(180,120,255,0.5);
+  --primary: #c084fc; --primary-dark: #a855f7; --primary-glow: rgba(192,132,252,0.25);
+  --secondary: #818cf8; --secondary-glow: rgba(129,140,248,0.2);
+  --text: #ede9fe; --text-dim: #5e3a99; --text-dimmer: #2d1a5a;
+  --shadow: 0 4px 40px rgba(0,0,0,0.92); --shadow-glow: 0 0 40px rgba(192,132,252,0.15);
+}
+body[data-theme="space"]::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    radial-gradient(1.5px 1.5px at  8% 12%, rgba(255,255,255,0.85) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 22% 72%, rgba(255,255,255,0.6)  0%, transparent 100%),
+    radial-gradient(2px   2px   at 45%  8%, rgba(220,200,255,0.9)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 67% 55%, rgba(255,255,255,0.7)  0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 88% 18%, rgba(200,180,255,0.8)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 33% 88%, rgba(255,255,255,0.6)  0%, transparent 100%),
+    radial-gradient(2px   2px   at 75% 80%, rgba(255,220,100,0.7)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 55% 42%, rgba(255,255,255,0.5)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 12% 55%, rgba(255,255,255,0.75) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 92% 65%, rgba(180,220,255,0.8)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 5%  90%, rgba(255,255,255,0.55) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 78% 33%, rgba(255,255,255,0.65) 0%, transparent 100%);
+}
+body[data-theme="space"]::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 40% 30% at 80% 20%, rgba(100,0,200,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 30% 40% at 15% 75%, rgba(0,60,200,0.12) 0%, transparent 70%);
+  filter: blur(20px);
+}
+[data-theme="space"] .sidebar,
+[data-theme="space"] .card,
+[data-theme="space"] .top-bar { backdrop-filter: blur(12px); }
+
+/* ── 8. RETRO ✨ ── */
+[data-theme="retro"] {
+  --bg: #fce4ff; --bg2: #fff0fd; --bg3: #f5d5ff;
+  --bg-main: #fce4ff; --bg-card: rgba(255,255,255,0.82); --bg-hover: rgba(167,139,250,0.1);
+  --card: rgba(255,255,255,0.82); --card-border: rgba(180,100,255,0.2); --card-border-hover: rgba(180,100,255,0.5);
+  --primary: #9333ea; --primary-dark: #7c22bc; --primary-glow: rgba(147,51,234,0.2);
+  --secondary: #ec4899; --secondary-glow: rgba(236,72,153,0.2);
+  --text: #3b0764; --text-dim: #7c3aed; --text-dimmer: #a78bfa;
+  --shadow: 0 4px 20px rgba(147,51,234,0.15); --shadow-glow: 0 0 30px rgba(147,51,234,0.12);
+}
+[data-theme="retro"] body { background: linear-gradient(135deg, #fce4ff 0%, #e8d5ff 30%, #d5eeff 60%, #d5ffe8 100%) fixed; }
+[data-theme="retro"] .sidebar { background: rgba(252,228,255,0.85); backdrop-filter: blur(20px); }
+[data-theme="retro"] .card { backdrop-filter: blur(10px); }
+
+/* ── 9. MIDNIGHT 🖤 ── */
+[data-theme="midnight"] {
+  --bg: #000000; --bg2: #080808; --bg3: #0f0f0f;
+  --bg-main: #000000; --bg-card: #0c0c0c; --bg-hover: rgba(255,255,255,0.04);
+  --card: #0c0c0c; --card-border: rgba(255,255,255,0.07); --card-border-hover: rgba(255,255,255,0.2);
+  --primary: #e5e5e5; --primary-dark: #cccccc; --primary-glow: rgba(255,255,255,0.1);
+  --secondary: #888888; --secondary-glow: rgba(170,170,170,0.1);
+  --text: #eeeeee; --text-dim: #555555; --text-dimmer: #2a2a2a;
+  --shadow: 0 4px 32px rgba(0,0,0,0.95); --shadow-glow: 0 0 30px rgba(255,255,255,0.04);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   THEME PICKER MODAL
+   ══════════════════════════════════════════════════════════════ */
+.theme-picker-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.theme-picker-overlay.open {
+  opacity: 1; pointer-events: all;
+}
+.theme-picker-modal {
+  background: var(--bg2);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 28px;
+  width: 580px;
+  max-width: calc(100vw - 32px);
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  transform: scale(0.94) translateY(10px);
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.theme-picker-overlay.open .theme-picker-modal {
+  transform: scale(1) translateY(0);
+}
+.theme-picker-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.theme-picker-header h3 {
+  font-size: 18px; font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.theme-picker-close {
+  width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--card-border);
+  background: transparent; color: var(--text-dim); cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.theme-picker-close:hover { background: var(--card-border); color: var(--text); }
+.themes-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
+}
+@media (max-width: 500px) { .themes-grid { grid-template-columns: repeat(2, 1fr); } }
+.theme-card {
+  border: 2px solid var(--card-border);
+  border-radius: 12px; padding: 12px 8px;
+  cursor: pointer; text-align: center;
+  transition: all 0.2s ease; position: relative;
+  background: var(--bg3);
+}
+.theme-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+.theme-card.active { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-glow); }
+.theme-card.active::after {
+  content: '✓';
+  position: absolute; top: 4px; right: 6px;
+  font-size: 10px; font-weight: 800; color: var(--primary);
+}
+.theme-swatches {
+  display: flex; gap: 3px; justify-content: center; margin-bottom: 8px;
+}
+.theme-swatch {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.theme-card-icon { font-size: 20px; margin-bottom: 4px; display: block; }
+.theme-card-name { font-size: 10px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Theme toggle button upgraded */
+.theme-toggle {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; margin: 8px 16px 16px;
+  border: 1px solid var(--card-border); border-radius: var(--radius-sm);
+  background: var(--bg3); color: var(--text-dim);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: all var(--transition); width: calc(100% - 32px);
+}
+.theme-toggle:hover { border-color: var(--primary); color: var(--primary); background: var(--bg-hover); }

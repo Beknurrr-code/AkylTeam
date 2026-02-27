@@ -949,26 +949,70 @@ function toggleVoiceChat() {
   startRecording('chatInput', btn);
 }
 
-// ── THEME TOGGLE ────────────────────────────────────────────────
+// ── THEME SYSTEM (10 themes) ────────────────────────────────────
+const THEMES = [
+  { id: 'dark',     icon: '🌙', name: 'Тёмная',     swatches: ['#080810','#7c6ff7','#3ecfcf'] },
+  { id: 'light',    icon: '☀️', name: 'Светлая',    swatches: ['#f0f2f5','#7c3aed','#0ea5e9'] },
+  { id: 'ocean',    icon: '🌊', name: 'Океан',       swatches: ['#010a14','#06b6d4','#38bdf8'] },
+  { id: 'forest',   icon: '🌿', name: 'Лес',         swatches: ['#020d06','#22c55e','#10b981'] },
+  { id: 'sunset',   icon: '🌅', name: 'Закат',       swatches: ['#0f0500','#f97316','#ec4899'] },
+  { id: 'neon',     icon: '⚡', name: 'Неон',        swatches: ['#000005','#00ffe0','#bf00ff'] },
+  { id: 'aurora',   icon: '🌌', name: 'Аврора',      swatches: ['#03021a','#00ffb4','#7800ff'] },
+  { id: 'space',    icon: '🚀', name: 'Космос',      swatches: ['#000010','#c084fc','#818cf8'] },
+  { id: 'retro',    icon: '✨', name: 'Ретро',       swatches: ['#fce4ff','#9333ea','#ec4899'] },
+  { id: 'midnight', icon: '🖤', name: 'Полночь',     swatches: ['#000000','#e5e5e5','#888888'] },
+];
+
 function initTheme() {
   const saved = localStorage.getItem('akyl_theme') || 'dark';
   applyTheme(saved);
 }
 
-function toggleTheme() {
+function openThemePicker() {
+  const overlay = document.getElementById('themePickerOverlay');
+  const grid = document.getElementById('themesGrid');
+  if (!overlay || !grid) return;
   const current = document.documentElement.getAttribute('data-theme') || 'dark';
-  applyTheme(current === 'dark' ? 'light' : 'dark');
+  grid.innerHTML = THEMES.map(t => `
+    <div class="theme-card ${t.id === current ? 'active' : ''}" onclick="applyTheme('${t.id}');renderThemeCards()">
+      <span class="theme-card-icon">${t.icon}</span>
+      <div class="theme-swatches">
+        ${t.swatches.map(c => `<div class="theme-swatch" style="background:${c}"></div>`).join('')}
+      </div>
+      <div class="theme-card-name">${t.name}</div>
+    </div>
+  `).join('');
+  overlay.classList.add('open');
 }
+
+function renderThemeCards() {
+  const grid = document.getElementById('themesGrid');
+  if (!grid) return;
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  grid.querySelectorAll('.theme-card').forEach(card => {
+    const id = card.getAttribute('onclick').match(/'([^']+)'/)[1];
+    card.classList.toggle('active', id === current);
+  });
+}
+
+function closeThemePicker() {
+  const overlay = document.getElementById('themePickerOverlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+// Legacy alias for command palette
+function toggleTheme() { openThemePicker(); }
 
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
+  document.body.setAttribute('data-theme', theme);
   localStorage.setItem('akyl_theme', theme);
-  const btn = document.getElementById('themeToggle');
+  // Update sidebar button label
+  const t = THEMES.find(x => x.id === theme);
   const lbl = document.getElementById('themeLabel');
   const drawerBtn = document.getElementById('drawerThemeBtn');
-  if (btn) btn.childNodes[0].textContent = theme === 'dark' ? '🌙 ' : '☀️ ';
-  if (lbl) lbl.textContent = theme === 'dark' ? t('ui.themeDark') || 'Тёмная' : t('ui.themeLight') || 'Светлая';
-  if (drawerBtn) drawerBtn.textContent = theme === 'dark' ? '☀️ Светлая тема' : '🌙 Тёмная тема';
+  if (lbl && t) lbl.textContent = `${t.icon} ${t.name}`;
+  if (drawerBtn && t) drawerBtn.textContent = `🎨 ${t.name}`;
 }
 
 // ── MEMBER LIVE SEARCH ─────────────────────────────────────────
@@ -1274,8 +1318,10 @@ document.addEventListener('keydown', e => {
     if (palette.style.display === 'none') openCmdPalette();
     else palette.style.display = 'none';
   }
-  if (e.key === 'Escape' && document.getElementById('cmdPalette').style.display !== 'none') {
-    document.getElementById('cmdPalette').style.display = 'none';
+  if (e.key === 'Escape') {
+    if (document.getElementById('cmdPalette').style.display !== 'none')
+      document.getElementById('cmdPalette').style.display = 'none';
+    closeThemePicker();
   }
 });
 

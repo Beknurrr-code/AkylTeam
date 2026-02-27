@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AkylTeam — More Styles</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; background: #08080f; color: #fff; padding: 30px; }
+h1 { text-align: center; font-size: 28px; margin-bottom: 6px; background: linear-gradient(135deg, #f97316, #ec4899, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { text-align: center; color: #555; margin-bottom: 40px; font-size: 14px; }
+.back-link { display: block; text-align: center; margin-bottom: 20px; color: #a78bfa; text-decoration: none; font-size: 13px; }
+.back-link:hover { text-decoration: underline; }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; max-width: 1200px; margin: 0 auto; }
+.preview-label { font-size: 18px; font-weight: 800; margin-bottom: 14px; padding: 8px 16px; border-radius: 8px; display: inline-block; }
+.choose-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 16px; transition: all 0.3s; letter-spacing: 0.5px; }
+
+/* ═══════════════════════════════════════════════
+   STYLE 5: AURORA (Northern Lights)
+══════════════════════════════════════════════════ */
+.aurora-wrap {
+  border-radius: 20px; padding: 28px; min-height: 420px;
+  background: #03001e;
+  position: relative; overflow: hidden;
+}
+.aurora-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 40%, rgba(0,255,180,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 20%, rgba(120,0,255,0.2) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 50% at 50% 80%, rgba(0,120,255,0.15) 0%, transparent 60%);
+  animation: aurora-shift 6s ease-in-out infinite alternate;
+  filter: blur(20px);
+}
+@keyframes aurora-shift {
+  0% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(-15px,10px) scale(1.05); }
+  66% { transform: translate(10px,-15px) scale(0.97); }
+  100% { transform: translate(-5px,5px) scale(1.02); }
+}
+.aurora-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(0,255,180,0.15);
+  border-radius: 14px; padding: 18px; margin-bottom: 14px;
+  position: relative; z-index: 1;
+  backdrop-filter: blur(12px);
+  transition: all 0.35s ease; cursor: pointer;
+}
+.aurora-card:hover {
+  border-color: rgba(0,255,180,0.4);
+  box-shadow: 0 0 30px rgba(0,255,180,0.1), 0 8px 32px rgba(0,0,0,0.4);
+  transform: translateY(-3px);
+}
+.aurora-nav {
+  display: flex; gap: 6px; margin-bottom: 14px; position: relative; z-index: 1;
+}
+.aurora-btn {
+  flex: 1; padding: 8px; border-radius: 10px;
+  border: 1px solid rgba(0,255,180,0.15);
+  background: rgba(0,255,180,0.05);
+  color: rgba(255,255,255,0.4); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+}
+.aurora-btn.active {
+  background: linear-gradient(135deg, rgba(0,255,180,0.2), rgba(120,0,255,0.2));
+  border-color: rgba(0,255,180,0.5);
+  color: #00ffb4;
+  box-shadow: 0 0 15px rgba(0,255,180,0.2);
+}
+.aurora-title { font-size: 15px; font-weight: 700; color: #e0fff8; margin-bottom: 5px; }
+.aurora-sub { font-size: 12px; color: rgba(255,255,255,0.4); }
+.aurora-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 20px; margin-top: 8px;
+  background: linear-gradient(90deg, rgba(0,255,180,0.15), rgba(120,0,255,0.15));
+  border: 1px solid rgba(0,255,180,0.3); color: #00ffb4; font-size: 11px; font-weight: 600;
+}
+.aurora-bar { height: 3px; margin-top: 10px; border-radius: 2px; position: relative; overflow: hidden; background: rgba(255,255,255,0.05); }
+.aurora-bar-fill { height:100%; width: 65%; background: linear-gradient(90deg, #00ffb4, #7800ff); border-radius: 2px; box-shadow: 0 0 8px rgba(0,255,180,0.7); animation: bar-anim 2s ease-in-out infinite alternate; }
+@keyframes bar-anim { from{width:45%} to{width:75%} }
+.aurora-label { background: linear-gradient(135deg, #03001e, #0a0a2e); border: 1px solid rgba(0,255,180,0.3); color: #00ffb4; }
+.choose-aurora { background: linear-gradient(135deg, rgba(0,255,180,0.3), rgba(120,0,255,0.3)); border: 1px solid rgba(0,255,180,0.4); color: #00ffb4; font-size: 14px; }
+.choose-aurora:hover { box-shadow: 0 0 30px rgba(0,255,180,0.3); transform: translateY(-2px); }
+
+/* ═══════════════════════════════════════════════
+   STYLE 6: BRUTALIST / BOLD
+══════════════════════════════════════════════════ */
+.brut-wrap {
+  border-radius: 4px; padding: 28px; min-height: 420px;
+  background: #f5f0e8;
+  border: 4px solid #000;
+  color: #000;
+}
+.brut-card {
+  background: #fff; border: 3px solid #000; border-radius: 0;
+  padding: 18px; margin-bottom: 12px;
+  box-shadow: 6px 6px 0 #000;
+  cursor: pointer; transition: all 0.15s; position: relative;
+}
+.brut-card:hover { transform: translate(-3px,-3px); box-shadow: 9px 9px 0 #000; }
+.brut-card:active { transform: translate(3px,3px); box-shadow: 3px 3px 0 #000; }
+.brut-nav {
+  display: flex; gap: 0; margin-bottom: 16px; border: 3px solid #000;
+}
+.brut-btn {
+  flex: 1; padding: 9px; border: none; border-right: 3px solid #000;
+  background: #fff; color: #000; font-size: 12px; font-weight: 900;
+  cursor: pointer; transition: all 0.1s; text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.brut-btn:last-child { border-right: none; }
+.brut-btn.active { background: #000; color: #f5f028; }
+.brut-btn:hover:not(.active) { background: #f5f028; }
+.brut-title { font-size: 18px; font-weight: 900; color: #000; margin-bottom: 4px; text-transform: uppercase; letter-spacing: -0.5px; }
+.brut-sub { font-size: 12px; color: #444; font-weight: 600; }
+.brut-tag {
+  display: inline-block; padding: 2px 10px; margin-top: 8px;
+  background: #f5f028; border: 2px solid #000; color: #000;
+  font-size: 11px; font-weight: 900; text-transform: uppercase;
+}
+.brut-tag.red { background: #ff3333; color: #fff; }
+.brut-bar { height: 8px; background: #e0d9cb; border: 2px solid #000; margin-top: 10px; }
+.brut-bar-fill { height: 100%; width: 60%; background: #000; }
+.brut-label { background: #f5f028; color: #000; border: 3px solid #000; border-radius: 0; box-shadow: 3px 3px 0 #000; }
+.choose-brut { background: #000; color: #f5f028; border: 3px solid #000 !important; border-radius: 0; box-shadow: 4px 4px 0 #f5f028; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+.choose-brut:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #f5f028; }
+
+/* ═══════════════════════════════════════════════
+   STYLE 7: RETRO / Y2K
+══════════════════════════════════════════════════ */
+.retro-wrap {
+  border-radius: 12px; padding: 28px; min-height: 420px;
+  background: linear-gradient(135deg, #ff9de2 0%, #c8b8f8 30%, #93efff 60%, #b8f4b8 100%);
+  position: relative;
+}
+.retro-card {
+  background: rgba(255,255,255,0.75);
+  border: 2px solid rgba(255,255,255,0.9);
+  border-radius: 12px; padding: 18px; margin-bottom: 12px;
+  box-shadow: 4px 4px 0 rgba(180,100,255,0.4), 0 8px 20px rgba(0,0,0,0.1);
+  cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+  backdrop-filter: blur(8px);
+}
+.retro-card::before {
+  content: '✦'; position: absolute; top: 6px; right: 10px;
+  font-size: 16px; color: rgba(180,100,255,0.4);
+  animation: spin-slow 4s linear infinite;
+}
+@keyframes spin-slow { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+.retro-card:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 rgba(180,100,255,0.6), 0 12px 28px rgba(0,0,0,0.15); }
+.retro-nav {
+  display: flex; gap: 8px; margin-bottom: 14px;
+  background: rgba(255,255,255,0.6); border-radius: 10px; padding: 6px;
+  backdrop-filter: blur(8px);
+}
+.retro-btn {
+  flex: 1; padding: 7px; border-radius: 8px;
+  border: 2px solid transparent; background: transparent;
+  font-size: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s;
+  color: #7a40cc;
+}
+.retro-btn.active {
+  background: linear-gradient(135deg, #c084fc, #60a5fa);
+  color: white; border-color: white;
+  box-shadow: 2px 2px 0 rgba(124,40,200,0.3);
+}
+.retro-btn:hover:not(.active) { background: rgba(255,255,255,0.7); }
+.retro-title { font-size: 16px; font-weight: 900; color: #5b21b6; margin-bottom: 4px; }
+.retro-sub { font-size: 12px; color: #7c3aed; font-weight: 600; }
+.retro-star { color: #f59e0b; font-size: 14px; margin-top: 6px; display: block; }
+.retro-bar { height: 8px; background: rgba(124,58,237,0.15); border-radius: 4px; margin-top:10px; overflow: hidden; border: 1px solid rgba(124,58,237,0.2); }
+.retro-bar-fill { height: 100%; width: 70%; background: linear-gradient(90deg, #c084fc, #60a5fa, #34d399); border-radius: 4px; animation: shimmer 2s ease infinite; background-size: 200%; }
+@keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+.retro-label { background: linear-gradient(135deg, #ff9de2, #c8b8f8); color: #5b21b6; border: 2px solid white; box-shadow: 2px 2px 0 rgba(124,40,200,0.3); }
+.choose-retro { background: linear-gradient(135deg, #c084fc, #60a5fa); color: white; border: 2px solid white !important; box-shadow: 3px 3px 0 rgba(124,40,200,0.4); font-weight: 900; }
+.choose-retro:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 rgba(124,40,200,0.5); }
+
+/* ═══════════════════════════════════════════════
+   STYLE 8: DEEP SPACE / COSMIC
+══════════════════════════════════════════════════ */
+.space-wrap {
+  border-radius: 20px; padding: 28px; min-height: 420px;
+  background: #000010;
+  position: relative; overflow: hidden;
+}
+.stars {
+  position: absolute; inset: 0; z-index: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 45%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 10%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 60%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 80%, rgba(255,255,255,0.8) 0%, transparent 100%),
+    radial-gradient(2px 2px at 70% 35%, rgba(200,150,255,0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 65%, white 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 90% 25%, rgba(150,200,255,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 55%, white 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 85%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(2px 2px at 5% 35%, rgba(255,200,100,0.7) 0%, transparent 100%);
+}
+.nebula {
+  position: absolute;
+  width: 250px; height: 150px;
+  background: radial-gradient(ellipse, rgba(120,0,200,0.2) 0%, transparent 70%);
+  top: 20%; right: 5%;
+  animation: nebula-drift 8s ease-in-out infinite alternate;
+  filter: blur(15px);
+}
+.nebula2 {
+  position: absolute;
+  width: 200px; height: 200px;
+  background: radial-gradient(ellipse, rgba(0,100,255,0.15) 0%, transparent 70%);
+  bottom: 10%; left: 10%;
+  animation: nebula-drift 10s ease-in-out infinite alternate-reverse;
+  filter: blur(20px);
+}
+@keyframes nebula-drift { from{transform:translate(0,0)} to{transform:translate(20px,-15px)} }
+.space-card {
+  background: rgba(20,10,50,0.85);
+  border: 1px solid rgba(150,100,255,0.25);
+  border-radius: 14px; padding: 18px; margin-bottom: 14px;
+  position: relative; z-index: 1; cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.35s ease;
+}
+.space-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(180,120,255,0.6), transparent);
+}
+.space-card:hover {
+  border-color: rgba(180,120,255,0.5);
+  box-shadow: 0 0 20px rgba(120,0,255,0.2), 0 8px 32px rgba(0,0,0,0.6);
+  transform: translateY(-3px);
+}
+.space-nav {
+  display: flex; gap: 6px; margin-bottom: 14px; position: relative; z-index: 1;
+}
+.space-btn {
+  flex: 1; padding: 8px; border-radius: 8px;
+  border: 1px solid rgba(150,100,255,0.2);
+  background: rgba(20,10,50,0.6); color: rgba(200,180,255,0.4);
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s;
+  backdrop-filter: blur(5px);
+}
+.space-btn.active {
+  background: rgba(100,0,200,0.3); border-color: rgba(180,120,255,0.6);
+  color: #c084fc; box-shadow: 0 0 15px rgba(120,0,200,0.3);
+}
+.space-title { font-size: 15px; font-weight: 700; color: #e9d5ff; margin-bottom: 5px; }
+.space-sub { font-size: 12px; color: rgba(180,160,220,0.6); }
+.space-badge {
+  display: inline-block; padding: 2px 10px; border-radius: 20px; margin-top: 8px;
+  background: rgba(100,0,200,0.25); border: 1px solid rgba(180,120,255,0.35);
+  color: #c084fc; font-size: 11px; font-weight: 600;
+}
+.space-orbit {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: #c084fc; box-shadow: 0 0 8px #c084fc; margin-right: 6px;
+  animation: orbit-pulse 1.5s ease-in-out infinite;
+}
+@keyframes orbit-pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:0.6} }
+.space-bar { height: 4px; background: rgba(255,255,255,0.04); border-radius:2px; margin-top:10px; overflow:hidden; position:relative; }
+.space-bar-fill { height:100%; width:60%; background: linear-gradient(90deg, #7c3aed, #c084fc, #e879f9); border-radius:2px; box-shadow: 0 0 10px rgba(192,132,252,0.6); animation: space-anim 2s ease-in-out infinite alternate; }
+@keyframes space-anim { from{width:40%} to{width:75%} }
+.space-label { background: rgba(20,10,50,0.95); border: 1px solid rgba(150,100,255,0.4); color: #c084fc; }
+.choose-space { background: linear-gradient(135deg, rgba(100,0,200,0.6), rgba(0,50,200,0.6)); border: 1px solid rgba(150,100,255,0.4) !important; color: #e9d5ff; backdrop-filter: blur(10px); }
+.choose-space:hover { box-shadow: 0 0 30px rgba(120,0,200,0.4); transform: translateY(-2px); border-color: rgba(180,120,255,0.7) !important; }
+
+footer { text-align: center; margin-top: 30px; color: #444; font-size: 13px; }
+.also { text-align:center; margin: 30px 0 10px; color: #888; font-size:13px; }
+.prev-link { display:block; text-align:center; margin-bottom:30px; }
+.prev-link a { color: #a78bfa; font-size:14px; font-weight:600; text-decoration:none; padding: 8px 20px; border: 1px solid rgba(167,139,250,0.3); border-radius: 8px; transition:all 0.2s; }
+.prev-link a:hover { background: rgba(167,139,250,0.1); }
+</style>
+</head>
+<body>
+
+<h1>🌌 AkylTeam — Ещё 4 стиля</h1>
+<p class="subtitle">Продолжение. Выбери что нравится — или вернись посмотреть первые 4</p>
+
+<div class="prev-link">
+  <a href="/static/design_preview.html">← Первые 4 стиля (Glass, Neo, Neon, Minimal)</a>
+</div>
+
+<div class="grid">
+
+  <!-- AURORA -->
+  <div>
+    <span class="preview-label aurora-label">🌌 Aurora (Северное сияние)</span>
+    <div class="aurora-wrap">
+      <div class="aurora-bg"></div>
+      <div class="aurora-nav">
+        <button class="aurora-btn active">🏠 Главная</button>
+        <button class="aurora-btn">📋 Канбан</button>
+        <button class="aurora-btn">🤖 AI</button>
+      </div>
+      <div class="aurora-card">
+        <div class="aurora-title">📝 Smart Notes</div>
+        <div class="aurora-sub">Записывай идеи с AI-анализом и фото</div>
+        <span class="aurora-badge">✨ AI-powered</span>
+        <div class="aurora-bar"><div class="aurora-bar-fill"></div></div>
+      </div>
+      <div class="aurora-card">
+        <div class="aurora-title">🏆 Хакатон: Astana Tech 2026</div>
+        <div class="aurora-sub">Призовой фонд: 5,000,000 ₸ · 3 дня осталось</div>
+        <span class="aurora-badge">🔥 В топ-10</span>
+      </div>
+      <div class="aurora-card">
+        <div class="aurora-title">💤 Анализ выгорания</div>
+        <div class="aurora-sub">AI оценивает состояние команды · Риск: средний</div>
+      </div>
+      <button class="choose-btn choose-aurora" onclick="choose('aurora')">🌌 Выбрать Aurora</button>
+    </div>
+  </div>
+
+  <!-- BRUTALIST -->
+  <div>
+    <span class="preview-label brut-label">💥 Brutalist / Bold</span>
+    <div class="brut-wrap">
+      <div class="brut-nav">
+        <button class="brut-btn active">🏠 ГЛ.</button>
+        <button class="brut-btn">📋 ДОСКА</button>
+        <button class="brut-btn">🤖 ИИ</button>
+      </div>
+      <div class="brut-card">
+        <div class="brut-title">📝 Smart Notes</div>
+        <div class="brut-sub">Записывай с AI-анализом</div>
+        <span class="brut-tag">AI-POWERED</span>
+        <div class="brut-bar"><div class="brut-bar-fill"></div></div>
+      </div>
+      <div class="brut-card">
+        <div class="brut-title">🏆 ASTANA TECH 2026</div>
+        <div class="brut-sub">5,000,000 ₸ · 3 ДНЯ</div>
+        <span class="brut-tag red">HOT</span>
+      </div>
+      <div class="brut-card">
+        <div class="brut-title">💤 ВЫГОРАНИЕ</div>
+        <div class="brut-sub">СРЕДНИЙ РИСК · AI АНАЛИЗ</div>
+      </div>
+      <button class="choose-btn choose-brut" onclick="choose('brutalist')">💥 Выбрать Brutalist</button>
+    </div>
+  </div>
+
+  <!-- RETRO Y2K -->
+  <div>
+    <span class="preview-label retro-label">✨ Retro / Y2K</span>
+    <div class="retro-wrap">
+      <div class="retro-nav">
+        <button class="retro-btn active">🏠 Главная</button>
+        <button class="retro-btn">📋 Канбан</button>
+        <button class="retro-btn">🤖 AI</button>
+      </div>
+      <div class="retro-card">
+        <div class="retro-title">📝 Smart Notes ✦</div>
+        <div class="retro-sub">Записывай идеи с AI-анализом и фото!</div>
+        <span class="retro-star">★★★★★ AI-powered · 3 заметки</span>
+        <div class="retro-bar"><div class="retro-bar-fill"></div></div>
+      </div>
+      <div class="retro-card">
+        <div class="retro-title">🏆 Astana Tech 2026</div>
+        <div class="retro-sub">Призовой фонд: 5,000,000 ₸ · 3 дня!</div>
+        <span class="retro-star">🔥🔥🔥 Горячий хакатон</span>
+      </div>
+      <div class="retro-card">
+        <div class="retro-title">💤 Выгорание</div>
+        <div class="retro-sub">AI оценивает · ⚠️ Средний риск</div>
+      </div>
+      <button class="choose-btn choose-retro" onclick="choose('retro')">✨ Выбрать Retro/Y2K</button>
+    </div>
+  </div>
+
+  <!-- DEEP SPACE -->
+  <div>
+    <span class="preview-label space-label">🚀 Deep Space / Cosmic</span>
+    <div class="space-wrap">
+      <div class="stars"></div>
+      <div class="nebula"></div>
+      <div class="nebula2"></div>
+      <div class="space-nav">
+        <button class="space-btn active">🏠 Главная</button>
+        <button class="space-btn">📋 Канбан</button>
+        <button class="space-btn">🤖 AI</button>
+      </div>
+      <div class="space-card">
+        <div class="space-title"><span class="space-orbit"></span>Smart Notes</div>
+        <div class="space-sub">Записывай идеи с AI-анализом и фото</div>
+        <span class="space-badge">✦ AI-powered</span>
+        <div class="space-bar"><div class="space-bar-fill"></div></div>
+      </div>
+      <div class="space-card">
+        <div class="space-title"><span class="space-orbit" style="background:#f97316;box-shadow:0 0 8px #f97316"></span>Astana Tech 2026</div>
+        <div class="space-sub">Призовой фонд: 5,000,000 ₸ · 3 дня осталось</div>
+        <span class="space-badge">🔥 Активный</span>
+      </div>
+      <div class="space-card">
+        <div class="space-title"><span class="space-orbit" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b"></span>Выгорание</div>
+        <div class="space-sub">AI оценивает состояние команды · Риск: средний</div>
+      </div>
+      <button class="choose-btn choose-space" onclick="choose('space')">🚀 Выбрать Deep Space</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="also">Хочешь ещё стилей? Или уже выбрал?</div>
+<footer>Скажи мне в чате какой стиль нравится — и я переделаю весь проект 🎨</footer>
+
+<script>
+const names = {
+  aurora: '🌌 Aurora — северное сияние, blur, зелёно-фиолетовые переливы',
+  brutalist: '💥 Brutalist — жирные рамки, жёлтый акцент, дерзко',
+  retro: '✨ Retro/Y2K — пастельные градиенты, весёлые звёздочки, 2000-е',
+  space: '🚀 Deep Space — тёмный космос, звёзды, туманности'
+};
+function choose(style) {
+  alert('Ты выбрал: ' + names[style] + '\n\nСкажи мне об этом в чате и я начну редизайн!');
+}
+</script>
+</body>
+</html>

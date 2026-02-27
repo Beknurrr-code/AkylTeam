@@ -236,8 +236,10 @@
       <button class="lang-btn" data-lang="kz">KZ</button>
       <button class="lang-btn" data-lang="en">EN</button>
     </div>
-    <!-- Theme toggle -->
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Сменить тему">🌙 <span id="themeLabel">Тёмная</span></button>
+    <!-- Theme picker -->
+    <button class="theme-toggle" id="themeToggle" onclick="openThemePicker()" title="Выбрать тему">
+      🎨 <span id="themeLabel">Темы</span>
+    </button>
   </nav>
 
   <!-- ── HAMBURGER ─────────────────────────────────────────────── -->
@@ -307,7 +309,7 @@
         <button class="lang-btn" data-lang="kz">KZ</button>
         <button class="lang-btn" data-lang="en">EN</button>
       </div>
-      <button class="drawer-theme-btn" id="drawerThemeBtn" onclick="toggleTheme()">🌙 Сменить тему</button>
+      <button class="drawer-theme-btn" id="drawerThemeBtn" onclick="openThemePicker()">🎨 Выбрать тему</button>
     </div>
   </div>
   <main class="main-content" id="mainContent">
@@ -2895,6 +2897,17 @@
         <button class="btn btn-secondary" onclick="closeModal('quickNoteModal')">Отмена</button>
         <button class="btn btn-primary" onclick="saveQuickNote()">Сохранить заметку</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ── THEME PICKER MODAL ──────────────────────────────────── -->
+  <div class="theme-picker-overlay" id="themePickerOverlay" onclick="if(event.target===this)closeThemePicker()">
+    <div class="theme-picker-modal">
+      <div class="theme-picker-header">
+        <h3>🎨 Выбери тему</h3>
+        <button class="theme-picker-close" onclick="closeThemePicker()">✕</button>
+      </div>
+      <div class="themes-grid" id="themesGrid"></div>
     </div>
   </div>
 

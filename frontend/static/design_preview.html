@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AkylTeam — Design Preview</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; background: #050508; color: #fff; padding: 30px; }
+h1 { text-align: center; font-size: 28px; margin-bottom: 8px; background: linear-gradient(135deg, #a78bfa, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { text-align: center; color: #666; margin-bottom: 40px; font-size: 14px; }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; max-width: 1200px; margin: 0 auto; }
+
+.preview-label {
+  font-size: 20px; font-weight: 800; margin-bottom: 16px; padding: 8px 16px;
+  border-radius: 8px; display: inline-block;
+}
+
+/* ═══════════════════════════════════════════════
+   STYLE 1: GLASSMORPHISM
+══════════════════════════════════════════════════ */
+.glass-wrap {
+  background: linear-gradient(135deg, #1a0533 0%, #0a1628 50%, #001833 100%);
+  border-radius: 20px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  min-height: 420px;
+}
+.glass-wrap::before {
+  content: '';
+  position: absolute;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(124,58,237,0.4) 0%, transparent 70%);
+  top: -80px; right: -80px;
+  animation: pulse1 4s ease-in-out infinite;
+}
+.glass-wrap::after {
+  content: '';
+  position: absolute;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(99,179,237,0.3) 0%, transparent 70%);
+  bottom: -50px; left: -50px;
+  animation: pulse1 4s ease-in-out infinite reverse;
+}
+@keyframes pulse1 { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.15)} }
+
+.glass-card {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.glass-card:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(167,139,250,0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px rgba(124,58,237,0.2);
+}
+.glass-nav {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+.glass-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(167,139,250,0.2);
+  color: #a78bfa;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.glass-btn.active { background: rgba(167,139,250,0.8); color: #fff; box-shadow: 0 0 20px rgba(167,139,250,0.5); }
+.glass-btn:hover:not(.active) { background: rgba(167,139,250,0.35); }
+.glass-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: #e9d5ff; }
+.glass-sub { font-size: 12px; color: rgba(255,255,255,0.5); }
+.glass-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(167,139,250,0.2);
+  border: 1px solid rgba(167,139,250,0.4);
+  color: #a78bfa;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+.glass-progress {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.glass-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #a78bfa, #60a5fa);
+  border-radius: 3px;
+  animation: progress-anim 2s ease-in-out infinite alternate;
+}
+@keyframes progress-anim { from{width:40%} to{width:75%} }
+
+/* ═══════════════════════════════════════════════
+   STYLE 2: NEOMORPHISM
+══════════════════════════════════════════════════ */
+.neo-wrap {
+  background: #1e1e2e;
+  border-radius: 20px;
+  padding: 28px;
+  min-height: 420px;
+}
+.neo-card {
+  background: #1e1e2e;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 8px 8px 20px #13131e, -8px -8px 20px #29293e;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.neo-card:hover {
+  box-shadow: 12px 12px 28px #13131e, -4px -4px 12px #29293e;
+}
+.neo-card:active {
+  box-shadow: inset 6px 6px 14px #13131e, inset -6px -6px 14px #29293e;
+}
+.neo-nav {
+  background: #1e1e2e;
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  box-shadow: 6px 6px 15px #13131e, -6px -6px 15px #29293e;
+}
+.neo-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  background: #1e1e2e;
+  color: #7a7a9d;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 4px 4px 10px #13131e, -4px -4px 10px #29293e;
+}
+.neo-btn.active {
+  box-shadow: inset 4px 4px 10px #13131e, inset -4px -4px 10px #29293e;
+  color: #a78bfa;
+}
+.neo-title { font-size: 16px; font-weight: 700; color: #c9c9e0; margin-bottom: 6px; }
+.neo-sub { font-size: 12px; color: #5a5a7d; }
+.neo-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  box-shadow: 0 0 10px currentColor;
+}
+.neo-progress {
+  height: 6px;
+  background: #1e1e2e;
+  border-radius: 3px;
+  margin-top: 10px;
+  box-shadow: inset 3px 3px 6px #13131e, inset -3px -3px 6px #29293e;
+  overflow: hidden;
+}
+.neo-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #a78bfa, #60a5fa);
+  border-radius: 3px;
+  width: 60%;
+  box-shadow: 0 0 10px rgba(167,139,250,0.5);
+}
+
+/* ═══════════════════════════════════════════════
+   STYLE 3: DARK NEON (CYBERPUNK)
+══════════════════════════════════════════════════ */
+.neon-wrap {
+  background: #000005;
+  border-radius: 20px;
+  padding: 28px;
+  min-height: 420px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #0a0a1a;
+}
+.neon-scanline {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 200, 0.02) 2px,
+    rgba(0, 255, 200, 0.02) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+.neon-card {
+  background: rgba(0,0,0,0.8);
+  border: 1px solid;
+  border-image: linear-gradient(135deg, #00ffe0, #bf00ff) 1;
+  border-radius: 4px;
+  padding: 18px;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+.neon-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,255,224,0.05), rgba(191,0,255,0.05));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.neon-card:hover::before { opacity: 1; }
+.neon-card:hover { box-shadow: 0 0 20px rgba(0,255,224,0.2), inset 0 0 20px rgba(0,255,224,0.05); }
+.neon-nav {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 1;
+}
+.neon-btn {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid rgba(0,255,224,0.2);
+  background: transparent;
+  color: rgba(0,255,224,0.5);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'Courier New', monospace;
+}
+.neon-btn.active {
+  border-color: #00ffe0;
+  color: #00ffe0;
+  background: rgba(0,255,224,0.1);
+  box-shadow: 0 0 15px rgba(0,255,224,0.3), inset 0 0 15px rgba(0,255,224,0.1);
+  text-shadow: 0 0 10px #00ffe0;
+}
+.neon-btn:hover:not(.active) {
+  border-color: rgba(0,255,224,0.5);
+  color: rgba(0,255,224,0.8);
+}
+.neon-title {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #00ffe0;
+  text-shadow: 0 0 10px rgba(0,255,224,0.8);
+  margin-bottom: 6px;
+}
+.neon-sub { font-size: 11px; color: rgba(191,0,255,0.7); font-family: monospace; }
+.neon-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid rgba(191,0,255,0.5);
+  color: #bf00ff;
+  font-size: 10px;
+  font-family: monospace;
+  text-transform: uppercase;
+  margin-top: 8px;
+  text-shadow: 0 0 8px #bf00ff;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.neon-cursor {
+  display: inline-block;
+  width: 8px; height: 14px;
+  background: #00ffe0;
+  box-shadow: 0 0 8px #00ffe0;
+  animation: blink 1s infinite;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+.neon-progress {
+  height: 4px;
+  background: rgba(0,255,224,0.1);
+  margin-top: 10px;
+  position: relative;
+}
+.neon-progress::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  width: 65%;
+  background: linear-gradient(90deg, #00ffe0, #bf00ff);
+  box-shadow: 0 0 10px #00ffe0;
+  animation: neon-loader 2s ease-in-out infinite alternate;
+}
+@keyframes neon-loader { from{width:40%} to{width:80%} }
+
+/* ═══════════════════════════════════════════════
+   STYLE 4: MINIMAL CLEAN
+══════════════════════════════════════════════════ */
+.min-wrap {
+  background: #fafafa;
+  border-radius: 20px;
+  padding: 28px;
+  min-height: 420px;
+  color: #111;
+}
+.min-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.min-card:hover {
+  border-color: #a78bfa;
+  box-shadow: 0 8px 20px rgba(167,139,250,0.15);
+  transform: translateY(-2px);
+}
+.min-nav {
+  background: #f3f4f6;
+  border-radius: 10px;
+  padding: 6px;
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.min-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.min-btn.active { background: #fff; color: #7c3aed; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.min-btn:hover:not(.active) { background: rgba(255,255,255,0.6); color: #374151; }
+.min-title { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+.min-sub { font-size: 12px; color: #9ca3af; }
+.min-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  background: #f3f0ff;
+  color: #7c3aed;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+.min-progress {
+  height: 6px;
+  background: #f3f4f6;
+  border-radius: 3px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.min-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7c3aed, #a78bfa);
+  border-radius: 3px;
+  width: 65%;
+  transition: width 1s ease;
+}
+.min-sep {
+  width: 30px; height: 3px;
+  background: #7c3aed;
+  border-radius: 2px;
+  margin: 8px 0;
+}
+
+/* LABEL STYLES */
+.label-glass { background: linear-gradient(135deg, #7c3aed, #2563eb); color: white; }
+.label-neo { background: #1e1e2e; color: #a78bfa; box-shadow: 3px 3px 8px #13131e, -3px -3px 8px #29293e; }
+.label-neon { border: 1px solid #00ffe0; color: #00ffe0; background: transparent; text-shadow: 0 0 10px #00ffe0; font-family: monospace; text-transform: uppercase; letter-spacing: 2px; }
+.label-min { background: #f3f0ff; color: #7c3aed; font-weight: 700; }
+
+.choose-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.3s;
+  letter-spacing: 0.5px;
+}
+.choose-glass {
+  background: linear-gradient(135deg, rgba(124,58,237,0.8), rgba(37,99,235,0.8));
+  color: white;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.choose-glass:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(124,58,237,0.4); }
+.choose-neo {
+  background: #1e1e2e;
+  color: #a78bfa;
+  box-shadow: 5px 5px 14px #13131e, -5px -5px 14px #29293e;
+}
+.choose-neo:hover { box-shadow: 8px 8px 20px #13131e, -3px -3px 10px #29293e; }
+.choose-neon {
+  background: transparent;
+  border: 2px solid #00ffe0 !important;
+  color: #00ffe0;
+  text-shadow: 0 0 10px #00ffe0;
+  box-shadow: 0 0 20px rgba(0,255,224,0.2);
+  font-family: monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.choose-neon:hover { background: rgba(0,255,224,0.1); box-shadow: 0 0 30px rgba(0,255,224,0.5); }
+.choose-min {
+  background: #7c3aed;
+  color: white;
+  box-shadow: 0 4px 12px rgba(124,58,237,0.4);
+}
+.choose-min:hover { background: #6d28d9; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(124,58,237,0.5); }
+
+footer { text-align: center; margin-top: 30px; color: #444; font-size: 13px; }
+</style>
+</head>
+<body>
+<h1>🎨 AkylTeam — Design Preview</h1>
+<p class="subtitle">Выбери стиль который понравится — нажми кнопку "Выбрать этот стиль"</p>
+
+<div class="grid">
+
+  <!-- GLASSMORPHISM -->
+  <div>
+    <span class="preview-label label-glass">✨ Glassmorphism</span>
+    <div class="glass-wrap">
+      <div class="glass-nav">
+        <button class="glass-btn active">🏠 Главная</button>
+        <button class="glass-btn">📋 Канбан</button>
+        <button class="glass-btn">🤖 AI Чат</button>
+      </div>
+      <div class="glass-card">
+        <div class="glass-title">📝 Smart Notes</div>
+        <div class="glass-sub">Записывай идеи с AI-анализом и фото</div>
+        <span class="glass-badge">✨ AI-powered</span>
+        <div class="glass-progress"><div class="glass-progress-fill"></div></div>
+      </div>
+      <div class="glass-card">
+        <div class="glass-title">🏆 Хакатон: Astana Tech 2026</div>
+        <div class="glass-sub">Призовой фонд: 5,000,000 ₸ · 3 дня осталось</div>
+        <span class="glass-badge">🔥 Горячий</span>
+      </div>
+      <div class="glass-card">
+        <div class="glass-title">💤 Анализ выгорания</div>
+        <div class="glass-sub">AI оценивает состояние команды</div>
+        <span class="glass-badge">😰 Риск: средний</span>
+      </div>
+      <button class="choose-btn choose-glass" onclick="choose('glassmorphism')">✨ Выбрать этот стиль</button>
+    </div>
+  </div>
+
+  <!-- NEOMORPHISM -->
+  <div>
+    <span class="preview-label label-neo">🌑 Neomorphism</span>
+    <div class="neo-wrap">
+      <div class="neo-nav">
+        <button class="neo-btn active">🏠 Главная</button>
+        <button class="neo-btn">📋 Канбан</button>
+        <button class="neo-btn">🤖 Чат</button>
+      </div>
+      <div class="neo-card">
+        <div class="neo-title">📝 Smart Notes</div>
+        <div class="neo-sub">Записывай идеи с AI-анализом</div>
+        <div style="margin-top:10px;display:flex;gap:8px;align-items:center;">
+          <span class="neo-dot" style="color:#a78bfa;background:#a78bfa"></span>
+          <span style="font-size:12px;color:#7a7a9d;">AI-powered · 3 заметки</span>
+        </div>
+        <div class="neo-progress"><div class="neo-progress-fill"></div></div>
+      </div>
+      <div class="neo-card">
+        <div class="neo-title">🏆 Хакатон: Astana Tech</div>
+        <div class="neo-sub">Призовой фонд: 5,000,000 ₸</div>
+        <div style="margin-top:10px;display:flex;gap:8px;align-items:center;">
+          <span class="neo-dot" style="color:#f97316;background:#f97316"></span>
+          <span style="font-size:12px;color:#7a7a9d;">3 дня осталось</span>
+        </div>
+      </div>
+      <div class="neo-card">
+        <div class="neo-title">💤 Риск выгорания</div>
+        <div class="neo-sub">Средний уровень стресса в команде</div>
+      </div>
+      <button class="choose-btn choose-neo" onclick="choose('neomorphism')">🌑 Выбрать этот стиль</button>
+    </div>
+  </div>
+
+  <!-- DARK NEON / CYBERPUNK -->
+  <div>
+    <span class="preview-label label-neon">⚡ Dark Neon / Cyberpunk</span>
+    <div class="neon-wrap">
+      <div class="neon-scanline"></div>
+      <div class="neon-nav">
+        <button class="neon-btn active">SYS</button>
+        <button class="neon-btn">BOARD</button>
+        <button class="neon-btn">A.I.</button>
+      </div>
+      <div class="neon-card">
+        <div class="neon-title">SMART NOTES<span class="neon-cursor"></span></div>
+        <div class="neon-sub">> AI-powered idea capture system</div>
+        <span class="neon-tag">ACTIVE</span>
+        <div class="neon-progress"></div>
+      </div>
+      <div class="neon-card">
+        <div class="neon-title">HACKATHON//ASTANA_2026</div>
+        <div class="neon-sub">> Prize pool: 5,000,000₸ :: 72h remaining</div>
+        <span class="neon-tag">HOT</span>
+      </div>
+      <div class="neon-card">
+        <div class="neon-title">BURNOUT SCANNER</div>
+        <div class="neon-sub">> Risk level: <span style="color:#ff4466;text-shadow:0 0 8px #ff4466">MEDIUM ALERT</span></div>
+      </div>
+      <button class="choose-btn choose-neon" onclick="choose('cyberpunk')">⚡ Выбрать этот стиль</button>
+    </div>
+  </div>
+
+  <!-- MINIMAL CLEAN -->
+  <div>
+    <span class="preview-label label-min">🤍 Minimal Clean</span>
+    <div class="min-wrap">
+      <div class="min-nav">
+        <button class="min-btn active">🏠 Главная</button>
+        <button class="min-btn">📋 Канбан</button>
+        <button class="min-btn">🤖 Чат</button>
+      </div>
+      <div class="min-card">
+        <div class="min-title">📝 Smart Notes</div>
+        <div class="min-sep"></div>
+        <div class="min-sub">Записывай идеи с AI-анализом и фото</div>
+        <span class="min-badge">AI-powered</span>
+        <div class="min-progress"><div class="min-progress-fill"></div></div>
+      </div>
+      <div class="min-card">
+        <div class="min-title">🏆 Хакатон: Astana Tech 2026</div>
+        <div class="min-sep"></div>
+        <div class="min-sub">Призовой фонд: 5,000,000 ₸ · 3 дня осталось</div>
+        <span class="min-badge">Активный</span>
+      </div>
+      <div class="min-card">
+        <div class="min-title">💤 Анализ выгорания</div>
+        <div class="min-sep"></div>
+        <div class="min-sub">AI оценивает состояние команды · Риск: средний</div>
+      </div>
+      <button class="choose-btn choose-min" onclick="choose('minimal')">🤍 Выбрать этот стиль</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>Нажми кнопку чтобы выбрать стиль, потом скажи мне какой выбрал 💬</footer>
+
+<script>
+function choose(style) {
+  const names = {
+    glassmorphism: '✨ Glassmorphism — стекло, blur, градиенты',
+    neomorphism: '🌑 Neomorphism — мягкие тени, монохром',
+    cyberpunk: '⚡ Dark Neon / Cyberpunk — неон, консоль',
+    minimal: '🤍 Minimal Clean — чистый, минималистичный'
+  };
+  alert('Ты выбрал: ' + names[style] + '\n\nСкажи мне об этом в чате и я начну редизайн!');
+}
+</script>
+</body>
+</html>
