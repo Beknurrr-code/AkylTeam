@@ -309,6 +309,7 @@
         <button class="lang-btn" data-lang="kz">KZ</button>
         <button class="lang-btn" data-lang="en">EN</button>
       </div>
+      <button class="drawer-theme-btn" id="crisisModeBtn" onclick="toggleCrisisMode()" style="margin-bottom:8px;">🚨 Crisis Mode</button>
       <button class="drawer-theme-btn" id="drawerThemeBtn" onclick="openThemePicker()">🎨 Выбрать тему</button>
     </div>
   </div>
@@ -978,6 +979,125 @@
         </div>
         <div id="ideasAIContent" class="ai-content markdown-content"></div>
       </div>
+
+      <!-- 💥 IDEA SCORING BOARD -->
+      <div class="card" style="margin-top:20px;">
+        <h3 class="card-title">💥 Оценка идеи командой</h3>
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">Оцени идею по 5 критериям — получи итоговый балл и AI-рекомендацию</p>
+        <div class="form-group">
+          <label>Название / описание идеи</label>
+          <input type="text" id="scoreIdeaText" class="input" placeholder="AI-платформа для повышения эффективности команды..." />
+        </div>
+        <div class="scoring-criteria" id="scoringCriteria">
+          <div class="scoring-row">
+            <div class="scoring-label">🎯 Оригинальность</div>
+            <div class="scoring-stars" data-criterion="originality">
+              <button class="star-btn" data-val="1" onclick="setStar(this,'originality',1)">★</button>
+              <button class="star-btn" data-val="2" onclick="setStar(this,'originality',2)">★</button>
+              <button class="star-btn" data-val="3" onclick="setStar(this,'originality',3)">★</button>
+              <button class="star-btn" data-val="4" onclick="setStar(this,'originality',4)">★</button>
+              <button class="star-btn" data-val="5" onclick="setStar(this,'originality',5)">★</button>
+            </div>
+            <div class="scoring-val" id="val-originality">0</div>
+          </div>
+          <div class="scoring-row">
+            <div class="scoring-label">⚙️ Реализуемость</div>
+            <div class="scoring-stars" data-criterion="feasibility">
+              <button class="star-btn" data-val="1" onclick="setStar(this,'feasibility',1)">★</button>
+              <button class="star-btn" data-val="2" onclick="setStar(this,'feasibility',2)">★</button>
+              <button class="star-btn" data-val="3" onclick="setStar(this,'feasibility',3)">★</button>
+              <button class="star-btn" data-val="4" onclick="setStar(this,'feasibility',4)">★</button>
+              <button class="star-btn" data-val="5" onclick="setStar(this,'feasibility',5)">★</button>
+            </div>
+            <div class="scoring-val" id="val-feasibility">0</div>
+          </div>
+          <div class="scoring-row">
+            <div class="scoring-label">📈 Рыночный потенциал</div>
+            <div class="scoring-stars" data-criterion="market">
+              <button class="star-btn" data-val="1" onclick="setStar(this,'market',1)">★</button>
+              <button class="star-btn" data-val="2" onclick="setStar(this,'market',2)">★</button>
+              <button class="star-btn" data-val="3" onclick="setStar(this,'market',3)">★</button>
+              <button class="star-btn" data-val="4" onclick="setStar(this,'market',4)">★</button>
+              <button class="star-btn" data-val="5" onclick="setStar(this,'market',5)">★</button>
+            </div>
+            <div class="scoring-val" id="val-market">0</div>
+          </div>
+          <div class="scoring-row">
+            <div class="scoring-label">💻 Технический охват</div>
+            <div class="scoring-stars" data-criterion="tech">
+              <button class="star-btn" data-val="1" onclick="setStar(this,'tech',1)">★</button>
+              <button class="star-btn" data-val="2" onclick="setStar(this,'tech',2)">★</button>
+              <button class="star-btn" data-val="3" onclick="setStar(this,'tech',3)">★</button>
+              <button class="star-btn" data-val="4" onclick="setStar(this,'tech',4)">★</button>
+              <button class="star-btn" data-val="5" onclick="setStar(this,'tech',5)">★</button>
+            </div>
+            <div class="scoring-val" id="val-tech">0</div>
+          </div>
+          <div class="scoring-row">
+            <div class="scoring-label">🤩 WOW-фактор</div>
+            <div class="scoring-stars" data-criterion="wow">
+              <button class="star-btn" data-val="1" onclick="setStar(this,'wow',1)">★</button>
+              <button class="star-btn" data-val="2" onclick="setStar(this,'wow',2)">★</button>
+              <button class="star-btn" data-val="3" onclick="setStar(this,'wow',3)">★</button>
+              <button class="star-btn" data-val="4" onclick="setStar(this,'wow',4)">★</button>
+              <button class="star-btn" data-val="5" onclick="setStar(this,'wow',5)">★</button>
+            </div>
+            <div class="scoring-val" id="val-wow">0</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;flex-wrap:wrap;gap:12px;">
+          <div class="scoring-total-wrap">
+            <span class="scoring-total-label">Итого:</span>
+            <span class="scoring-total-score" id="scoringTotalScore">0</span>
+            <span class="scoring-total-max">/25</span>
+            <span class="scoring-grade" id="scoringGrade"></span>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-outline" onclick="resetScoring()">🔄 Сброс</button>
+            <button class="btn btn-primary" onclick="aiScoreIdea()">🤖 AI-оценка</button>
+          </div>
+        </div>
+        <div class="ai-response-card" id="scoringAIResult" style="display:none;margin-top:12px;">
+          <div class="ai-response-header"><span>🤖 AI-оценка идеи</span></div>
+          <div id="scoringAIContent" class="ai-content markdown-content"></div>
+        </div>
+      </div>
+
+      <!-- 🔧 TECH STACK ADVISOR -->
+      <div class="card" style="margin-top:20px;">
+        <h3 class="card-title">🔧 AI Советник по стеку</h3>
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">Опиши проект — AI посоветует оптимальный технологический стек для хакатона</p>
+        <div class="grid-2">
+          <div>
+            <div class="form-group">
+              <label>Описание проекта</label>
+              <textarea id="stackDesc" class="input textarea" rows="3" placeholder="Веб-платформа для координации команд на хакатоне с AI-функциями..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Навыки команды</label>
+              <input type="text" id="stackSkills" class="input" placeholder="Python, React, ML, no SQL..." />
+            </div>
+          </div>
+          <div>
+            <div class="form-group">
+              <label>Доступное время (часов)</label>
+              <input type="number" id="stackHours" class="input" value="24" min="4" max="72" />
+            </div>
+            <div class="form-group">
+              <label>Размер команды</label>
+              <input type="number" id="stackTeamSize" class="input" value="3" min="1" max="10" />
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-secondary" onclick="techStackAdvisor()">🔧 Подобрать стек</button>
+        <div class="ai-response-card" id="stackAIResponse" style="display:none;margin-top:16px;">
+          <div class="ai-response-header">
+            <span>🔧 Рекомендованный стек</span>
+            <div class="ai-actions"><button class="icon-btn" onclick="copyText('stackAIContent')">📋</button></div>
+          </div>
+          <div id="stackAIContent" class="ai-content markdown-content"></div>
+        </div>
+      </div>
     </section>
 
     <!-- ── CODE REVIEW PAGE ── -->
@@ -1030,6 +1150,32 @@
         <h1 data-i18n="pitch.title">Создатель питча</h1>
         <p class="page-subtitle" data-i18n="pitch.subtitle">Убедительная презентация для жюри</p>
       </div>
+
+      <!-- ⏱️ Pitch Practice Timer -->
+      <div class="card pitch-timer-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+          <div>
+            <div style="font-weight:700;font-size:15px;margin-bottom:4px;">⏱️ Тренировочный таймер</div>
+            <div style="font-size:12px;color:var(--text-dim);">Практикуй питч вслух — уложись в отведённое время</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <div class="pitch-timer-display" id="pitchTimerDisplay">02:00</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="btn btn-sm pitch-preset-btn" onclick="startPitchTimer(2)">2 мин</button>
+              <button class="btn btn-sm pitch-preset-btn" onclick="startPitchTimer(5)">5 мин</button>
+              <button class="btn btn-sm pitch-preset-btn" onclick="startPitchTimer(10)">10 мин</button>
+              <button class="btn btn-sm" style="background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.3);" onclick="stopPitchTimer()">⏹ Стоп</button>
+            </div>
+          </div>
+        </div>
+        <div id="pitchTimerBarWrap" style="display:none;margin-top:10px;">
+          <div style="height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;">
+            <div id="pitchTimerBar" style="height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:2px;transition:width .5s linear;width:100%;"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:4px;" id="pitchTimerStatus">Готов к старту</div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="grid-2">
           <div>
@@ -1739,6 +1885,48 @@
         <button class="btn btn-outline" onclick="runInsights('report')">📄 Итоговый отчёт</button>
       </div>
       <div id="insightsResult" class="ai-content-body" style="max-width:740px;min-height:60px;"></div>
+
+      <!-- Post-Hackathon Report -->
+      <div class="card" style="margin-top:32px;">
+        <div class="card-header">
+          <h2 class="card-title">📋 Пост-хакатон отчёт</h2>
+          <p class="card-subtitle">Сгенерируй итоговый отчёт о проекте с помощью AI</p>
+        </div>
+        <div class="form-grid grid-2">
+          <div class="form-group">
+            <label>Название проекта</label>
+            <input id="reportProjectName" class="input" type="text" placeholder="Например: AkylHelper AI"/>
+          </div>
+          <div class="form-group">
+            <label>Длительность (часов)</label>
+            <input id="reportDuration" class="input" type="number" value="24" min="1" max="168"/>
+          </div>
+          <div class="form-group">
+            <label>Участники команды</label>
+            <input id="reportTeamNames" class="input" type="text" placeholder="Имя1, Имя2, Имя3"/>
+          </div>
+          <div class="form-group">
+            <label>Технологии</label>
+            <input id="reportTechStack" class="input" type="text" placeholder="Python, React, PostgreSQL..."/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Что было сделано</label>
+          <textarea id="reportWhatDone" class="input" rows="3" placeholder="Опиши реализованный функционал, фичи, архитектуру..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Проблемы и вызовы</label>
+          <textarea id="reportChallenges" class="input" rows="2" placeholder="С какими трудностями столкнулись? Как решили?"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="generateHackathonReport()">📄 Сгенерировать отчёт</button>
+        <div id="reportAIResponse" class="ai-response-card" style="display:none;margin-top:16px;">
+          <div class="ai-response-header">
+            <span>📋 Итоговый отчёт</span>
+            <div class="ai-actions"><button class="icon-btn" onclick="copyText('reportAIContent')">📋</button></div>
+          </div>
+          <div id="reportAIContent" class="ai-content markdown-content"></div>
+        </div>
+      </div>
     </section>
 
     <!-- ── TEAMS HUB PAGE ──────────────────────────────────────── -->
@@ -2559,49 +2747,7 @@
     </button>
   </nav>
 
-  <!-- ── HACKATHON COUNTDOWN WIDGET ─────────────────────────── -->
-  <div class="countdown-widget" id="countdownWidget" style="display:none;">
-    <div class="countdown-header">
-      <span>⏳ До конца хакатона</span>
-      <button onclick="openCountdownSettings()" title="Настроить" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--text-dim);">⚙️</button>
-      <button onclick="hideCountdown()" title="Скрыть" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--text-dim);">✕</button>
-    </div>
-    <div class="countdown-display" id="countdownDisplay">
-      <div class="countdown-unit"><span id="cdDays">--</span><small>д</small></div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-unit"><span id="cdHours">--</span><small>ч</small></div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-unit"><span id="cdMinutes">--</span><small>м</small></div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-unit"><span id="cdSeconds">--</span><small>с</small></div>
-    </div>
-    <div id="countdownDone" style="display:none;color:var(--success);font-weight:700;text-align:center;font-size:13px;padding:4px 0;">🎉 Время вышло!</div>
-  </div>
-  <!-- Countdown FAB (bottom-right show button) -->
-  <button class="countdown-fab" id="countdownFab" onclick="toggleCountdown()" title="Таймер хакатона">⏳</button>
-
-  <!-- ── COUNTDOWN SETTINGS MODAL ──────────────────────────── -->
-  <div class="modal-overlay" id="countdownModal" style="display:none;">
-    <div class="modal-box" style="max-width:380px;">
-      <div class="modal-header">
-        <h3>⏳ Таймер хакатона</h3>
-        <button class="modal-close" onclick="closeModal('countdownModal')">✕</button>
-      </div>
-      <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">Установи дедлайн — счётчик покажет сколько времени осталось.</p>
-      <div class="form-group">
-        <label>Дата и время окончания</label>
-        <input type="datetime-local" id="cdDeadlineInput" class="input" />
-      </div>
-      <div class="form-group">
-        <label>Название события (необязательно)</label>
-        <input type="text" id="cdEventName" class="input" placeholder="Hackathon 2026" />
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="setCountdown()">✅ Запустить</button>
-        <button class="btn btn-secondary" onclick="clearCountdown()">🗑️ Сбросить</button>
-      </div>
-    </div>
-  </div>
+  <!-- Old countdown widget removed (duplicate ID fix) -->
   <!-- ── EDIT PROFILE MODAL ─────────────────────────────────── -->
   <!-- ── SOLO MODE MODAL ─────────────────────────────────────── -->
   <div class="modal-overlay" id="soloModeModal" style="display:none;">
@@ -2851,18 +2997,20 @@
       <button class="pomo-icon-btn" onclick="closeCountdown()">×</button>
     </div>
     <div id="cdwName" class="cdw-name">Нет хакатона</div>
-    <div class="cdw-display" id="cdwDisplay">
-      <div class="cdw-unit"><span id="cdwD">--</span><small>Дней</small></div>
+    <div class="cdw-display" id="countdownDisplay">
+      <div class="cdw-unit"><span id="cdDays">--</span><small>Дней</small></div>
       <div class="cdw-sep">:</div>
-      <div class="cdw-unit"><span id="cdwH">--</span><small>Часов</small></div>
+      <div class="cdw-unit"><span id="cdHours">--</span><small>Часов</small></div>
       <div class="cdw-sep">:</div>
-      <div class="cdw-unit"><span id="cdwM">--</span><small>Мин</small></div>
+      <div class="cdw-unit"><span id="cdMinutes">--</span><small>Мин</small></div>
     </div>
+    <div id="countdownDone" style="display:none;color:var(--success);font-weight:700;text-align:center;font-size:13px;padding:6px 0;">🎉 Время вышло!</div>
     <div style="display:flex;gap:6px;margin-top:8px;">
-      <input type="text" id="cdwNameInput"   class="input" style="flex:2;font-size:11px;padding:4px 8px;" placeholder="Название хакатона" />
+      <input type="text" id="cdwNameInput" class="input" style="flex:2;font-size:11px;padding:4px 8px;" placeholder="Название хакатона" />
       <input type="datetime-local" id="cdwDate" class="input" style="flex:3;font-size:11px;padding:4px 8px;" />
       <button class="btn btn-primary" style="font-size:11px;padding:4px 10px;" onclick="setCountdown()">OK</button>
     </div>
+    <button class="btn btn-danger" style="font-size:11px;padding:4px 8px;margin-top:6px;width:100%;" onclick="clearCountdown()">🗑️ Сбросить таймер</button>
   </div>
 
   <!-- Quick Note FAB -->

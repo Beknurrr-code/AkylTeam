@@ -2057,19 +2057,16 @@ function openCountdownSettings() {
 }
 
 function setCountdown() {
-  const deadline = document.getElementById('cdDeadlineInput')?.value;
-  const name = document.getElementById('cdEventName')?.value?.trim() || 'Хакатон';
+  const deadline = document.getElementById('cdwDate')?.value;
+  const name = document.getElementById('cdwNameInput')?.value?.trim() || 'Хакатон';
   if (!deadline) return showToast('Выбери дату и время', 'error');
   const ts = new Date(deadline).getTime();
   if (ts <= Date.now()) return showToast('Дата должна быть в будущем', 'error');
   localStorage.setItem('akyl_countdown', JSON.stringify({ deadline: ts, name }));
-  closeModal('countdownModal');
-  const header = document.querySelector('.countdown-header span');
-  if (header) header.textContent = `⏳ ${name}`;
+  const nameEl = document.getElementById('cdwName');
+  if (nameEl) nameEl.textContent = name;
   const widget = document.getElementById('countdownWidget');
   if (widget) widget.style.display = '';
-  const fab = document.getElementById('countdownFab');
-  if (fab) fab.style.display = 'flex';
   startCountdownInterval();
   showToast('⏳ Таймер запущен!', 'success');
 }
@@ -2079,10 +2076,159 @@ function clearCountdown() {
   if (_cdInterval) { clearInterval(_cdInterval); _cdInterval = null; }
   const widget = document.getElementById('countdownWidget');
   if (widget) widget.style.display = 'none';
-  const fab = document.getElementById('countdownFab');
-  if (fab) fab.style.display = 'flex'; // keep visible so user can set new one
-  closeModal('countdownModal');
   showToast('Таймер сброшен', 'success');
+}
+
+function closeCountdown() {
+  const w = document.getElementById('countdownWidget');
+  if (w) w.style.display = 'none';
+}
+
+function openCountdown() {
+  const w = document.getElementById('countdownWidget');
+  if (w) w.style.display = '';
+}
+
+// ── CRISIS MODE ──
+let _crisisMode = false;
+function toggleCrisisMode() {
+  _crisisMode = !_crisisMode;
+  document.body.classList.toggle('crisis-mode', _crisisMode);
+  const btn = document.getElementById('crisisModeBtn');
+  if (btn) btn.textContent = _crisisMode ? '✅ Выйти из Crisis Mode' : '🚨 Crisis Mode';
+  showToast(_crisisMode ? '🚨 Crisis Mode активирован!' : '✅ Обычный режим', _crisisMode ? 'error' : 'success');
+}
+
+// ── PITCH TIMER ──
+let _pitchTimerInterval = null;
+let _pitchTimerTotal = 0;
+let _pitchTimerLeft = 0;
+function startPitchTimer(minutes) {
+  stopPitchTimer();
+  _pitchTimerTotal = minutes * 60;
+  _pitchTimerLeft = _pitchTimerTotal;
+  const wrap = document.getElementById('pitchTimerBarWrap');
+  if (wrap) wrap.style.display = '';
+  const status = document.getElementById('pitchTimerStatus');
+  if (status) status.textContent = '⏱ Идёт отсчёт...';
+  _pitchTimerInterval = setInterval(() => {
+    _pitchTimerLeft--;
+    updatePitchTimerDisplay();
+    if (_pitchTimerLeft <= 0) {
+      clearInterval(_pitchTimerInterval);
+      _pitchTimerInterval = null;
+      const s = document.getElementById('pitchTimerStatus');
+      if (s) s.textContent = '⏰ Время вышло!';
+      showToast('⏰ Время питча истекло!', 'error');
+    }
+  }, 1000);
+  updatePitchTimerDisplay();
+}
+function stopPitchTimer() {
+  if (_pitchTimerInterval) { clearInterval(_pitchTimerInterval); _pitchTimerInterval = null; }
+  const disp = document.getElementById('pitchTimerDisplay');
+  if (disp) { disp.textContent = '00:00'; disp.style.color = ''; }
+  const bar = document.getElementById('pitchTimerBar');
+  if (bar) bar.style.width = '100%';
+  const status = document.getElementById('pitchTimerStatus');
+  if (status) status.textContent = '';
+}
+function updatePitchTimerDisplay() {
+  const m = Math.floor(_pitchTimerLeft / 60);
+  const s = _pitchTimerLeft % 60;
+  const disp = document.getElementById('pitchTimerDisplay');
+  if (disp) {
+    disp.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    disp.style.color = _pitchTimerLeft < 30 ? 'var(--danger, #ef4444)' : 'var(--primary)';
+  }
+  const bar = document.getElementById('pitchTimerBar');
+  if (bar) bar.style.width = (_pitchTimerTotal > 0 ? (_pitchTimerLeft / _pitchTimerTotal * 100) : 100) + '%';
+}
+
+// ── IDEA SCORING BOARD ──
+const _scores = { originality: 0, feasibility: 0, market: 0, tech: 0, wow: 0 };
+function setStar(btn, criterion, val) {
+  _scores[criterion] = val;
+  const container = btn.closest('.scoring-stars');
+  if (container) {
+    container.querySelectorAll('.star-btn').forEach((s, i) => {
+      s.style.color = i < val ? '#f59e0b' : '';
+    });
+  }
+  const valEl = document.getElementById('val-' + criterion);
+  if (valEl) valEl.textContent = val;
+  updateScoringTotal();
+}
+function updateScoringTotal() {
+  const total = Object.values(_scores).reduce((a, b) => a + b, 0);
+  const scoreEl = document.getElementById('scoringTotalScore');
+  if (scoreEl) scoreEl.textContent = total;
+  const grade = document.getElementById('scoringGrade');
+  if (grade) {
+    if (total >= 22) grade.textContent = '🏆 Отличная идея!';
+    else if (total >= 16) grade.textContent = '✅ Хорошая идея';
+    else if (total >= 10) grade.textContent = '⚠️ Нужна доработка';
+    else grade.textContent = '❌ Слабая идея';
+  }
+}
+function resetScoring() {
+  Object.keys(_scores).forEach(k => _scores[k] = 0);
+  document.querySelectorAll('.star-btn').forEach(s => s.style.color = '');
+  document.querySelectorAll('.scoring-val').forEach(v => v.textContent = '0');
+  const scoreEl = document.getElementById('scoringTotalScore');
+  if (scoreEl) scoreEl.textContent = '0';
+  const grade = document.getElementById('scoringGrade');
+  if (grade) grade.textContent = '';
+  const res = document.getElementById('scoringAIResult');
+  if (res) res.style.display = 'none';
+}
+async function aiScoreIdea() {
+  const idea = document.getElementById('scoreIdeaText')?.value.trim();
+  if (!idea) return showToast('Введи описание идеи', 'error');
+  showLoader('AI оценивает идею...');
+  try {
+    const params = new URLSearchParams({ idea, team_skills: '', language: 'ru' });
+    const res = await fetch('/api/tools/validate-idea?' + params, { method: 'POST' });
+    const data = await res.json();
+    showAIResponse('scoringAIResult', 'scoringAIContent', data.content);
+  } catch (e) { showToast('Ошибка: ' + e.message, 'error'); }
+  finally { hideLoader(); }
+}
+
+// ── TECH STACK ADVISOR ──
+async function techStackAdvisor() {
+  const description = document.getElementById('stackDesc')?.value.trim();
+  if (!description) return showToast('Опиши проект', 'error');
+  const team_skills = document.getElementById('stackSkills')?.value || '';
+  const time_hours = parseInt(document.getElementById('stackHours')?.value || '24');
+  const team_size = parseInt(document.getElementById('stackTeamSize')?.value || '3');
+  showLoader('Подбираю стек...');
+  try {
+    const params = new URLSearchParams({ description, time_hours, team_size, team_skills, language: 'ru' });
+    const res = await fetch('/api/tools/tech-stack?' + params, { method: 'POST' });
+    const data = await res.json();
+    showAIResponse('stackAIResponse', 'stackAIContent', data.content);
+  } catch (e) { showToast('Ошибка: ' + e.message, 'error'); }
+  finally { hideLoader(); }
+}
+
+// ── POST-HACKATHON REPORT ──
+async function generateHackathonReport() {
+  const project_name = document.getElementById('reportProjectName')?.value.trim();
+  const what_was_done = document.getElementById('reportWhatDone')?.value.trim();
+  if (!project_name || !what_was_done) return showToast('Заполни название и описание', 'error');
+  const duration_hours = parseInt(document.getElementById('reportDuration')?.value || '24');
+  const team_names = document.getElementById('reportTeamNames')?.value || '';
+  const challenges = document.getElementById('reportChallenges')?.value || '';
+  const tech_stack = document.getElementById('reportTechStack')?.value || '';
+  showLoader('Генерирую отчёт...');
+  try {
+    const params = new URLSearchParams({ project_name, what_was_done, duration_hours, team_names, challenges, tech_stack, language: 'ru' });
+    const res = await fetch('/api/tools/hackathon-report?' + params, { method: 'POST' });
+    const data = await res.json();
+    showAIResponse('reportAIResponse', 'reportAIContent', data.content);
+  } catch (e) { showToast('Ошибка: ' + e.message, 'error'); }
+  finally { hideLoader(); }
 }
 
 function startCountdownInterval() {
@@ -3810,36 +3956,6 @@ function closeCountdown() {
   document.getElementById('countdownWidget').style.display = 'none';
   clearInterval(_cdwTimer);
 }
-function setCountdown() {
-  const name = document.getElementById('cdwNameInput').value.trim() || 'Хакатон';
-  const date = document.getElementById('cdwDate').value;
-  if (!date) { showToast('Укажи дату!', 'error'); return; }
-  localStorage.setItem('akyl_countdown', JSON.stringify({ name, date }));
-  _startCountdown(name, date);
-}
-function _startCountdown(name, dateStr) {
-  document.getElementById('cdwName').textContent = name;
-  clearInterval(_cdwTimer);
-  function tick() {
-    const diff = new Date(dateStr) - new Date();
-    if (diff <= 0) {
-      document.getElementById('cdwD').textContent = '00';
-      document.getElementById('cdwH').textContent = '00';
-      document.getElementById('cdwM').textContent = '00';
-      clearInterval(_cdwTimer);
-      return;
-    }
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    document.getElementById('cdwD').textContent = String(d).padStart(2,'0');
-    document.getElementById('cdwH').textContent = String(h).padStart(2,'0');
-    document.getElementById('cdwM').textContent = String(m).padStart(2,'0');
-  }
-  tick();
-  _cdwTimer = setInterval(tick, 60000);
-}
-
 /* ═══════════════════════════════════════════════════════════════════
    FAB + QUICK NOTE
    ═══════════════════════════════════════════════════════════════════ */
