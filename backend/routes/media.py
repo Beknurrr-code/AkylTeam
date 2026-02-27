@@ -107,6 +107,25 @@ async def create_moodboard(
     }
 
 
+@router.get("/moodboard")
+async def list_moodboards(db: Session = Depends(get_db)):
+    """List all mood boards."""
+    boards = db.query(MoodBoard).order_by(MoodBoard.id.desc()).all()
+    result = []
+    for b in boards:
+        result.append({
+            "id": b.id,
+            "title": b.title,
+            "description": b.description,
+            "color_palette": b.color_palette or [],
+            "style_tags": b.style_tags or [],
+            "mood_description": b.mood_description,
+            "photo_count": len(b.images or []),
+            "created_at": b.created_at.isoformat() if b.created_at else None,
+        })
+    return {"boards": result}
+
+
 @router.get("/moodboard/{board_id}")
 async def get_moodboard(board_id: int, db: Session = Depends(get_db)):
     """Get full mood board with all images and colors."""
