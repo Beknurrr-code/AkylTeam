@@ -257,7 +257,8 @@ function showPage(pageId) {
   if (pageId === 'kanban') { initKanbanPage(); }
   if (pageId === 'dashboard') { initDashboardPage(); }
   if (pageId === 'channels') { initChannelsPage(); }
-  if (pageId === 'notes') { initNotesPage(); }
+  if (pageId === 'notes') { loadSmartNotes(); }
+  if (pageId === 'moodboard') { loadMoodboards(); }
   if (pageId === 'teams') { initTeamsPage(); }
   if (pageId === 'learn') { initLearnPage(); }
   if (pageId === 'ai-insights') { initInsightsPage(); }
@@ -5046,4 +5047,518 @@ async function shareRoadmap() {
   } finally {
     hideLoader();
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SMART NOTES MODULE
+   ═══════════════════════════════════════════════════════════════════ */
+
+let _mediaStream = null;
+let _mediaRecorder = null;
+let _photoData = null;
+
+// Initialize notes page
+async function loadSmartNotes() {
+  try {
+    const response = await fetch('/api/notes/list');
+    if (!response.ok) throw new Error('Failed to load notes');
+    const notes = await response.json();
+    
+    // Render recent notes in #notesRecentList
+    const recentList = document.getElementById('notesRecentList');
+    if (recentList && notes.length) {
+      recentList.innerHTML = notes.slice(0, 5).map(n => `
+        <div class="note-preview-card" onclick="loadNoteDetail(${n.id})">
+          <div class="note-preview-title">${escapeHtml((n.content || '').slice(0, 50))}</div>
+          <div class="note-preview-meta">
+            ${n.has_photo ? '📸' : ''} ${new Date(n.created_at).toLocaleDateString('ru')}
+          </div>
+        </div>`).join('');
+    }
+
+    // Render all notes in archive grid
+    const archive = document.getElementById('notesArchive');
+    if (archive) {
+      archive.innerHTML = notes.length ? notes.map(n => `
+        <div class="note-card" onclick="loadNoteDetail(${n.id})">
+          <div class="note-card-header">
+            ${n.has_photo ? '<span class="note-has-photo">📸</span>' : ''}
+            <span class="note-date">${new Date(n.created_at).toLocaleDateString('ru', {month: 'short', day: 'numeric'})}</span>
+          </div>
+          <div class="note-card-content">${escapeHtml((n.content || '').slice(0, 100))}</div>
+          ${n.tags && n.tags.length ? `<div class="note-tags">${n.tags.slice(0, 2).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+          ${n.extracted_tasks && n.extracted_tasks.length ? `<div class="note-tasks">✓ ${n.extracted_tasks.length} задач</div>` : ''}
+        </div>`).join('') : '<div class="empty-state">📝 Ещё нет заметок. Добавь первую!</div>';
+    }
+  } catch (e) {
+    console.warn('Error loading notes:', e);
+    showToast('Ошибка загрузки заметок', 'error');
+  }
+}
+
+// Open camera for photo capture
+async function notesOpenCamera() {
+  const btn = document.getElementById('notesCameraBtn');
+  const preview = document.getElementById('notesPhotoPreview');
+  
+  try {
+    if (!_mediaStream) {
+      _mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      const video = document.createElement('video');
+      video.id = 'notesVideoPreview';
+      video.srcObject = _mediaStream;
+      video.autoplay = true;
+      video.playsinline = true;
+      video.style.cssText = 'width:100%;max-height:300px;border-radius:10px;margin-bottom:10px;';
+      
+      // Remove old video if exists
+      const oldVideo = document.getElementById('notesVideoPreview');
+      if (oldVideo) oldVideo.remove();
+      
+      preview.parentElement.insertBefore(video, preview);
+      
+      // Add capture button
+      if (btn) btn.innerHTML = '📷 Снять фото';
+    } else {
+      // Stop camera
+      _mediaStream.getTracks().forEach(track => track.stop());
+      _mediaStream = null;
+      const video = document.getElementById('notesVideoPreview');
+      if (video) video.remove();
+      if (btn) btn.innerHTML = '📷 Открыть камеру';
+    }
+  } catch (e) {
+    showToast('Нет доступа к камере: ' + e.message, 'error');
+    if (btn) btn.innerHTML = '📷 Камера недоступна';
+  }
+}
+
+// Capture photo from video stream
+async function captureNotePhoto() {
+  const video = document.getElementById('notesVideoPreview');
+  if (!video) return showToast('Откройте камеру сначала', 'error');
+  
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+    
+    _photoData = canvas.toDataURL('image/jpeg', 0.8);
+    
+    // Show preview of captured photo
+    const preview = document.getElementById('notesPhotoPreview');
+    preview.innerHTML = `
+      <div style="position:relative;">
+        <img src="${_photoData}" style="width:100%;max-height:300px;border-radius:10px;margin-bottom:10px;" />
+        <button class="btn btn-secondary" onclick="notesRemovePhoto()" style="position:absolute;top:5px;right:5px;">✕ Удалить</button>
+      </div>`;
+    
+    // Stop camera
+    _mediaStream.getTracks().forEach(track => track.stop());
+    _mediaStream = null;
+    const video = document.getElementById('notesVideoPreview');
+    if (video) video.remove();
+    
+    const btn = document.getElementById('notesCameraBtn');
+    if (btn) btn.innerHTML = '📷 Открыть камеру';
+    
+    showToast('📷 Фото захвачено!', 'success');
+  } catch (e) {
+    showToast('Ошибка захвата фото: ' + e.message, 'error');
+  }
+}
+
+// Remove captured photo
+function notesRemovePhoto() {
+  _photoData = null;
+  const preview = document.getElementById('notesPhotoPreview');
+  if (preview) preview.innerHTML = '';
+}
+
+// Capture (save) the note
+async function captureNote() {
+  const content = document.getElementById('notesContent')?.value?.trim();
+  const tagsText = document.getElementById('notesTags')?.value?.trim() || '';
+  const tags = tagsText ? tagsText.split(',').map(t => t.trim()).filter(Boolean) : [];
+  
+  if (!content && !_photoData) {
+    showToast('Напиши заметку или сделай фото', 'error');
+    return;
+  }
+  
+  const btn = document.getElementById('notesSaveBtn');
+  if (btn) btn.disabled = true;
+  
+  try {
+    const formData = new FormData();
+    formData.append('content', content);
+    formData.append('tags', JSON.stringify(tags));
+    
+    // Add photo if captured
+    if (_photoData) {
+      const blob = await (await fetch(_photoData)).blob();
+      formData.append('photo', blob, 'note-photo.jpg');
+    }
+    
+    const response = await fetch('/api/notes/capture', {
+      method: 'POST',
+      body: formData,
+    });
+    
+    if (!response.ok) throw new Error(response.statusText);
+    const result = await response.json();
+    
+    showToast('✅ Заметка сохранена!', 'success');
+    
+    // Clear form
+    document.getElementById('notesContent').value = '';
+    document.getElementById('notesTags').value = '';
+    notesRemovePhoto();
+    _photoData = null;
+    
+    // Update extracted tasks display
+    if (result.extracted_tasks && result.extracted_tasks.length) {
+      const tasksArea = document.getElementById('notesExtractedTasks');
+      if (tasksArea) {
+        tasksArea.innerHTML = `
+          <h4 style="font-size:13px;font-weight:600;margin-bottom:10px;">📋 Извлечённые задачи:</h4>
+          <ul style="list-style:none;padding:0;margin:0;">
+            ${result.extracted_tasks.map(task => `
+              <li style="padding:6px 0;display:flex;align-items:center;gap:8px;">
+                <input type="checkbox" /> ${escapeHtml(task)}
+              </li>`).join('')}
+          </ul>`;
+      }
+    }
+    
+    // Reload notes list
+    await loadSmartNotes();
+  } catch (e) {
+    showToast('Ошибка сохранения: ' + e.message, 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+// Load and display full note details
+async function loadNoteDetail(noteId) {
+  try {
+    const response = await fetch(`/api/notes/${noteId}`);
+    if (!response.ok) throw new Error('Failed to load note');
+    const note = await response.json();
+    
+    // Show detail modal or navigate to detail view
+    const modal = document.getElementById('noteDetailModal') || createNoteDetailModal();
+    
+    modal.innerHTML = `
+      <div class="modal-box" style="max-width:600px;max-height:80vh;overflow-y:auto;">
+        <div class="modal-header">
+          <h3>📝 Заметка</h3>
+          <button class="modal-close" onclick="this.closest('.modal-overlay').style.display='none'">✕</button>
+        </div>
+        <div class="modal-body" style="padding:20px;">
+          ${note.photo_data ? `
+            <div style="margin-bottom:16px;">
+              <img src="${note.photo_data}" style="width:100%;max-height:300px;border-radius:10px;object-fit:cover;" />
+              ${note.photo_analysis ? `<p style="font-size:12px;color:var(--text-dim);margin-top:8px;">📸 ${note.photo_analysis}</p>` : ''}
+            </div>` : ''}
+          
+          <div style="margin-bottom:16px;">
+            <div style="font-size:12px;color:var(--text-dim);margin-bottom:4px;">${new Date(note.created_at).toLocaleString('ru')}</div>
+            <p style="font-size:14px;line-height:1.6;white-space:pre-wrap;">${escapeHtml(note.content)}</p>
+          </div>
+          
+          ${note.ai_summary ? `
+            <div style="background:var(--card-dim);border-left:3px solid var(--primary);padding:12px;border-radius:6px;margin-bottom:16px;">
+              <div style="font-size:12px;font-weight:600;margin-bottom:6px;">✨ AI Резюме:</div>
+              <div style="font-size:13px;color:var(--text-dim);">${escapeHtml(note.ai_summary)}</div>
+            </div>` : ''}
+          
+          ${note.extracted_tasks && note.extracted_tasks.length ? `
+            <div style="margin-bottom:16px;">
+              <div style="font-size:12px;font-weight:600;margin-bottom:8px;">📋 Задачи:</div>
+              <ul style="list-style:none;padding:0;margin:0;">
+                ${note.extracted_tasks.map(task => `
+                  <li style="padding:6px 0;display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="createTaskFromNote(${note.id},'${task.replace(/'/g,"\\'").replace(/"/g,'\\"')}')">
+                    <span style="width:18px;height:18px;border:2px solid var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;">+</span>
+                    <span>${escapeHtml(task)}</span>
+                  </li>`).join('')}
+              </ul>
+            </div>` : ''}
+          
+          ${note.tags && note.tags.length ? `
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              ${note.tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('')}
+            </div>` : ''}
+        </div>
+      </div>`;
+    
+    modal.style.display = 'flex';
+  } catch (e) {
+    showToast('Ошибка загрузки заметки: ' + e.message, 'error');
+  }
+}
+
+function createNoteDetailModal() {
+  const modal = document.createElement('div');
+  modal.id = 'noteDetailModal';
+  modal.className = 'modal-overlay';
+  modal.onclick = (e) => {
+    if (e.target === modal) modal.style.display = 'none';
+  };
+  document.body.appendChild(modal);
+  return modal;
+}
+
+// Create Kanban task from note
+async function createTaskFromNote(noteId, taskText) {
+  try {
+    const response = await fetch(`/api/notes/${noteId}/create-task`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ task_text: taskText || '' }),
+    });
+    
+    if (!response.ok) throw new Error(response.statusText);
+    const task = await response.json();
+    
+    showToast(`✅ Задача добавлена в Канбан: "${taskText.slice(0, 50)}"`, 'success');
+  } catch (e) {
+    showToast('Ошибка создания задачи: ' + e.message, 'error');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOOD BOARD MODULE
+   ═══════════════════════════════════════════════════════════════════ */
+
+let _moodboardPhotos = [];
+let _currentMoodboard = null;
+
+// Load and display mood boards
+async function loadMoodboards() {
+  try {
+    const response = await fetch('/api/media/moodboard');
+    if (!response.ok) throw new Error('Failed to load mood boards');
+    const boards = await response.json();
+    
+    // Render boards list
+    const list = document.getElementById('mbBoardsList');
+    if (list) {
+      list.innerHTML = boards.length ? boards.map(board => `
+        <div class="moodboard-card" onclick="loadMoodboardDetail(${board.id})">
+          ${board.images && board.images.length ? `
+            <div class="moodboard-thumbnail">
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px;width:100%;height:120px;">
+                ${board.images.slice(0, 4).map((img, i) => `
+                  <img src="${img.data}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;" />
+                `).join('')}
+              </div>
+            </div>` : '<div style="width:100%;height:120px;background:var(--card-dim);border-radius:10px;"></div>'}
+          
+          <div style="padding:10px 0;">
+            <div style="font-weight:600;font-size:13px;">${escapeHtml(board.title)}</div>
+            <div style="font-size:11px;color:var(--text-dim);">${board.images ? board.images.length : 0} фото</div>
+            ${board.color_palette && board.color_palette.length ? `
+              <div style="display:flex;gap:4px;margin-top:6px;">
+                ${board.color_palette.slice(0, 5).map(color => `
+                  <div style="width:20px;height:20px;background:${color};border-radius:50%;border:1px solid var(--card-border);cursor:pointer;" title="${color}" onclick="event.stopPropagation();copyColor('${color}')"></div>
+                `).join('')}
+              </div>` : ''}
+          </div>
+        </div>`).join('') : '<div class="empty-state">🎨 Ещё нет mood boards. Создай первый!</div>';
+    }
+  } catch (e) {
+    console.warn('Error loading mood boards:', e);
+  }
+}
+
+// Load full mood board details
+async function loadMoodboardDetail(boardId) {
+  try {
+    const response = await fetch(`/api/media/moodboard/${boardId}`);
+    if (!response.ok) throw new Error('Failed to load mood board');
+    const board = await response.json();
+    
+    _currentMoodboard = board;
+    
+    // Update palette display
+    const palette = document.getElementById('mbColorPalette');
+    if (palette && board.color_palette) {
+      palette.innerHTML = board.color_palette.map(color => `
+        <div class="color-swatch" style="background:${color};cursor:pointer;" onclick="copyColor('${color}')" title="Нажми чтобы скопировать">
+          <span class="color-hex">${color}</span>
+        </div>`).join('');
+    }
+    
+    // Update mood description
+    const mood = document.getElementById('mbMood');
+    if (mood) mood.textContent = board.mood_description || 'AI анализирует...';
+    
+    // Update style tags
+    const tags = document.getElementById('mbStyleTags');
+    if (tags && board.style_tags) {
+      tags.innerHTML = board.style_tags.map(tag => `<span class="style-tag">${escapeHtml(tag)}</span>`).join('');
+    }
+    
+    // Update photo gallery
+    const gallery = document.getElementById('mbPhotoGallery');
+    if (gallery && board.images) {
+      gallery.innerHTML = board.images.map((img, i) => `
+        <div class="photo-thumbnail" style="position:relative;">
+          <img src="${img.data}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" />
+          <button class="btn btn-sm" style="position:absolute;top:4px;right:4px;font-size:10px;" onclick="event.stopPropagation();removeMoodboardPhoto(${i})">✕</button>
+        </div>`).join('');
+    }
+  } catch (e) {
+    showToast('Ошибка загрузки mood board: ' + e.message, 'error');
+  }
+}
+
+// Trigger file upload
+function mbUploadPhoto() {
+  const input = document.getElementById('mbPhotoInput');
+  if (input) input.click();
+}
+
+// Handle photo selection
+function mbPhotoSelected(event) {
+  const files = Array.from(event.target.files || []);
+  if (!files.length) return;
+  
+  const readers = files.map(file => new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      _moodboardPhotos.push({ name: file.name, data: reader.result });
+      resolve();
+    };
+    reader.readAsDataURL(file);
+  }));
+  
+  Promise.all(readers).then(() => {
+    // Update gallery preview
+    const gallery = document.getElementById('mbPhotoGallery');
+    if (gallery) {
+      gallery.innerHTML = _moodboardPhotos.map((photo, i) => `
+        <div class="photo-thumbnail" style="position:relative;">
+          <img src="${photo.data}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" />
+          <button class="btn btn-sm" style="position:absolute;top:4px;right:4px;font-size:10px;" onclick="removeMoodboardPhoto(${i})">✕</button>
+        </div>`).join('');
+    }
+    showToast(`📷 Добавлено ${files.length} фото`, 'success');
+  });
+}
+
+// Remove photo from mood board
+function removeMoodboardPhoto(index) {
+  _moodboardPhotos.splice(index, 1);
+  const gallery = document.getElementById('mbPhotoGallery');
+  if (gallery) {
+    gallery.innerHTML = _moodboardPhotos.map((photo, i) => `
+      <div class="photo-thumbnail" style="position:relative;">
+        <img src="${photo.data}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" />
+        <button class="btn btn-sm" style="position:absolute;top:4px;right:4px;font-size:10px;" onclick="removeMoodboardPhoto(${i})">✕</button>
+      </div>`).join('');
+  }
+}
+
+// Create mood board
+async function createMoodboard() {
+  const title = document.getElementById('mbTitle')?.value?.trim();
+  const desc = document.getElementById('mbDescription')?.value?.trim();
+  
+  if (!title) {
+    showToast('Введи название mood board', 'error');
+    return;
+  }
+  
+  if (!_moodboardPhotos.length) {
+    showToast('Добавь хотя бы одно фото', 'error');
+    return;
+  }
+  
+  const btn = document.getElementById('mbCreateBtn');
+  if (btn) btn.disabled = true;
+  
+  try {
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', desc || '');
+    
+    // Add photos
+    _moodboardPhotos.forEach((photo, index) => {
+      const blob = dataURLtoBlob(photo.data);
+      formData.append(`photo_${index}`, blob, `photo-${index}.jpg`);
+    });
+    
+    const response = await fetch('/api/media/create-moodboard', {
+      method: 'POST',
+      body: formData,
+    });
+    
+    if (!response.ok) throw new Error(response.statusText);
+    const result = await response.json();
+    
+    showToast('✅ Mood board создан!', 'success');
+    
+    // Clear form
+    document.getElementById('mbTitle').value = '';
+    document.getElementById('mbDescription').value = '';
+    _moodboardPhotos = [];
+    document.getElementById('mbPhotoGallery').innerHTML = '';
+    
+    // Load updated list
+    await loadMoodboards();
+    
+    // If we have AI results, display them
+    if (result.color_palette) {
+      const palette = document.getElementById('mbColorPalette');
+      if (palette) {
+        palette.innerHTML = result.color_palette.map(color => `
+          <div class="color-swatch" style="background:${color};cursor:pointer;" onclick="copyColor('${color}')" title="Скопировать">
+            <span class="color-hex">${color}</span>
+          </div>`).join('');
+      }
+    }
+    
+    if (result.style_tags) {
+      const tags = document.getElementById('mbStyleTags');
+      if (tags) {
+        tags.innerHTML = result.style_tags.map(tag => `<span class="style-tag">${escapeHtml(tag)}</span>`).join('');
+      }
+    }
+    
+    if (result.mood_description) {
+      const mood = document.getElementById('mbMood');
+      if (mood) mood.textContent = result.mood_description;
+    }
+  } catch (e) {
+    showToast('Ошибка создания: ' + e.message, 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+// Copy color to clipboard
+function copyColor(hex) {
+  navigator.clipboard.writeText(hex).then(() => {
+    showToast(`📋 ${hex} скопирован!`, 'success');
+  }).catch(() => {
+    showToast('Ошибка копирования', 'error');
+  });
+}
+
+// Helper function: convert data URL to Blob
+function dataURLtoBlob(dataURL) {
+  const arr = dataURL.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
 }

@@ -2461,3 +2461,301 @@ input[type=range]::-webkit-slider-thumb {
   background: var(--bg3); padding: 16px; border-radius: var(--radius-sm);
   border: 1px solid var(--card-border);
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   SMART NOTES & MOOD BOARD
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Notes page layout */
+.twin-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 800px) {
+  .twin-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Note cards */
+.note-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.note-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124,111,247,0.15);
+}
+
+.note-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.note-has-photo {
+  font-size: 16px;
+}
+
+.note-date {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.note-card-content {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.note-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 3px 8px;
+  background: rgba(124,111,247,0.12);
+  color: var(--primary);
+  border-radius: 12px;
+  border: 1px solid rgba(124,111,247,0.2);
+}
+
+.note-tasks {
+  font-size: 11px;
+  color: var(--success);
+  font-weight: 600;
+}
+
+/* Note preview cards (recent list) */
+.note-preview-card {
+  background: var(--bg3);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xs);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.note-preview-card:hover {
+  background: var(--card);
+  border-color: var(--primary);
+}
+
+.note-preview-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-preview-meta {
+  font-size: 10px;
+  color: var(--text-dimmer);
+}
+
+/* Photo preview in notes */
+#notesPhotoPreview img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--card-border);
+}
+
+/* Mood Board cards */
+.moodboard-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  cursor: pointer;
+  transition: all var(--transition);
+  overflow: hidden;
+}
+
+.moodboard-card:hover {
+  border-color: var(--secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(62,207,207,0.15);
+}
+
+.moodboard-thumbnail {
+  width: 100%;
+  height: 140px;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: var(--bg3);
+}
+
+.moodboard-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Color swatches */
+.color-swatch {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  border: 2px solid var(--card-border);
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+  border-color: var(--text);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.color-hex {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 4px 6px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Style tags */
+.style-tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 4px 10px;
+  background: rgba(62,207,207,0.12);
+  color: var(--secondary);
+  border-radius: 14px;
+  border: 1px solid rgba(62,207,207,0.2);
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+
+/* Photo thumbnails in gallery */
+.photo-thumbnail {
+  width: 100%;
+  height: 100px;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  background: var(--bg3);
+  border: 1px solid var(--card-border);
+  position: relative;
+}
+
+.photo-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Photo gallery grid */
+#mbPhotoGallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 12px;
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--card-border);
+}
+
+#mbPhotoGallery::-webkit-scrollbar {
+  width: 6px;
+}
+
+#mbPhotoGallery::-webkit-scrollbar-track {
+  background: var(--bg2);
+  border-radius: 6px;
+}
+
+#mbPhotoGallery::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 6px;
+}
+
+/* Color palette display */
+#mbColorPalette {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--card-border);
+  justify-content: center;
+}
+
+/* Mood description */
+#mbMood {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  padding: 16px;
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--secondary);
+  margin-bottom: 16px;
+}
+
+/* Style tags container */
+#mbStyleTags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 12px;
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--card-border);
+}
+
+/* Empty states */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-dim);
+  font-size: 14px;
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--card-border);
+}

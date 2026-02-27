@@ -340,3 +340,44 @@ class ProjectRoadmap(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+
+# ─────────────────────────── SMART NOTES ─────────────────────────────────
+
+class SmartNote(Base):
+    """User notes with optional photos, AI analysis, and task extraction."""
+    __tablename__ = "smart_notes"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    team_id = Column(Integer, ForeignKey("teams.id"), nullable=True)
+    content = Column(Text, nullable=False)
+    tags = Column(JSON, default=list)  # ["design", "marketing", "urgent"]
+    has_photo = Column(Boolean, default=False)
+    photo_data = Column(Text, nullable=True)  # base64 encoded image
+    photo_analysis = Column(Text, nullable=True)  # AI analysis: "whiteboard photo", "mood board", etc
+    ai_summary = Column(Text, nullable=True)
+    mentioned_people = Column(JSON, default=list)
+    linked_kanban_task_id = Column(Integer, ForeignKey("kanban_tasks.id"), nullable=True)
+    extracted_tasks = Column(JSON, default=list)  # AI extracted actionable items
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+# ─────────────────────────── MOOD BOARD ─────────────────────────────────
+
+class MoodBoard(Base):
+    """Visual design inspiration board with AI color/style suggestions."""
+    __tablename__ = "mood_boards"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    team_id = Column(Integer, ForeignKey("teams.id"), nullable=True)
+    project_id = Column(Integer, ForeignKey("project_roadmaps.id"), nullable=True)
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    images = Column(JSON, default=list)  # [{id, data (base64), uploaded_at}, ...]
+    color_palette = Column(JSON, nullable=True)  # AI suggested: ["#7c3aed", "#ec4899", ...]
+    style_tags = Column(JSON, default=list)  # ["modern", "minimalist", "colorful"]
+    mood_description = Column(Text, nullable=True)  # AI description of mood
+    canvas_data = Column(Text, nullable=True)  # SVG or canvas drawing data
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+

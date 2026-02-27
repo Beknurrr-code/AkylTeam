@@ -155,3 +155,66 @@ class AIResponse(BaseModel):
     success: bool
     content: str
     metadata: Optional[Dict[str, Any]] = None
+
+
+# --- Smart Notes Schemas ---
+class SmartNoteCreate(BaseModel):
+    content: str
+    tags: List[str] = []
+    photo_data: Optional[str] = None  # base64 encoded
+
+
+class SmartNoteUpdate(BaseModel):
+    content: Optional[str] = None
+    tags: Optional[List[str]] = None
+
+
+class SmartNoteResponse(BaseModel):
+    id: int
+    user_id: Optional[int] = None
+    team_id: Optional[int] = None
+    content: str
+    tags: List[str]
+    has_photo: bool
+    photo_data: Optional[str] = None  # base64
+    photo_analysis: Optional[str] = None
+    ai_summary: Optional[str] = None
+    mentioned_people: Optional[List[str]] = None
+    linked_kanban_task_id: Optional[int] = None
+    extracted_tasks: Optional[List[str]] = None
+    created_at: datetime
+    updated_at: datetime
+    class Config:
+        from_attributes = True
+
+
+# --- Mood Board Schemas ---
+class MoodBoardCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+    images: Optional[List[Dict[str, Any]]] = []  # list of {id, data (base64), uploaded_at}
+    team_id: Optional[int] = None
+
+
+class MoodBoardUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    color_palette: Optional[List[str]] = None
+
+
+class MoodBoardResponse(BaseModel):
+    id: int
+    user_id: Optional[int] = None
+    team_id: Optional[int] = None
+    project_id: Optional[int] = None
+    title: str
+    description: Optional[str]
+    images: Optional[List[Dict[str, Any]]] = []
+    color_palette: Optional[List[str]] = []
+    style_tags: Optional[List[str]] = []
+    mood_description: Optional[str] = None
+    canvas_data: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+    class Config:
+        from_attributes = True
