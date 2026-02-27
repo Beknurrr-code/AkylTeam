@@ -257,7 +257,7 @@ function showPage(pageId) {
   if (pageId === 'kanban') { initKanbanPage(); }
   if (pageId === 'dashboard') { initDashboardPage(); }
   if (pageId === 'channels') { initChannelsPage(); }
-  if (pageId === 'notes') { loadSmartNotes(); }
+  if (pageId === 'smart-notes') { loadSmartNotes(); }
   if (pageId === 'moodboard') { loadMoodboards(); }
   if (pageId === 'teams') { initTeamsPage(); }
   if (pageId === 'learn') { initLearnPage(); }
