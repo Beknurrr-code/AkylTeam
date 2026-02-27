@@ -267,7 +267,7 @@ function showPage(pageId) {
   if (pageId === 'home') { loadDailyChallenge(); }
   if (pageId === 'project') { loadRoadmapList(); }
   if (pageId === 'olympiad') { initOlymPage(); }
-  if (pageId === 'codespace') { initCodeSpace(); }
+  if (pageId === 'codespace') { initCodeSpace(); _initGhTokenFromStorage(); }
   if (pageId === 'project-space') { initProjectSpace(); }
 }
 
@@ -1619,7 +1619,7 @@ async function runSkillMatch() {
   }
 }
 
-async function generateHackathonReport() {
+async function generateTeamInsightsReport() {
   const teamId = currentTeamId;
   if (!teamId) return showToast('Выбери команду сначала', 'error');
   const summary = await showInputModal('📊 Итоговый отчёт', 'Кратко опишите результат проекта (необязательно)', '');
@@ -2227,6 +2227,58 @@ async function generateHackathonReport() {
     const res = await fetch('/api/tools/hackathon-report?' + params, { method: 'POST' });
     const data = await res.json();
     showAIResponse('reportAIResponse', 'reportAIContent', data.content);
+  } catch (e) { showToast('Ошибка: ' + e.message, 'error'); }
+  finally { hideLoader(); }
+}
+
+// ── GITHUB REPO AUTO-CREATE ──
+function _initGhTokenFromStorage() {
+  const saved = localStorage.getItem('gh_token');
+  const el = document.getElementById('ghToken');
+  if (saved && el && !el.value) el.value = saved;
+}
+
+async function githubCreateRepo() {
+  _initGhTokenFromStorage();
+  const token = document.getElementById('ghToken')?.value.trim();
+  const repo_name = document.getElementById('ghRepoName')?.value.trim();
+  const description = document.getElementById('ghRepoDesc')?.value.trim() || '';
+  const private_repo = document.getElementById('ghPrivate')?.checked || false;
+  const push_code = document.getElementById('ghPushCode')?.checked ?? true;
+
+  if (!token) return showToast('Введи GitHub токен', 'error');
+  if (!repo_name) return showToast('Введи название репозитория', 'error');
+  if (!/^[a-zA-Z0-9_.-]+$/.test(repo_name)) return showToast('Название репо: только латиница, цифры, _ - .', 'error');
+
+  localStorage.setItem('gh_token', token);
+
+  const initial_code = push_code ? (csGetCode() || '') : '';
+  const lang_select = document.getElementById('csLang');
+  const lang = lang_select?.value || 'python';
+  const ext_map = { python:'py', javascript:'js', typescript:'ts', java:'java', cpp:'cpp', c:'c', go:'go', rust:'rs', ruby:'rb', php:'php' };
+  const code_filename = `main.${ext_map[lang] || 'txt'}`;
+
+  showLoader('Создаю репозиторий и генерирую README...');
+  try {
+    const params = new URLSearchParams({
+      token, repo_name, description,
+      private: private_repo,
+      initial_code, code_filename,
+      project_description: description,
+      language: 'ru'
+    });
+    const res = await fetch('/api/tools/github-create-repo?' + params, { method: 'POST' });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.content || 'Ошибка');
+    showAIResponse('ghResult', 'ghResultContent', data.content);
+    showToast('🐙 Репозиторий создан!', 'success');
+    // Extract URL and open it
+    const urlMatch = data.content.match(/https:\/\/github\.com\/[^\)]+/);
+    if (urlMatch) {
+      setTimeout(() => {
+        if (confirm('Открыть репозиторий на GitHub?')) window.open(urlMatch[0], '_blank');
+      }, 800);
+    }
   } catch (e) { showToast('Ошибка: ' + e.message, 'error'); }
   finally { hideLoader(); }
 }
@@ -4772,7 +4824,7 @@ function initCodeSpace() {
   }
 
   require.config({
-    paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.50.0/min/vs' },
+    paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs' },
   });
   require(['vs/editor/editor.main'], function () {
     const container = document.getElementById('csMonacoEditor');

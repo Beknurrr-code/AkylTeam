@@ -727,7 +727,7 @@
         <div class="btn-row" style="flex-wrap:wrap;">
           <button class="btn btn-primary" onclick="predictFailure()">⚠️ Предсказать риски</button>
           <button class="btn btn-secondary" onclick="openSkillMatch()">🎯 Skill Matching</button>
-          <button class="btn btn-accent" onclick="generateHackathonReport()">📊 Итоговый отчёт</button>
+          <button class="btn btn-accent" onclick="generateTeamInsightsReport()">📊 Итоговый отчёт</button>
         </div>
         <div id="insightsResult" class="ai-content markdown-content" style="display:none;margin-top:16px;"></div>
       </div>
@@ -2558,6 +2558,44 @@
         <div style="display:flex;align-items:center;gap:8px;padding:8px 0;">
           <label style="white-space:nowrap;font-size:12px;color:var(--text-dim);">Stdin (ввод):</label>
           <input type="text" id="csStdin" class="input" placeholder="Необязательный ввод данных для программы..." />
+        </div>
+      </div>
+
+      <!-- GitHub Repo Creator -->
+      <div class="card" style="margin-top:24px;">
+        <div class="card-header">
+          <h2 class="card-title">🐙 Создать GitHub репозиторий</h2>
+          <p class="card-subtitle">Создай репо, загрузи код и AI сгенерирует README за 10 секунд</p>
+        </div>
+        <div class="form-grid grid-2">
+          <div class="form-group">
+            <label>Название репозитория</label>
+            <input id="ghRepoName" class="input" type="text" placeholder="my-hackathon-project" />
+          </div>
+          <div class="form-group">
+            <label>Описание</label>
+            <input id="ghRepoDesc" class="input" type="text" placeholder="Краткое описание проекта" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>GitHub Personal Access Token <a href="https://github.com/settings/tokens/new?scopes=repo" target="_blank" style="font-size:11px;color:var(--primary);">(получить токен →)</a></label>
+          <input id="ghToken" class="input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="localStorage.setItem('gh_token', this.value)" />
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
+            <input type="checkbox" id="ghPrivate" /> Приватный репо
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
+            <input type="checkbox" id="ghPushCode" checked /> Загрузить текущий код
+          </label>
+        </div>
+        <button class="btn btn-primary" onclick="githubCreateRepo()">🐙 Создать репозиторий</button>
+        <div id="ghResult" class="ai-response-card" style="display:none;margin-top:16px;">
+          <div class="ai-response-header">
+            <span>🐙 GitHub</span>
+            <div class="ai-actions"><button class="icon-btn" onclick="copyText('ghResultContent')">📋</button></div>
+          </div>
+          <div id="ghResultContent" class="ai-content markdown-content"></div>
         </div>
       </div>
     </section>

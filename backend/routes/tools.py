@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend.models.database import get_db, IdeaLog
 from backend.models.schemas import IdeaGeneratorRequest, CodeReviewRequest, PitchRequest, AIResponse
 from backend.services.openrouter_service import chat_completion, get_system_prompt, SMART_MODEL
+import httpx
+import base64
 
 router = APIRouter(prefix="/api/tools", tags=["AI Tools"])
 
@@ -269,3 +271,100 @@ _Отчёт готов для размещения на GitHub, LinkedIn или 
     messages = [{"role": "system", "content": system}, {"role": "user", "content": prompt}]
     content = await chat_completion(messages, model=SMART_MODEL, max_tokens=3000)
     return AIResponse(success=True, content=content)
+
+
+# ─── GITHUB REPO AUTO-CREATE ────────────────────────────────────────────────────
+@router.post("/github-create-repo", response_model=AIResponse)
+async def github_create_repo(
+    token: str,
+    repo_name: str,
+    description: str = "",
+    private: bool = False,
+    initial_code: str = "",
+    code_filename: str = "main.py",
+    project_description: str = "",
+    language: str = "ru"
+):
+    """Create a GitHub repo and optionally push initial code + AI-generated README."""
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+
+    async with httpx.AsyncClient(timeout=20) as client:
+        # 1. Create the repository
+        create_resp = await client.post(
+            "https://api.github.com/user/repos",
+            headers=headers,
+            json={
+                "name": repo_name,
+                "description": description,
+                "private": private,
+                "auto_init": False,
+            }
+        )
+        if create_resp.status_code not in (200, 201):
+            err = create_resp.json().get("message", create_resp.text)
+            raise HTTPException(status_code=400, detail=f"GitHub API: {err}")
+
+        repo_data = create_resp.json()
+        repo_url = repo_data["html_url"]
+        full_name = repo_data["full_name"]
+
+        # 2. Generate AI README
+        readme_prompt = f"""Создай профессиональный README.md для GitHub репозитория хакатонного проекта.
+
+Название: {repo_name}
+Описание: {project_description or description}
+{'Код проекта:' + chr(10) + initial_code[:800] if initial_code else ''}
+
+Структура README:
+# {repo_name}\n> краткое описание\n## 🚀 Возможности\n## 🛠️ Стек технологий\n## ⚡ Быстрый старт\n## 👥 Команда\n## 📄 Лицензия MIT"""
+
+        system = get_system_prompt("hackathon_helper", language)
+        readme_content = await chat_completion(
+            [{"role": "system", "content": system}, {"role": "user", "content": readme_prompt}],
+            model=SMART_MODEL, max_tokens=1500
+        )
+
+        # 3. Push README.md
+        await client.put(
+            f"https://api.github.com/repos/{full_name}/contents/README.md",
+            headers=headers,
+            json={
+                "message": "docs: initial README",
+                "content": base64.b64encode(readme_content.encode()).decode(),
+            }
+        )
+
+        # 4. Push initial code if provided
+        if initial_code.strip():
+            await client.put(
+                f"https://api.github.com/repos/{full_name}/contents/{code_filename}",
+                headers=headers,
+                json={
+                    "message": f"feat: initial {code_filename}",
+                    "content": base64.b64encode(initial_code.encode()).decode(),
+                }
+            )
+
+    result = f"""## ✅ Репозиторий создан!
+
+**Ссылка:** [{repo_url}]({repo_url})
+
+**Что было сделано:**
+- 📁 Репозиторий `{repo_name}` ({"приватный" if private else "публичный"})
+- 📝 AI сгенерировал и загрузил `README.md`
+{'- 💻 Загружен начальный код `' + code_filename + '`' if initial_code.strip() else ''}
+
+**Следующие шаги:**
+```bash
+git clone {repo_url}
+cd {repo_name}
+```
+
+---
+{readme_content[:600]}..."""
+
+    return AIResponse(success=True, content=result, metadata={"repo_url": repo_url})

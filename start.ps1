@@ -15,6 +15,8 @@ Write-Host "Запускаю туннель..." -ForegroundColor Cyan
 from pyngrok import ngrok
 import time
 ngrok.set_auth_token('39zVprwhAA5Hyypf7XPeVo4TjF6_5HV6cx6uKdcGkkYvXh7r6')
+ngrok.kill()
+time.sleep(1)
 t = ngrok.connect(8000, 'http')
 print('')
 print('='*50)
