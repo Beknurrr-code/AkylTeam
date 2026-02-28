@@ -5882,8 +5882,8 @@ async function loadMyTeamPage() {
     _myTeamData = null;
     noDiv.style.display  = 'block';
     hasDiv.style.display = 'none';
-    // Still load invitations for the no-team state
-    _loadMyInvitations();
+    // Load invitations even without a team
+    _loadMyInvitationsNoTeam();
   }
 }
 
@@ -5957,22 +5957,37 @@ async function _loadMyInvitations() {
       return;
     }
     if (empty) empty.style.display = 'none';
-    list.innerHTML = invs.map(inv => `
-      <div class="request-card">
-        <div style="font-size:32px">💌</div>
-        <div class="request-info">
-          <div class="request-name">Команда: <strong>${inv.team_name}</strong></div>
-          <div class="request-msg">От: ${inv.inviter} · ${inv.message || 'Без сообщения'}</div>
-          <div class="request-actions">
-            <button class="btn btn-sm btn-primary" onclick="respondInvitation(${inv.id},'accept')">Принять</button>
-            <button class="btn btn-sm btn-secondary" onclick="respondInvitation(${inv.id},'decline')">Отклонить</button>
-          </div>
-        </div>
-      </div>`).join('');
-    // Update badge
+    list.innerHTML = _renderInvCards(invs);
     const badge = document.getElementById('teamInvsBadge');
     if (badge) { badge.textContent = invs.length; badge.style.display = 'inline'; }
   } catch { list.innerHTML = '<p style="color:var(--text-dim)">Ошибка загрузки</p>'; }
+}
+
+async function _loadMyInvitationsNoTeam() {
+  const card = document.getElementById('noTeamInvsCard');
+  const list = document.getElementById('noTeamInvsList');
+  if (!card || !list) return;
+  try {
+    const invs = await apiFetch('/api/teams/my-invitations');
+    if (!invs.length) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+    list.innerHTML = _renderInvCards(invs);
+  } catch { card.style.display = 'none'; }
+}
+
+function _renderInvCards(invs) {
+  return invs.map(inv => `
+    <div class="request-card">
+      <div style="font-size:32px">💌</div>
+      <div class="request-info">
+        <div class="request-name">Команда: <strong>${inv.team_name}</strong></div>
+        <div class="request-msg">От: ${inv.inviter} · ${inv.message || 'Без сообщения'}</div>
+        <div class="request-actions">
+          <button class="btn btn-sm btn-primary" onclick="respondInvitation(${inv.id},'accept')">✓ Принять</button>
+          <button class="btn btn-sm btn-secondary" onclick="respondInvitation(${inv.id},'decline')">Отклонить</button>
+        </div>
+      </div>
+    </div>`).join('');
 }
 
 async function _loadRequestsBadge() {
@@ -6186,4 +6201,64 @@ function setText(id, text) {
 function _toggleEl(id, show) {
   const el = document.getElementById(id);
   if (el) el.style.display = show ? '' : 'none';
+}
+
+// ── Find-Team page tabs ────────────────────────────────────────────
+function switchFindTab(tab) {
+  var tabs = ['people', 'teams'];
+  tabs.forEach(function(t) {
+    var el = document.getElementById('findTab-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('#page-find-team .team-section-tab').forEach(function(btn, i) {
+    btn.classList.toggle('active', tabs[i] === tab);
+  });
+  if (tab === 'teams') searchTeams();
+  if (tab === 'people') searchUsers();
+}
+
+async function searchTeams() {
+  var qEl = document.getElementById('searchTeamQ');
+  var q = qEl ? qEl.value.trim() : '';
+  var grid = document.getElementById('teamsGrid');
+  if (!grid) return;
+  grid.innerHTML = '<div class="empty-state">Загрузка...</div>';
+  try {
+    var teams = await apiFetch('/api/teams?q=' + encodeURIComponent(q));
+    if (!teams.length) {
+      grid.innerHTML = '<div class="empty-state">Команд не найдено</div>';
+      return;
+    }
+    var myTeamId = (_myTeamData && _myTeamData.team) ? _myTeamData.team.id : null;
+    var isLoggedIn = typeof AUTH !== 'undefined' && AUTH.isLoggedIn();
+    grid.innerHTML = teams.map(function(t) {
+      var isMine = t.id === myTeamId;
+      var safeName = t.name.replace(/'/g, "\'");
+      var actions = isLoggedIn && !isMine
+        ? '<button class="btn btn-sm btn-primary" onclick="sendJoinRequest(' + t.id + ',\'' + safeName + '\')">📩 Подать заявку</button>'
+        : isMine ? '<span style="font-size:12px;color:var(--primary);font-weight:700">✓ Моя команда</span>' : '';
+      return '<div class="card" style="display:flex;align-items:center;gap:16px;padding:16px 20px">' +
+        '<div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🎯</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div style="font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + t.name + '</div>' +
+          '<div style="font-size:13px;color:var(--text-dim);margin-top:2px">' + (t.hackathon_theme || 'Тема не указана') + '</div>' +
+        '</div>' +
+        '<div style="flex-shrink:0">' + actions + '</div>' +
+        '</div>';
+    }).join('');
+  } catch(e) { grid.innerHTML = '<div class="empty-state">Ошибка: ' + e.message + '</div>'; }
+}
+
+async function sendJoinRequest(teamId, teamName) {
+  if (typeof AUTH === 'undefined' || !AUTH.isLoggedIn()) {
+    showToast('Войдите в аккаунт', 'error'); return;
+  }
+  var msg = prompt('Сообщение для команды «' + teamName + '» (необязательно):', '');
+  if (msg === null) return;
+  try {
+    await apiFetch('/api/teams/' + teamId + '/join-request', {
+      method: 'POST', body: JSON.stringify({ message: msg })
+    });
+    showToast('📩 Заявка в «' + teamName + '» отправлена!');
+  } catch(e) { showToast(e.message || 'Ошибка отправки заявки', 'error'); }
 }

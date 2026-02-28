@@ -1818,11 +1818,11 @@
           <p style="color:var(--text-dim);margin-bottom:28px">Создай свою команду или вступи в существующую</p>
           <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
             <button class="btn btn-primary" onclick="showTeamCreate()">➕ Создать команду</button>
-            <button class="btn btn-secondary" onclick="switchTeamSection('invitations');scrollTo(0,0)">💌 Мои приглашения</button>
+            <button class="btn btn-secondary" onclick="goPage('find-team')">🔎 Найти команду</button>
           </div>
         </div>
         <!-- Join by code -->
-        <div class="card">
+        <div class="card" style="margin-bottom:16px">
           <h3 style="margin-bottom:14px">🔑 Вступить по коду</h3>
           <div style="display:flex;gap:10px;align-items:center">
             <input type="text" id="joinCodeInput" class="input" placeholder="ABC123" maxlength="6" style="font-size:20px;letter-spacing:4px;font-weight:700;text-transform:uppercase;flex:1" />
@@ -1830,7 +1830,7 @@
           </div>
         </div>
         <!-- Create team modal-inline -->
-        <div class="card" id="teamCreateForm" style="display:none;margin-top:16px">
+        <div class="card" id="teamCreateForm" style="display:none;margin-bottom:16px">
           <h3 style="margin-bottom:14px">➕ Создать команду</h3>
           <div class="form-group">
             <label>Название команды *</label>
@@ -1844,6 +1844,11 @@
             <button class="btn btn-primary" onclick="createTeam()">Создать</button>
             <button class="btn btn-secondary" onclick="document.getElementById('teamCreateForm').style.display='none'">Отмена</button>
           </div>
+        </div>
+        <!-- Pending invitations in no-team state -->
+        <div class="card" id="noTeamInvsCard" style="display:none">
+          <h3 style="margin-bottom:14px">💌 Мои приглашения</h3>
+          <div id="noTeamInvsList" style="display:flex;flex-direction:column;gap:10px"></div>
         </div>
       </div>
 
@@ -1962,27 +1967,45 @@
         <h1 class="page-title">🔎 <span data-i18n="findTeam.title">Найти команду / тиммейта</span></h1>
       </div>
 
-      <!-- Search -->
-      <div class="search-bar">
-        <input type="text" id="searchSkills" class="input" data-i18n-placeholder="findTeam.skillsPlaceholder" placeholder="Навыки: Python, React, ML..." />
-        <select id="searchRole" class="input select-sm">
-          <option value="" data-i18n="findTeam.anyRole">Любая роль</option>
-          <option value="backend">Backend</option>
-          <option value="frontend">Frontend</option>
-          <option value="ml">ML/AI</option>
-          <option value="design">Design</option>
-          <option value="manager">Manager</option>
-          <option value="mobile">Mobile</option>
-        </select>
-        <label class="checkbox-label">
-          <input type="checkbox" id="searchLooking" onchange="searchUsers()" />
-          <span data-i18n="findTeam.onlyLooking">Только ищущие команду</span>
-        </label>
-        <button class="btn btn-primary" onclick="searchUsers()" data-i18n="findTeam.find">Найти</button>
+      <!-- Tabs: People / Teams -->
+      <div class="team-section-tabs" style="margin-bottom:20px">
+        <button class="team-section-tab active" onclick="switchFindTab('people')">👤 Люди</button>
+        <button class="team-section-tab" onclick="switchFindTab('teams')">👥 Команды</button>
       </div>
 
-      <div class="users-grid" id="usersGrid">
-        <div class="empty-state" data-i18n="findTeam.initialHint">Используй поиск выше</div>
+      <!-- PEOPLE tab -->
+      <div id="findTab-people">
+        <div class="search-bar">
+          <input type="text" id="searchSkills" class="input" data-i18n-placeholder="findTeam.skillsPlaceholder" placeholder="Навыки: Python, React, ML..." />
+          <select id="searchRole" class="input select-sm">
+            <option value="" data-i18n="findTeam.anyRole">Любая роль</option>
+            <option value="backend">Backend</option>
+            <option value="frontend">Frontend</option>
+            <option value="ml">ML/AI</option>
+            <option value="design">Design</option>
+            <option value="manager">Manager</option>
+            <option value="mobile">Mobile</option>
+          </select>
+          <label class="checkbox-label">
+            <input type="checkbox" id="searchLooking" onchange="searchUsers()" />
+            <span data-i18n="findTeam.onlyLooking">Только ищущие команду</span>
+          </label>
+          <button class="btn btn-primary" onclick="searchUsers()" data-i18n="findTeam.find">Найти</button>
+        </div>
+        <div class="users-grid" id="usersGrid">
+          <div class="empty-state" data-i18n="findTeam.initialHint">Используй поиск выше</div>
+        </div>
+      </div>
+
+      <!-- TEAMS tab -->
+      <div id="findTab-teams" style="display:none">
+        <div class="search-bar" style="margin-bottom:16px">
+          <input type="text" id="searchTeamQ" class="input" placeholder="Название или тема команды..." oninput="searchTeams()" />
+          <button class="btn btn-primary" onclick="searchTeams()">Поиск</button>
+        </div>
+        <div id="teamsGrid" style="display:flex;flex-direction:column;gap:12px">
+          <div class="empty-state">Загрузка команд...</div>
+        </div>
       </div>
     </section>
 
