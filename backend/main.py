@@ -20,6 +20,7 @@ from backend.routes.readme import router as readme_router
 from backend.routes.codespace import router as codespace_router
 from backend.routes.notes import router as notes_router
 from backend.routes.media import router as media_router
+from backend.routes.teams import router as teams_router
 
 app = FastAPI(
     title="AkylTeam - AI Hackathon Platform",
@@ -58,6 +59,8 @@ app.include_router(olympiad_router)
 app.include_router(readme_router)
 app.include_router(codespace_router)
 app.include_router(notes_router)
+app.include_router(media_router)
+app.include_router(teams_router)
 app.include_router(media_router)
 
 # Serve static frontend

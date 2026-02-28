@@ -269,6 +269,7 @@ function showPage(pageId) {
   if (pageId === 'olympiad') { initOlymPage(); }
   if (pageId === 'codespace') { initCodeSpace(); _initGhTokenFromStorage(); }
   if (pageId === 'project-space') { initProjectSpace(); }
+  if (pageId === 'myteam') { loadMyTeamPage(); }
 }
 
 // ── TEAMS ─────────────────────────────────────────────────────────
@@ -5828,4 +5829,361 @@ function dataURLtoBlob(dataURL) {
     u8arr[n] = bstr.charCodeAt(n);
   }
   return new Blob([u8arr], { type: mime });
+}
+// ════════════════════════════════════════════════════════════════
+//  AUTH UI HELPERS
+// ════════════════════════════════════════════════════════════════
+function toggleEye(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+function updatePassStrength(val) {
+  const fill  = document.getElementById('passStrengthFill');
+  const label = document.getElementById('passStrengthLabel');
+  if (!fill || !label) return;
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const pct   = [0, 25, 50, 75, 100][score];
+  const color = ['#ef4444','#f97316','#eab308','#22c55e'][score - 1] || '#ef4444';
+  const text  = ['','Слабый','Средний','Хороший','Сильный'][score] || '';
+  fill.style.width     = pct + '%';
+  fill.style.background = color;
+  label.textContent    = text;
+  label.style.color    = color;
+}
+
+// ════════════════════════════════════════════════════════════════
+//  MY TEAM PAGE
+// ════════════════════════════════════════════════════════════════
+let _myTeamData = null; // cache
+
+async function loadMyTeamPage() {
+  const noDiv  = document.getElementById('teamNoTeamDiv');
+  const hasDiv = document.getElementById('teamHasTeamDiv');
+  if (!noDiv || !hasDiv) return;
+
+  try {
+    const data = await apiFetch('/api/teams/my-team');
+    _myTeamData = data;
+    noDiv.style.display  = 'none';
+    hasDiv.style.display = 'block';
+    _renderTeamOverview(data);
+    // preload invitations badge
+    _loadInvitationsBadge();
+    _loadRequestsBadge();
+  } catch (err) {
+    // 404 → no team
+    _myTeamData = null;
+    noDiv.style.display  = 'block';
+    hasDiv.style.display = 'none';
+    // Still load invitations for the no-team state
+    _loadMyInvitations();
+  }
+}
+
+function _renderTeamOverview(data) {
+  const team = data.team;
+  const role = data.role; // "leader" or "member"
+
+  setText('teamHeroName', team.name);
+  setText('teamHeroTheme', team.hackathon_theme ? `Тема: ${team.hackathon_theme}` : 'Тема: —');
+  setText('teamInviteCode', team.invite_code || '------');
+
+  const badge = document.getElementById('teamRoleBadge');
+  if (badge) {
+    badge.textContent = role === 'leader' ? '👑 Лидер' : '🙋 Участник';
+    badge.className = `team-hero-badge ${role}`;
+  }
+
+  const cnt = document.getElementById('teamMemberCount');
+  if (cnt && data.members) cnt.textContent = data.members.length;
+
+  // Show leader-only controls
+  const leaderOnly = role === 'leader';
+  _toggleEl('teamRegenCodeBtn', leaderOnly);
+  _toggleEl('teamInviteBtn', leaderOnly);
+  _toggleEl('teamLeaderSettings', leaderOnly);
+  _toggleEl('teamMemberSettings', !leaderOnly);
+
+  // Pre-fill settings form
+  const sName = document.getElementById('teamSettingsName');
+  const sTheme = document.getElementById('teamSettingsTheme');
+  if (sName)  sName.value  = team.name || '';
+  if (sTheme) sTheme.value = team.hackathon_theme || '';
+
+  // Render members
+  _renderMembersList(data.members || [], role, data.user_id);
+}
+
+function _renderMembersList(members, myRole, myUserId) {
+  const list = document.getElementById('teamMembersList');
+  if (!list) return;
+  if (!members.length) { list.innerHTML = '<p style="color:var(--text-dim)">Участников нет</p>'; return; }
+  list.innerHTML = members.map(m => {
+    const initial = (m.username || '?')[0].toUpperCase();
+    const isLeader = m.role === 'leader';
+    const isMe = m.user_id === myUserId;
+    const actions = (myRole === 'leader' && !isMe)
+      ? `<button class="btn btn-sm" style="color:#ef4444;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25)" onclick="kickMember(${m.user_id})">Удалить</button>
+         <button class="btn btn-sm btn-secondary" onclick="transferLeadership(${m.user_id})">👑</button>`
+      : '';
+    return `<div class="member-card">
+      <div class="member-avatar">${initial}</div>
+      <div style="flex:1;min-width:0">
+        <div class="member-name">${m.username}${isMe ? ' (вы)' : ''}</div>
+        <div class="member-skills">${m.skills || 'Навыки не указаны'}</div>
+      </div>
+      <span class="member-role-badge ${m.role}">${isLeader ? '👑 Лидер' : 'Участник'}</span>
+      ${actions}
+    </div>`;
+  }).join('');
+}
+
+async function _loadMyInvitations() {
+  const list  = document.getElementById('teamMyInvsList');
+  const empty = document.getElementById('teamInvsEmpty');
+  if (!list) return;
+  try {
+    const invs = await apiFetch('/api/teams/my-invitations');
+    if (!invs.length) {
+      list.innerHTML = '';
+      if (empty) empty.style.display = 'block';
+      return;
+    }
+    if (empty) empty.style.display = 'none';
+    list.innerHTML = invs.map(inv => `
+      <div class="request-card">
+        <div style="font-size:32px">💌</div>
+        <div class="request-info">
+          <div class="request-name">Команда: <strong>${inv.team_name}</strong></div>
+          <div class="request-msg">От: ${inv.inviter} · ${inv.message || 'Без сообщения'}</div>
+          <div class="request-actions">
+            <button class="btn btn-sm btn-primary" onclick="respondInvitation(${inv.id},'accept')">Принять</button>
+            <button class="btn btn-sm btn-secondary" onclick="respondInvitation(${inv.id},'decline')">Отклонить</button>
+          </div>
+        </div>
+      </div>`).join('');
+    // Update badge
+    const badge = document.getElementById('teamInvsBadge');
+    if (badge) { badge.textContent = invs.length; badge.style.display = 'inline'; }
+  } catch { list.innerHTML = '<p style="color:var(--text-dim)">Ошибка загрузки</p>'; }
+}
+
+async function _loadRequestsBadge() {
+  if (!_myTeamData || _myTeamData.role !== 'leader') return;
+  try {
+    const reqs = await apiFetch(`/api/teams/${_myTeamData.team.id}/join-requests`);
+    const badge = document.getElementById('teamRequestsBadge');
+    if (badge && reqs.length) { badge.textContent = reqs.length; badge.style.display = 'inline'; }
+  } catch {}
+}
+
+async function _loadInvitationsBadge() {
+  try {
+    const invs = await apiFetch('/api/teams/my-invitations');
+    const badge = document.getElementById('teamInvsBadge');
+    if (badge && invs.length) { badge.textContent = invs.length; badge.style.display = 'inline'; }
+  } catch {}
+}
+
+function switchTeamSection(section) {
+  document.querySelectorAll('.team-section-tab').forEach((t, i) => {
+    const sections = ['overview','members','requests','invitations','settings'];
+    t.classList.toggle('active', sections[i] === section);
+  });
+  document.querySelectorAll('.team-section-content').forEach(el => el.style.display = 'none');
+  const target = document.getElementById(`teamsec-${section}`);
+  if (target) target.style.display = 'block';
+
+  // Lazy load section content when switching
+  if (section === 'members' && _myTeamData) {
+    _renderMembersList(_myTeamData.members || [], _myTeamData.role, _myTeamData.user_id);
+  }
+  if (section === 'requests') { _loadJoinRequests(); }
+  if (section === 'invitations') { _loadMyInvitations(); }
+}
+
+async function _loadJoinRequests() {
+  const list  = document.getElementById('teamJoinRequestsList');
+  const empty = document.getElementById('teamRequestsEmpty');
+  if (!list || !_myTeamData) return;
+  if (_myTeamData.role !== 'leader') {
+    list.innerHTML = '<p style="color:var(--text-dim)">Только лидер может видеть заявки</p>';
+    return;
+  }
+  try {
+    const reqs = await apiFetch(`/api/teams/${_myTeamData.team.id}/join-requests`);
+    if (!reqs.length) {
+      list.innerHTML = '';
+      if (empty) empty.style.display = 'block';
+      return;
+    }
+    if (empty) empty.style.display = 'none';
+    list.innerHTML = reqs.map(r => `
+      <div class="request-card">
+        <div style="font-size:32px">🙋</div>
+        <div class="request-info">
+          <div class="request-name">${r.username}</div>
+          <div class="request-msg">${r.message || 'Без сообщения'} · ${r.skills || ''}</div>
+          <div class="request-actions">
+            <button class="btn btn-sm btn-primary" onclick="respondJoinRequest(${r.id},'accept')">Принять</button>
+            <button class="btn btn-sm btn-secondary" onclick="respondJoinRequest(${r.id},'reject')">Отклонить</button>
+          </div>
+        </div>
+      </div>`).join('');
+  } catch { list.innerHTML = '<p style="color:var(--text-dim)">Ошибка загрузки</p>'; }
+}
+
+// ── Actions ───────────────────────────────────────────────────────
+function showTeamCreate() {
+  const f = document.getElementById('teamCreateForm');
+  if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+async function createTeam() {
+  const name  = document.getElementById('newTeamName')?.value.trim();
+  const theme = document.getElementById('newTeamTheme')?.value.trim();
+  if (!name) { showToast('Введите название команды', 'error'); return; }
+  try {
+    await apiFetch('/api/teams', { method: 'POST', body: JSON.stringify({ name, hackathon_theme: theme }) });
+    showToast('🎉 Команда создана!');
+    loadMyTeamPage();
+  } catch (e) { showToast(e.message || 'Ошибка создания команды', 'error'); }
+}
+
+async function joinByCode() {
+  const code = document.getElementById('joinCodeInput')?.value.trim().toUpperCase();
+  if (!code || code.length < 4) { showToast('Введите код приглашения', 'error'); return; }
+  try {
+    await apiFetch('/api/teams/join-by-code', { method: 'POST', body: JSON.stringify({ code }) });
+    showToast('🎉 Вы вступили в команду!');
+    loadMyTeamPage();
+  } catch (e) { showToast(e.message || 'Неверный код или ошибка', 'error'); }
+}
+
+async function respondJoinRequest(reqId, action) {
+  try {
+    await apiFetch(`/api/teams/join-requests/${reqId}/respond`, { method: 'POST', body: JSON.stringify({ action }) });
+    showToast(action === 'accept' ? '✅ Принят!' : '❌ Отклонён');
+    _loadJoinRequests();
+    loadMyTeamPage();
+  } catch (e) { showToast(e.message || 'Ошибка', 'error'); }
+}
+
+function showInviteForm() {
+  const f = document.getElementById('teamInviteForm');
+  if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+async function inviteUser() {
+  const username = document.getElementById('inviteUsername')?.value.trim();
+  const message  = document.getElementById('inviteMessage')?.value.trim();
+  if (!username) { showToast('Введите никнейм', 'error'); return; }
+  if (!_myTeamData) return;
+  try {
+    await apiFetch(`/api/teams/${_myTeamData.team.id}/invite`, {
+      method: 'POST', body: JSON.stringify({ username, message })
+    });
+    showToast(`💌 Приглашение отправлено ${username}!`);
+    document.getElementById('inviteUsername').value = '';
+    document.getElementById('inviteMessage').value  = '';
+    document.getElementById('teamInviteForm').style.display = 'none';
+  } catch (e) { showToast(e.message || 'Ошибка приглашения', 'error'); }
+}
+
+async function respondInvitation(invId, action) {
+  try {
+    await apiFetch(`/api/teams/invitations/${invId}/respond`, { method: 'POST', body: JSON.stringify({ action }) });
+    showToast(action === 'accept' ? '🎉 Вы приняли приглашение!' : 'Приглашение отклонено');
+    loadMyTeamPage();
+  } catch (e) { showToast(e.message || 'Ошибка', 'error'); }
+}
+
+async function saveTeamSettings() {
+  if (!_myTeamData || _myTeamData.role !== 'leader') return;
+  const name  = document.getElementById('teamSettingsName')?.value.trim();
+  const theme = document.getElementById('teamSettingsTheme')?.value.trim();
+  if (!name) { showToast('Укажите название', 'error'); return; }
+  try {
+    await apiFetch(`/api/teams/${_myTeamData.team.id}/settings`, {
+      method: 'PUT', body: JSON.stringify({ name, hackathon_theme: theme })
+    });
+    showToast('✅ Настройки сохранены!');
+    loadMyTeamPage();
+  } catch (e) { showToast(e.message || 'Ошибка', 'error'); }
+}
+
+async function regenerateInviteCode() {
+  if (!_myTeamData) return;
+  if (!confirm('Старый код перестанет работать. Продолжить?')) return;
+  try {
+    const res = await apiFetch(`/api/teams/${_myTeamData.team.id}/regenerate-code`, { method: 'POST' });
+    setText('teamInviteCode', res.invite_code);
+    showToast('🔄 Новый код создан!');
+  } catch (e) { showToast(e.message || 'Ошибка', 'error'); }
+}
+
+async function kickMember(userId) {
+  if (!_myTeamData) return;
+  if (!confirm('Удалить участника из команды?')) return;
+  try {
+    await apiFetch(`/api/teams/${_myTeamData.team.id}/members/${userId}`, { method: 'DELETE' });
+    showToast('Участник удалён');
+    loadMyTeamPage();
+  } catch (e) { showToast(e.message || 'Ошибка', 'error'); }
+}
+
+async function transferLeadership(userId) {
+  if (!_myTeamData) return;
+  if (!confirm('Передать лидерство этому участнику?')) return;
+  try {
+    await apiFetch(`/api/teams/${_myTeamData.team.id}/transfer-leadership/${userId}`, { method: 'POST' });
+    showToast('👑 Лидерство передано!');
+    loadMyTeamPage();
+  } catch (e) { showToast(e.message || 'Ошибка', 'error'); }
+}
+
+async function leaveTeam() {
+  if (!_myTeamData) return;
+  const isLeader = _myTeamData.role === 'leader';
+  const msg = isLeader ? 'Вы лидер. Если выйдете и нет других участников — команда будет удалена. Продолжить?' : 'Покинуть команду?';
+  if (!confirm(msg)) return;
+  try {
+    await apiFetch(`/api/teams/${_myTeamData.team.id}/leave`, { method: 'POST' });
+    showToast(isLeader ? 'Команда распущена' : 'Вы покинули команду');
+    loadMyTeamPage();
+  } catch (e) { showToast(e.message || 'Ошибка', 'error'); }
+}
+
+function copyInviteCode() {
+  const code = document.getElementById('teamInviteCode')?.textContent || '';
+  navigator.clipboard.writeText(code).then(() => showToast('📋 Код скопирован!')).catch(() => {});
+}
+
+// ── apiFetch helper (uses AUTH token if available) ─────────────────
+async function apiFetch(url, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+  if (typeof AUTH !== 'undefined' && AUTH.isLoggedIn()) {
+    headers['Authorization'] = `Bearer ${AUTH.getToken()}`;
+  }
+  const res = await fetch(url, { ...opts, headers });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json.detail || json.message || `HTTP ${res.status}`);
+  return json;
+}
+
+// ── Tiny UI helpers ────────────────────────────────────────────────
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+function _toggleEl(id, show) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = show ? '' : 'none';
 }

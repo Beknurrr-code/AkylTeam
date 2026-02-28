@@ -381,3 +381,45 @@ class MoodBoard(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+
+# ─────────────────────────── TEAM MEMBERSHIP SYSTEM ──────────────────────────
+
+class TeamMembership(Base):
+    """Links authenticated Users to Teams with a role (new system)."""
+    __tablename__ = "team_memberships"
+    id = Column(Integer, primary_key=True, index=True)
+    team_id = Column(Integer, ForeignKey("teams.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+    role = Column(String, default="member")   # leader | member
+    joined_at = Column(DateTime, default=datetime.utcnow)
+    team = relationship("Team")
+    user = relationship("User")
+
+
+class JoinRequest(Base):
+    """User requests to join a team (pending leader approval)."""
+    __tablename__ = "join_requests"
+    id = Column(Integer, primary_key=True, index=True)
+    team_id = Column(Integer, ForeignKey("teams.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+    message = Column(Text, nullable=True)
+    status = Column(String, default="pending")  # pending | accepted | rejected
+    created_at = Column(DateTime, default=datetime.utcnow)
+    team = relationship("Team")
+    user = relationship("User")
+
+
+class TeamInvitation(Base):
+    """Team leader invites a specific user to the team."""
+    __tablename__ = "team_invitations"
+    id = Column(Integer, primary_key=True, index=True)
+    team_id = Column(Integer, ForeignKey("teams.id"))
+    inviter_id = Column(Integer, ForeignKey("users.id"))
+    invitee_id = Column(Integer, ForeignKey("users.id"))
+    message = Column(Text, nullable=True)
+    status = Column(String, default="pending")  # pending | accepted | declined
+    created_at = Column(DateTime, default=datetime.utcnow)
+    team = relationship("Team")
+    inviter = relationship("User", foreign_keys=[inviter_id])
+    invitee = relationship("User", foreign_keys=[invitee_id])
+
