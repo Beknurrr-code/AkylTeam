@@ -1215,6 +1215,60 @@
         </div>
         <div id="pitchAIContent" class="ai-content markdown-content"></div>
       </div>
+
+      <!-- AI Project Name Generator -->
+      <div class="card" style="margin-top:24px;">
+        <div class="card-header">
+          <h2 class="card-title">✨ Генератор названия</h2>
+          <p class="card-subtitle">Введи 3–5 слов о проекте — AI выдаст 10 названий + слоган</p>
+        </div>
+        <div class="form-group">
+          <label>Ключевые слова о проекте</label>
+          <input id="nameKeywords" class="input" type="text" placeholder="ИИ, хакатон, командная работа, продуктивность..."/>
+        </div>
+        <button class="btn btn-primary" onclick="generateProjectName()">✨ Сгенерировать названия</button>
+        <div id="nameAIResponse" class="ai-response-card" style="display:none;margin-top:16px;">
+          <div class="ai-response-header">
+            <span>✨ Варианты названий</span>
+            <div class="ai-actions"><button class="icon-btn" onclick="copyText('nameAIContent')">📋</button></div>
+          </div>
+          <div id="nameAIContent" class="ai-content markdown-content"></div>
+        </div>
+      </div>
+
+      <!-- AI Slide Deck Generator -->
+      <div class="card" style="margin-top:20px;">
+        <div class="card-header">
+          <h2 class="card-title">📊 AI Структура слайдов</h2>
+          <p class="card-subtitle">Питч-дек за 30 секунд — все нужные слайды с тезисами</p>
+        </div>
+        <div class="form-grid grid-2">
+          <div class="form-group">
+            <label>Название проекта</label>
+            <input id="slidesProject" class="input" type="text" placeholder="AkylTeam"/>
+          </div>
+          <div class="form-group">
+            <label>Технологии</label>
+            <input id="slidesTech" class="input" type="text" placeholder="Python, React, GPT-4..."/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Проблема</label>
+          <textarea id="slidesProblem" class="input" rows="2" placeholder="Команды не знают как..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Решение</label>
+          <textarea id="slidesSolution" class="input" rows="2" placeholder="Мы создали платформу которая..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="generateSlidesDeck()">📊 Создать структуру</button>
+        <div id="slidesAIResponse" class="ai-response-card" style="display:none;margin-top:16px;">
+          <div class="ai-response-header">
+            <span>📊 Структура слайдов</span>
+            <div class="ai-actions"><button class="icon-btn" onclick="copyText('slidesAIContent')">📋</button></div>
+          </div>
+          <div id="slidesAIContent" class="ai-content markdown-content"></div>
+        </div>
+      </div>
     </section>
 
     <!-- ── CHAT PAGE ── -->
@@ -3014,18 +3068,27 @@
   <!-- Pomodoro Timer -->
   <div id="pomodoroWidget" class="pomodoro-widget" style="display:none;">
     <div class="pomo-header">
-      <span class="pomo-mode" id="pomoMode">🍅 Фокус</span>
+      <span>🍅 Pomodoro</span>
       <div style="display:flex;gap:6px;">
         <button class="pomo-icon-btn" onclick="resetPomodoro()" title="Сброс">🔄</button>
-        <button class="pomo-icon-btn" onclick="closePomodoro()" title="Свернуть">−</button>
+        <button class="pomo-icon-btn" onclick="document.getElementById('pomodoroWidget').style.display='none'" title="Свернуть">−</button>
       </div>
     </div>
-    <div class="pomo-time" id="pomoTime">25:00</div>
-    <div class="pomo-progress-wrap"><div class="pomo-progress-bar" id="pomoBar"></div></div>
-    <div class="pomo-controls">
-      <button class="btn btn-primary" id="pomoBtnStart" onclick="togglePomodoro()">&#9654; Старт</button>
+    <div class="pomo-body">
+      <div class="pomo-phase" id="pomoPhase">🍅 Фокус</div>
+      <div class="pomo-time" id="pomoTime">25:00</div>
+      <div class="pomo-progress-wrap"><div class="pomo-progress-bar" id="pomoProgressBar" style="width:100%"></div></div>
+      <div class="pomo-cycles" id="pomoCycles">🍅 Циклов: 0</div>
+      <div class="pomo-controls" style="margin-top:12px;">
+        <button class="pomo-btn active" style="flex:1;" id="pomoStartBtn" onclick="togglePomodoro()">▶ Старт</button>
+        <button class="pomo-btn" onclick="resetPomodoro()">↺</button>
+      </div>
+      <div style="display:flex;gap:5px;margin-top:8px;justify-content:center;">
+        <button class="pitch-preset-btn" onclick="setPomoWork(25)">25м</button>
+        <button class="pitch-preset-btn" onclick="setPomoWork(45)">45м</button>
+        <button class="pitch-preset-btn" onclick="setPomoWork(50)">50м</button>
+      </div>
     </div>
-    <div class="pomo-sessions" id="pomoSessions"></div>
   </div>
 
   <!-- Hackathon Countdown -->

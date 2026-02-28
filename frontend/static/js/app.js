@@ -980,6 +980,7 @@ function openThemePicker() {
         ${t.swatches.map(c => `<div class="theme-swatch" style="background:${c}"></div>`).join('')}
       </div>
       <div class="theme-card-name">${t.name}</div>
+      <div class="theme-card-desc">${t.desc}</div>
     </div>
   `).join('');
   overlay.classList.add('open');
@@ -2099,7 +2100,136 @@ function toggleCrisisMode() {
   showToast(_crisisMode ? '🚨 Crisis Mode активирован!' : '✅ Обычный режим', _crisisMode ? 'error' : 'success');
 }
 
-// ── PITCH TIMER ──
+// ── POMODORO TIMER ──────────────────────────────────────────────────────
+const _pomo = { work: 25, shortBreak: 5, longBreak: 15 };
+let _pomoState = { phase: 'work', left: 25*60, cycles: 0, running: false, interval: null };
+
+function openPomodoro() {
+  const fabMenu = document.getElementById('fabMenu');
+  if (fabMenu) fabMenu.style.display = 'none';
+  const w = document.getElementById('pomodoroWidget');
+  if (!w) return;
+  w.style.display = w.style.display === 'none' || !w.style.display ? 'block' : 'none';
+  _renderPomodoro();
+}
+
+function _renderPomodoro() {
+  const m = Math.floor(_pomoState.left / 60);
+  const s = _pomoState.left % 60;
+  const timerEl = document.getElementById('pomoTime');
+  const phaseEl = document.getElementById('pomoPhase');
+  const btnEl   = document.getElementById('pomoStartBtn');
+  const barEl   = document.getElementById('pomoProgressBar');
+  const cyclesEl = document.getElementById('pomoCycles');
+  if (!timerEl) return;
+  timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  timerEl.className = 'pomo-time' + (_pomoState.phase !== 'work' ? ' pomo-break' : '') + (_pomoState.left < 60 && _pomoState.phase === 'work' ? ' urgent' : '');
+  const phaseNames = { work: '🍅 Фокус', shortBreak: '☕ Короткий перерыв', longBreak: '🛋️ Длинный перерыв' };
+  if (phaseEl) phaseEl.textContent = phaseNames[_pomoState.phase] || _pomoState.phase;
+  if (btnEl) btnEl.textContent = _pomoState.running ? '⏸ Пауза' : '▶ Старт';
+  const totalSec = (_pomoState.phase === 'work' ? _pomo.work : _pomoState.phase === 'shortBreak' ? _pomo.shortBreak : _pomo.longBreak) * 60;
+  if (barEl) barEl.style.width = (_pomoState.left / totalSec * 100) + '%';
+  if (cyclesEl) cyclesEl.textContent = `🍅 Циклов: ${_pomoState.cycles}`;
+}
+
+function togglePomodoro() {
+  if (_pomoState.running) {
+    clearInterval(_pomoState.interval);
+    _pomoState.interval = null;
+    _pomoState.running = false;
+  } else {
+    _pomoState.running = true;
+    _pomoState.interval = setInterval(() => {
+      _pomoState.left--;
+      if (_pomoState.left <= 0) {
+        clearInterval(_pomoState.interval);
+        _pomoState.interval = null;
+        _pomoState.running = false;
+        _pomoPlaySound();
+        _pomoNextPhase();
+      }
+      _renderPomodoro();
+    }, 1000);
+  }
+  _renderPomodoro();
+}
+
+function resetPomodoro() {
+  clearInterval(_pomoState.interval);
+  _pomoState.interval = null;
+  _pomoState.running = false;
+  _pomoState.left = _pomo.work * 60;
+  _pomoState.phase = 'work';
+  _renderPomodoro();
+}
+
+function _pomoNextPhase() {
+  if (_pomoState.phase === 'work') {
+    _pomoState.cycles++;
+    _pomoState.phase = _pomoState.cycles % 4 === 0 ? 'longBreak' : 'shortBreak';
+    _pomoState.left = (_pomoState.cycles % 4 === 0 ? _pomo.longBreak : _pomo.shortBreak) * 60;
+    showToast(_pomoState.cycles % 4 === 0 ? '🛋️ Длинный перерыв!' : '☕ Короткий перерыв!', 'success');
+  } else {
+    _pomoState.phase = 'work';
+    _pomoState.left = _pomo.work * 60;
+    showToast('🍅 Время фокуса!', 'info');
+  }
+  const w = document.getElementById('pomodoroWidget');
+  if (w) w.style.display = 'block';
+  _renderPomodoro();
+}
+
+function _pomoPlaySound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.8);
+  } catch(e) {}
+}
+
+function setPomoWork(min) {
+  _pomo.work = parseInt(min);
+  if (_pomoState.phase === 'work' && !_pomoState.running) {
+    _pomoState.left = _pomo.work * 60;
+  }
+  _renderPomodoro();
+}
+
+// ── PROJECT NAME GENERATOR ─────────────────────────────────────────
+async function generateProjectName() {
+  const keywords = document.getElementById('nameKeywords')?.value.trim();
+  if (!keywords) return showToast('Введи ключевые слова', 'error');
+  showLoader('Генерирую названия...');
+  try {
+    const params = new URLSearchParams({ keywords, language: 'ru' });
+    const res = await fetch('/api/tools/project-names?' + params, { method: 'POST', headers: getAuthHeaders() });
+    const data = await res.json();
+    showAIResponse('nameAIResponse', 'nameAIContent', data.content);
+  } catch(e) { showToast('Ошибка: ' + e.message, 'error'); }
+  finally { hideLoader(); }
+}
+
+// ── AI SLIDE DECK ─────────────────────────────────────────────────
+async function generateSlidesDeck() {
+  const project = document.getElementById('slidesProject')?.value.trim();
+  const problem = document.getElementById('slidesProblem')?.value.trim();
+  if (!project || !problem) return showToast('Введи название и проблему', 'error');
+  const solution = document.getElementById('slidesSolution')?.value || '';
+  const tech = document.getElementById('slidesTech')?.value || '';
+  showLoader('Генерирую структуру слайдов...');
+  try {
+    const params = new URLSearchParams({ project_name: project, problem, solution, tech_stack: tech, language: 'ru' });
+    const res = await fetch('/api/tools/slide-deck?' + params, { method: 'POST', headers: getAuthHeaders() });
+    const data = await res.json();
+    showAIResponse('slidesAIResponse', 'slidesAIContent', data.content);
+  } catch(e) { showToast('Ошибка: ' + e.message, 'error'); }
+  finally { hideLoader(); }
+}
 let _pitchTimerInterval = null;
 let _pitchTimerTotal = 0;
 let _pitchTimerLeft = 0;
@@ -3908,83 +4038,6 @@ async function markChallengeComplete() {
   } catch (e) {
     showToast('Сначала выполни задание!', 'error');
   }
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   POMODORO TIMER
-   ═══════════════════════════════════════════════════════════════════ */
-
-const POMO_WORK  = 25 * 60;
-const POMO_SHORT =  5 * 60;
-const POMO_LONG  = 15 * 60;
-let _pomoState = {
-  running: false, secondsLeft: POMO_WORK, total: POMO_WORK,
-  mode: 'work', sessions: 0, timer: null
-};
-
-function openPomodoro() {
-  document.getElementById('pomodoroWidget').style.display = '';
-  document.getElementById('fabMenu').style.display = 'none';
-  _renderPomodoro();
-}
-function closePomodoro() {
-  document.getElementById('pomodoroWidget').style.display = 'none';
-}
-function _renderPomodoro() {
-  const timeEl = document.getElementById('pomoTime');
-  if (!timeEl) return; // DOM not ready yet
-  const m = Math.floor(_pomoState.secondsLeft / 60).toString().padStart(2,'0');
-  const s = (_pomoState.secondsLeft % 60).toString().padStart(2,'0');
-  timeEl.textContent = `${m}:${s}`;
-  const pct = (_pomoState.secondsLeft / _pomoState.total) * 100;
-  const barEl = document.getElementById('pomoBar');
-  if (barEl) barEl.style.width = `${pct}%`;
-  const modeMap = { work: '🍅 Фокус', short: '☕ Короткий перерыв', long: '🛋️ Длинный перерыв' };
-  const modeEl = document.getElementById('pomoMode');
-  if (modeEl) modeEl.textContent = modeMap[_pomoState.mode] || 'Pomodoro';
-  const btn = document.getElementById('pomoBtnStart');
-  if (btn) btn.innerHTML = _pomoState.running ? '⏸ Пауза' : '▶ Старт';
-  const sessEl = document.getElementById('pomoSessions');
-  if (sessEl) sessEl.textContent = `🍅 × ${_pomoState.sessions}`;
-}
-function togglePomodoro() {
-  if (_pomoState.running) {
-    clearInterval(_pomoState.timer);
-    _pomoState.running = false;
-  } else {
-    _pomoState.running = true;
-    _pomoState.timer = setInterval(() => {
-      _pomoState.secondsLeft--;
-      if (_pomoState.secondsLeft <= 0) {
-        clearInterval(_pomoState.timer);
-        _pomoState.running = false;
-        _onPomoDone();
-      }
-      _renderPomodoro();
-    }, 1000);
-  }
-  _renderPomodoro();
-}
-function _onPomoDone() {
-  if (_pomoState.mode === 'work') {
-    _pomoState.sessions++;
-    api.awardXp(5, 'Pomodoro сессия завершена').catch(() => {});
-    showToast('🍅 Pomodoro завершён! +5 XP. Сделай перерыв.', 'success');
-    const isLong = _pomoState.sessions % 4 === 0;
-    _pomoState.mode = isLong ? 'long' : 'short';
-    _pomoState.total = _pomoState.secondsLeft = isLong ? POMO_LONG : POMO_SHORT;
-  } else {
-    _pomoState.mode = 'work';
-    _pomoState.total = _pomoState.secondsLeft = POMO_WORK;
-    showToast('☕ Перерыв закончен! Назад к работе.', 'info');
-  }
-  // Auto-start next
-  setTimeout(() => { if (document.getElementById('pomodoroWidget').style.display !== 'none') togglePomodoro(); }, 1200);
-}
-function resetPomodoro() {
-  clearInterval(_pomoState.timer);
-  _pomoState = { running: false, secondsLeft: POMO_WORK, total: POMO_WORK, mode: 'work', sessions: 0, timer: null };
-  _renderPomodoro();
 }
 
 /* ═══════════════════════════════════════════════════════════════════

@@ -368,3 +368,57 @@ cd {repo_name}
 {readme_content[:600]}..."""
 
     return AIResponse(success=True, content=result, metadata={"repo_url": repo_url})
+
+
+@router.post("/project-names", response_model=AIResponse)
+async def project_names(keywords: str, language: str = "ru"):
+    """Generate 10 creative project names based on a few keywords."""
+    prompt = f"""Придумай 10 крутых названий для хакатонного проекта.
+
+Ключевые слова / идея: {keywords}
+
+Для каждого:
+## [Номер]. [НАЗВАНИЕ]
+**Слоган:** [Короткий слоган до 10 слов]
+**Почему работает:** [1 предложение]
+
+Требования:
+- Запоминающееся и уникальное
+- Микс английских и казахских/русских (~5 на каждом)
+- Годится для хакатона и будущего стартапа
+- В конце — ⭐ Топ-3 рекомендации с обоснованием"""
+    system = get_system_prompt("hackathon_helper", language)
+    messages = [{"role": "system", "content": system}, {"role": "user", "content": prompt}]
+    content = await chat_completion(messages, model=SMART_MODEL, max_tokens=2000)
+    return AIResponse(success=True, content=content)
+
+
+@router.post("/slide-deck", response_model=AIResponse)
+async def slide_deck(
+    project_name: str,
+    problem: str,
+    solution: str = "",
+    tech_stack: str = "",
+    language: str = "ru"
+):
+    """Generate a full pitch deck structure with talking points."""
+    prompt = f"""Создай профессиональную структуру питч-дека для хакатона (10–12 слайдов).
+
+Проект: {project_name}
+Проблема: {problem}
+Решение: {solution}
+Технологии: {tech_stack}
+
+Для каждого слайда:
+## Слайд N: [Эмодзи + Тема]
+**Ключевые тезисы:** (3–4 буллета)
+**Визуальная рекомендация:** (что показать)
+**Время:** [X сек]
+
+Слайды: Титульный, Проблема, Решение, Демо, Архитектура, Рынок, Конкуренты, Монетизация, Роадмап, Команда, CTA.
+
+В конце: ⚡ Советы по питчу и что выделит вас среди других команд."""
+    system = get_system_prompt("hackathon_helper", language)
+    messages = [{"role": "system", "content": system}, {"role": "user", "content": prompt}]
+    content = await chat_completion(messages, model=SMART_MODEL, max_tokens=3000)
+    return AIResponse(success=True, content=content)
