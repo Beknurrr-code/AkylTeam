@@ -214,6 +214,37 @@ body {
 .nav-link.active { color: #fff; background: linear-gradient(135deg, var(--primary), #6c5fd4); box-shadow: 0 4px 16px rgba(139,124,248,0.3); font-weight: 600; }
 .nav-icon { font-size: 18px; width: 22px; text-align: center; flex-shrink: 0; }
 
+/* Nav category labels */
+.nav-category {
+  list-style: none;
+  padding: 14px 0 4px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-dimmer);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.sidebar .nav-category span {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  display: inline-block;
+  transition: max-width 0.25s ease, opacity 0.15s ease;
+}
+.sidebar:hover .nav-category span {
+  max-width: 200px;
+  opacity: 1;
+  transition: max-width 0.3s ease, opacity 0.25s 0.05s ease;
+}
+/* tiny dot placeholder when collapsed */
+.sidebar:not(:hover) .nav-category::before {
+  content: '·';
+  opacity: 0.3;
+  font-size: 12px;
+}
+
 /* ── LANG SWITCHER ─────────────────────────────────────────────── */
 .lang-switcher {
   display: flex;
@@ -2374,6 +2405,14 @@ input[type=range]::-webkit-slider-thumb {
 .drawer-link.active { color: var(--primary); background: rgba(124,111,247,.1); }
 .drawer-link .dl-icon { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
 .drawer-sep { height: 1px; background: var(--card-border); margin: 6px 16px; }
+.drawer-cat {
+  padding: 14px 16px 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-dimmer);
+}
 .drawer-footer { padding: 12px 16px; border-top: 1px solid var(--card-border); flex-shrink: 0; }
 .drawer-lang { display: flex; gap: 6px; margin-bottom: 10px; }
 .drawer-theme-btn {
