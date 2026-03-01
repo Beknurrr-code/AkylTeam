@@ -378,116 +378,35 @@
 
     <!-- ── HOME PAGE ── -->
     <section class="page active" id="page-home">
-      <div class="hero">
-        <div class="hero-badge" data-i18n="home.badge">🏆 Hackathon AI Platform</div>
-        <h1 class="hero-title" data-i18n="home.title">AkylTeam</h1>
-        <p class="hero-subtitle" data-i18n="home.subtitle">AI-платформа для хакатонных команд</p>
-        <p class="hero-tagline" data-i18n="home.tagline">Умный ментор. Персональный учитель. Детектор выгорания.</p>
-        <button class="btn btn-primary btn-lg" onclick="showPage('teams')" data-i18n="home.getStarted">Начать</button>
-      </div>
 
-      <!-- Platform Stats -->
-      <div class="platform-stats" id="platformStats">
-        <div class="pstat">
-          <div class="pstat-val" id="statUsers">—</div>
-          <div class="pstat-lbl">👤 <span data-i18n="home.statUsers">Участников</span></div>
+      <!-- HERO -->
+      <div class="home-hero">
+        <div class="home-hero-content">
+          <div class="home-hero-badge">🏆 Hackathon AI Platform</div>
+          <h1 class="home-hero-title">AkylTeam — <span class="home-hero-accent">AI для победителей</span></h1>
+          <p class="home-hero-sub">Персональный AI-ментор, детектор выгорания, генератор идей, турниры, канбан и ещё 15 инструментов для хакатонных команд.</p>
+          <div class="home-hero-btns">
+            <button class="btn btn-primary btn-lg" onclick="showPage('teams')">🚀 Начать работу</button>
+            <button class="home-hero-outline" onclick="showPage('personal-chat')">💬 Открыть AI-чат</button>
+          </div>
         </div>
-        <div class="pstat">
-          <div class="pstat-val" id="statTournaments">—</div>
-          <div class="pstat-lbl">🏆 <span data-i18n="home.statTournaments">Турниров</span></div>
-        </div>
-        <div class="pstat">
-          <div class="pstat-val" id="statProjects">—</div>
-          <div class="pstat-lbl">🚀 <span data-i18n="home.statProjects">Проектов</span></div>
-        </div>
-      </div>
-
-      <div class="quote-of-day" id="quoteOfDay">
-        <span class="qotd-icon">💬</span>
-        <blockquote id="qotdText">Загрузка цитаты...</blockquote>
-        <cite id="qotdAuthor">—</cite>
-      </div>
-
-      <h2 class="section-title" data-i18n="home.modules">Модули</h2>
-      <div class="modules-grid">
-        <div class="module-card" onclick="showPage('personal-chat')">
-          <div class="module-icon">🤖</div>
-          <h3>AI-чат</h3>
-          <p>Персональный AI-ментор. Задавай вопросы, получай советы, разбирай проблемы.</p>
-        </div>
-        <div class="module-card" onclick="showPage('teams')">
-          <div class="module-icon">👥</div>
-          <h3 data-i18n="home.modTeamTitle">Команды</h3>
-          <p>Создай или вступи в команду. Чат, доска задач, заметки, файлы — всё вместе.</p>
-        </div>
-        <div class="module-card" onclick="showPage('learn')">
-          <div class="module-icon">📚</div>
-          <h3>AI-Обучение</h3>
-          <p>AI генерирует курс из 5 уроков по любой теме с тестами и XP-наградой.</p>
-        </div>
-        <div class="module-card" onclick="showPage('burnout')">
-          <div class="module-icon">💤</div>
-          <h3 data-i18n="home.modBurnoutTitle">Детектор выгорания</h3>
-          <p data-i18n="home.modBurnoutDesc">Определяет уровень выгорания, оптимизирует расписание и задачи.</p>
-        </div>
-        <div class="module-card" onclick="showPage('kanban')">
-          <div class="module-icon">📋</div>
-          <h3>Канбан-доска</h3>
-          <p>Управляй задачами команды: Todo, In Progress, Done. Экспорт в CSV.</p>
-        </div>
-        <div class="module-card" onclick="showPage('ideas')">
-          <div class="module-icon">💡</div>
-          <h3 data-i18n="home.modIdeasTitle">Генератор идей</h3>
-          <p data-i18n="home.modIdeasDesc">Генерирует и оценивает идеи проектов под тему хакатона.</p>
-        </div>
-        <div class="module-card" onclick="showPage('codereview')">
-          <div class="module-icon">🔍</div>
-          <h3 data-i18n="home.modCodeReviewTitle">AI Код-ревью</h3>
-          <p data-i18n="home.modCodeReviewDesc">Senior-разработчик проверяет код, находит баги и улучшает качество.</p>
-        </div>
-        <div class="module-card" onclick="showPage('pitch')">
-          <div class="module-icon">🎤</div>
-          <h3 data-i18n="home.modPitchTitle">Создатель питча</h3>
-          <p data-i18n="home.modPitchDesc">Создаёт убедительный питч для жюри с ответами на вопросы.</p>
-        </div>
-        <div class="module-card" onclick="showPage('ai-insights')">
-          <div class="module-icon">🔮</div>
-          <h3>AI-Аналитика</h3>
-          <p>Предсказание рисков команды, анализ навыков, итоговый отчёт хакатона.</p>
-        </div>
-        <div class="module-card" onclick="showPage('tournaments')">
-          <div class="module-icon">🏆</div>
-          <h3 data-i18n="home.modTournamentsTitle">Турниры проектов</h3>
-          <p data-i18n="home.modTournamentsDesc">Мини-DevPost: создавай турниры, подавай проекты, получай оценку AI и голосуй.</p>
-        </div>
-        <div class="module-card" onclick="showPage('leaderboard')">
-          <div class="module-icon">📊</div>
-          <h3 data-i18n="home.modLeaderboardTitle">Лидерборд</h3>
-          <p data-i18n="home.modLeaderboardDesc">Рейтинг хакатонщиков по XP. Зарабатывай очки, бейджи и поднимайся в топ.</p>
-        </div>
-        <div class="module-card" onclick="showPage('role-test')">
-          <div class="module-icon">🧭</div>
-          <h3>Найди свою роль</h3>
-          <p>6 вопросов — узнай, кто ты в команде: PM, Developer, Designer или ML-инженер.</p>
-        </div>
-        <div class="module-card" onclick="showPage('readme')">
-          <div class="module-icon">📄</div>
-          <h3>README Generator</h3>
-          <p>Опиши проект — AI напишет профессиональный README.md с бейджами и разделами.</p>
-        </div>
-        <div class="module-card" onclick="showPage('codespace')">
-          <div class="module-icon">⌨️</div>
-          <h3>CodeSpace</h3>
-          <p>Monaco-редактор с AI-автодополнением, запуском кода в 10+ языках и AI-дебаггером.</p>
-        </div>
-        <div class="module-card" onclick="showPage('project-space')">
-          <div class="module-icon">🗂️</div>
-          <h3>Project Space</h3>
-          <p>Визуальная доска со стикерами, идеями и AI-мозговым штурмом — как Miro, но умнее.</p>
+        <div class="home-hero-stats" id="platformStats">
+          <div class="hstat-card">
+            <div class="hstat-val" id="statUsers">—</div>
+            <div class="hstat-lbl">👤 Участников</div>
+          </div>
+          <div class="hstat-card">
+            <div class="hstat-val" id="statTournaments">—</div>
+            <div class="hstat-lbl">🏆 Турниров</div>
+          </div>
+          <div class="hstat-card">
+            <div class="hstat-val" id="statProjects">—</div>
+            <div class="hstat-lbl">🚀 Проектов</div>
+          </div>
         </div>
       </div>
 
-      <!-- ── DAILY CHALLENGE ── -->
+      <!-- DAILY CHALLENGE -->
       <div class="daily-challenge-wrap" id="dailyChallengeWrap">
         <div class="daily-challenge-card" id="dailyChallengeCard">
           <div class="dc-left">
@@ -506,155 +425,175 @@
         </div>
       </div>
 
-      <!-- ── MY HACKATHONS ──────────────────────────────── -->
+      <!-- QUOTE OF DAY -->
+      <div class="quote-of-day" id="quoteOfDay">
+        <span class="qotd-icon">💬</span>
+        <blockquote id="qotdText">Загрузка цитаты...</blockquote>
+        <cite id="qotdAuthor">—</cite>
+      </div>
+
+      <!-- AI TOOLS SECTION -->
+      <div class="home-section">
+        <div class="home-section-hdr">
+          <div>
+            <div class="home-section-title">🤖 AI-инструменты</div>
+            <div class="home-section-sub">Умные помощники для каждого этапа хакатона</div>
+          </div>
+        </div>
+        <div class="home-cards-grid">
+          <div class="home-card hc-purple" onclick="showPage('personal-chat')">
+            <div class="hc-icon">🤖</div><div class="hc-body"><div class="hc-title">AI-чат</div><div class="hc-desc">Персональный AI-ментор. Задавай вопросы и получай советы.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-teal" onclick="showPage('learn')">
+            <div class="hc-icon">📚</div><div class="hc-body"><div class="hc-title">AI-Обучение</div><div class="hc-desc">Курс из 5 уроков по любой теме с тестами и XP.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-purple" onclick="showPage('ai-insights')">
+            <div class="hc-icon">🔮</div><div class="hc-body"><div class="hc-title">AI-Аналитика</div><div class="hc-desc">Предсказание рисков, анализ навыков, итоговый отчёт.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-blue" onclick="showPage('codereview')">
+            <div class="hc-icon">🔍</div><div class="hc-body"><div class="hc-title">AI Код-ревю</div><div class="hc-desc">Senior-разработчик проверяет твой код и находит баги.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-pink" onclick="showPage('ideas')">
+            <div class="hc-icon">💡</div><div class="hc-body"><div class="hc-title">Генератор идей</div><div class="hc-desc">Генерирует и оценивает идеи под тему хакатона.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-orange" onclick="showPage('burnout')">
+            <div class="hc-icon">💤</div><div class="hc-body"><div class="hc-title">Детектор выгорания</div><div class="hc-desc">Определяет уровень стресса и оптимизирует расписание.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-pink" onclick="showPage('notes')">
+            <div class="hc-icon">📓</div><div class="hc-body"><div class="hc-title">Smart Notes</div><div class="hc-desc">AI-заметки с автосаммаризацией и тегами.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-teal" onclick="showPage('teacher')">
+            <div class="hc-icon">👨‍🏫</div><div class="hc-body"><div class="hc-title">AI-Учитель</div><div class="hc-desc">Персональные уроки и задачи под твой уровень.</div></div><div class="hc-arrow">›</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEAM & PRODUCTIVITY SECTION -->
+      <div class="home-section">
+        <div class="home-section-hdr">
+          <div>
+            <div class="home-section-title">👥 Команда и продуктивность</div>
+            <div class="home-section-sub">Инструменты для слаженной командной работы</div>
+          </div>
+        </div>
+        <div class="home-cards-grid">
+          <div class="home-card hc-blue" onclick="showPage('teams')">
+            <div class="hc-icon">👥</div><div class="hc-body"><div class="hc-title">Команды</div><div class="hc-desc">Создай или вступи в команду. Чат, задачи, файлы — всё вместе.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-orange" onclick="showPage('kanban')">
+            <div class="hc-icon">📋</div><div class="hc-body"><div class="hc-title">Канбан-доска</div><div class="hc-desc">Todo, In Progress, Done. Управление задачами команды.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-teal" onclick="showPage('project-space')">
+            <div class="hc-icon">🗂️</div><div class="hc-body"><div class="hc-title">Project Space</div><div class="hc-desc">Визуальная доска со стикерами и AI-мозговым штурмом.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-teal" onclick="showPage('readme')">
+            <div class="hc-icon">📄</div><div class="hc-body"><div class="hc-title">README Generator</div><div class="hc-desc">AI напишет профессиональный README.md за секунды.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-purple" onclick="showPage('codespace')">
+            <div class="hc-icon">⌨️</div><div class="hc-body"><div class="hc-title">CodeSpace</div><div class="hc-desc">Monaco-редактор с AI-автодополнением и запуском кода.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-green" onclick="showPage('pitch')">
+            <div class="hc-icon">🎤</div><div class="hc-body"><div class="hc-title">Питч-тренер</div><div class="hc-desc">Создаёт убедительный питч для жюри с вопросами-ответами.</div></div><div class="hc-arrow">›</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPETITIONS & GROWTH SECTION -->
+      <div class="home-section">
+        <div class="home-section-hdr">
+          <div>
+            <div class="home-section-title">🏆 Соревнования и рост</div>
+            <div class="home-section-sub">Соревнуйся, побеждай и развивайся</div>
+          </div>
+        </div>
+        <div class="home-cards-grid">
+          <div class="home-card hc-purple" onclick="showPage('leaderboard')">
+            <div class="hc-icon">📊</div><div class="hc-body"><div class="hc-title">Лидерборд</div><div class="hc-desc">Рейтинг по XP. Зарабатывай бейджи и поднимайся в топ.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-orange" onclick="showPage('tournaments')">
+            <div class="hc-icon">🏆</div><div class="hc-body"><div class="hc-title">Турниры</div><div class="hc-desc">Мини-DevPost: создавай турниры, подавай проекты, голосуй.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-pink" onclick="showPage('hackathon-catalog')">
+            <div class="hc-icon">🗓️</div><div class="hc-body"><div class="hc-title">Каталог хакатонов</div><div class="hc-desc">Актуальные хакатоны с дедлайнами и призами.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-green" onclick="showPage('role-test')">
+            <div class="hc-icon">🧭</div><div class="hc-body"><div class="hc-title">Найди свою роль</div><div class="hc-desc">6 вопросов — узнай кто ты: PM, Dev, Designer или ML.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-blue" onclick="showPage('olympiad')">
+            <div class="hc-icon">🎯</div><div class="hc-body"><div class="hc-title">Олимпиадный тренажёр</div><div class="hc-desc">Задачи по алгоритмам и структурам данных с AI-подсказками.</div></div><div class="hc-arrow">›</div>
+          </div>
+          <div class="home-card hc-teal" onclick="showPage('hackathon')">
+            <div class="hc-icon">💼</div><div class="hc-body"><div class="hc-title">Хакатон менеджер</div><div class="hc-desc">Управление участием в хакатонах: заявки, прогресс, команда.</div></div><div class="hc-arrow">›</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MY HACKATHONS -->
       <div class="my-hackathons-wrap">
         <div class="my-hack-header">
           <h3 class="my-hack-title">🏆 Мои хакатоны</h3>
-          <button class="btn btn-outline btn-sm" onclick="goPage('hackathon-catalog')">+ Добавить</button>
+          <button class="btn btn-outline btn-sm" onclick="goPage('hackathon-catalog')">Добавить</button>
         </div>
         <div class="my-hack-grid">
-
-          <!-- alem.ai battle — URGENT — deadline Feb 22 -->
           <div class="my-hack-card my-hack-urgent">
             <div class="my-hack-emoji">🇺🇿</div>
             <div class="my-hack-body">
               <div class="my-hack-name">alem.ai battle 2026</div>
               <div class="my-hack-org">Astana Hub · MIDR RK</div>
               <div class="my-hack-prize">💰 25 млн тенге</div>
-              <div class="my-hack-tags">
-                <span class="mh-tag">🤖 AI</span>
-                <span class="mh-tag">🇺🇿 Казахстан</span>
-                <span class="mh-tag">🎓 Студенты</span>
-              </div>
-              <div class="my-hack-deadline" id="mhd-alem">
-                <span class="mhd-label">⏰ До дедлайна:</span>
-                <span class="mhd-val" id="mhd-alem-val">—</span>
-              </div>
-              <div class="my-hack-desc">4 категории: школьники, студенты, стартапы, R&D. Нужен AI MVP.
-                Финал в Astana Hub.</div>
+              <div class="my-hack-tags"><span class="mh-tag">🤖 AI</span><span class="mh-tag">🇺🇿 Казахстан</span><span class="mh-tag">🎓 Студенты</span></div>
+              <div class="my-hack-deadline" id="mhd-alem"><span class="mhd-label">⏰ До дедлайна:</span><span class="mhd-val" id="mhd-alem-val">—</span></div>
+              <div class="my-hack-desc">4 категории: школьники, студенты, стартапы, R&amp;D. Нужен AI MVP.</div>
             </div>
             <a href="https://astanahub.com/account/service/alem_ai_battle/request/510/create/" target="_blank" class="btn btn-primary btn-sm my-hack-btn">Подать заявку →</a>
           </div>
-
-          <!-- Next Byte Hacks — deadline Feb 24 -->
           <div class="my-hack-card my-hack-hot">
             <div class="my-hack-emoji">⚡</div>
             <div class="my-hack-body">
               <div class="my-hack-name">Next Byte Hacks: Jan 2026</div>
               <div class="my-hack-org">Next Bytes · Devpost</div>
-              <div class="my-hack-prize">💰 $100 + CodeCrafters VIP ($720)</div>
-              <div class="my-hack-tags">
-                <span class="mh-tag">🌐 Online</span>
-                <span class="mh-tag">🚀 Open Ended</span>
-                <span class="mh-tag">👋 13+</span>
-              </div>
-              <div class="my-hack-deadline" id="mhd-nb">
-                <span class="mhd-label">⏰ До дедлайна:</span>
-                <span class="mhd-val" id="mhd-nb-val">—</span>
-              </div>
-              <div class="my-hack-desc">Open-ended: любая идея. Нужно: demo-видео 1-3 мин + GitHub + скриншоты.
-                Оценка по Impact.</div>
+              <div class="my-hack-prize">💰 $100 + CodeCrafters VIP</div>
+              <div class="my-hack-tags"><span class="mh-tag">🌐 Online</span><span class="mh-tag">🚀 Open Ended</span></div>
+              <div class="my-hack-deadline" id="mhd-nb"><span class="mhd-label">⏰ До дедлайна:</span><span class="mhd-val" id="mhd-nb-val">—</span></div>
+              <div class="my-hack-desc">Open-ended: любая идея. Нужно: demo-видео + GitHub + скриншоты.</div>
             </div>
             <a href="https://next-byte-january-2026.devpost.com/" target="_blank" class="btn btn-primary btn-sm my-hack-btn">Перейти →</a>
           </div>
-
-          <!-- Creator Colosseum — deadline Mar 26 -->
           <div class="my-hack-card">
             <div class="my-hack-emoji">🏗️</div>
             <div class="my-hack-body">
               <div class="my-hack-name">Creator Colosseum 2026</div>
               <div class="my-hack-org">Creator Colosseum · Devpost</div>
               <div class="my-hack-prize">💰 $575 cash + Менторинг</div>
-              <div class="my-hack-tags">
-                <span class="mh-tag">🌍 Глобальный</span>
-                <span class="mh-tag">🏢 Стартап</span>
-                <span class="mh-tag">13–18 лет</span>
-              </div>
-              <div class="my-hack-deadline" id="mhd-cc">
-                <span class="mhd-label">⏰ До дедлайна:</span>
-                <span class="mhd-val" id="mhd-cc-val">—</span>
-              </div>
-              <div class="my-hack-desc">Startup-идея в Q&amp;A формате. 40% оценки — усилия. Судьи: Microsoft, Google,
-                IBM, Johnson &amp; Johnson.</div>
+              <div class="my-hack-tags"><span class="mh-tag">🌍 Глобальный</span><span class="mh-tag">13–18 лет</span></div>
+              <div class="my-hack-deadline" id="mhd-cc"><span class="mhd-label">⏰ До дедлайна:</span><span class="mhd-val" id="mhd-cc-val">—</span></div>
+              <div class="my-hack-desc">Startup-идея в Q&amp;A формате. Судьи: Microsoft, Google, IBM.</div>
             </div>
             <a href="https://creatorcolosseumcompetition26.devpost.com/" target="_blank" class="btn btn-primary btn-sm my-hack-btn">Перейти →</a>
           </div>
-
         </div>
       </div>
 
-      <!-- ── NEW IDEAS & IMPROVEMENTS ── -->
+      <!-- IDEAS ROADMAP -->
       <div class="ideas-roadmap">
         <button class="ideas-toggle" onclick="toggleIdeasRoadmap(this)">
           🚀 Новые идеи и улучшения <span class="ideas-chevron">▼</span>
         </button>
         <div class="ideas-content" id="ideasContent" style="display:none">
-          <p class="ideas-intro">Планы по развитию платформы AkylTeam — функции, которые появятся в будущих версиях:</p>
+          <p class="ideas-intro">Планы по развитию платформы AkylTeam:</p>
           <div class="ideas-grid">
-            <div class="idea-card">
-              <div class="idea-icon">⚡</div>
-              <h4>WebSocket реального времени</h4>
-              <p>Мгновенная доставка сообщений в каналах и чате без перезагрузки страницы через постоянные WebSocket-соединения.</p>
-              <span class="idea-tag idea-tag-high">Высокий приоритет</span>
-            </div>
-            <div class="idea-card">
-              <div class="idea-icon">📎</div>
-              <h4>Загрузка файлов и вложений</h4>
-              <p>Отправка изображений, PDF, ZIP-архивов и кода прямо в чат и каналы. Предпросмотр файлов без скачивания.</p>
-              <span class="idea-tag idea-tag-high">Высокий приоритет</span>
-            </div>
-            <div class="idea-card">
-              <div class="idea-icon">🔔</div>
-              <h4>Push-уведомления браузера</h4>
-              <p>Уведомления о новых сообщениях, упоминаниях @you и дедлайнах задач через Web Push API, даже если вкладка закрыта.</p>
-              <span class="idea-tag idea-tag-high">Высокий приоритет</span>
-            </div>
-            <div class="idea-card">
-              <div class="idea-icon">🎨</div>
-              <h4>Темы оформления</h4>
-              <p>Несколько цветовых схем на выбор: Dark, Light, Cyberpunk, Forest. Настройка акцентного цвета и размера шрифта.</p>
-              <span class="idea-tag idea-tag-med">Средний приоритет</span>
-            </div>
-            <div class="idea-card">
-              <div class="idea-icon">📄</div>
-              <h4>Экспорт отчётов в PDF</h4>
-              <p>Автоматическая генерация PDF-отчётов по команде, канбан-доске, AI-аналитике и итогам хакатона для жюри.</p>
-              <span class="idea-tag idea-tag-med">Средний приоритет</span>
-            </div>
-            <div class="idea-card">
-              <div class="idea-icon">🐙</div>
-              <h4>Интеграция с GitHub</h4>
-              <p>Синхронизация репозитория команды: автоматический code review на каждый пул-реквест, отображение коммитов в чате.</p>
-              <span class="idea-tag idea-tag-med">Средний приоритет</span>
-            </div>
-            <div class="idea-card">
-              <div class="idea-icon">👍</div>
-              <h4>Голосование за идеи</h4>
-              <p>Участники команды голосуют за предложенные идеи прямо в чате. Итоги голосования — в виде прогресс-баров.</p>
-              <span class="idea-tag idea-tag-med">Средний приоритет</span>
-            </div>
-            <div class="idea-card">
-              <div class="idea-icon">🏅</div>
-              <h4>Геймификация команд</h4>
-              <p>Командный рейтинг в дополнение к личному лидерборду. Командные достижения, трофеи и XP за совместные победы.</p>
-              <span class="idea-tag idea-tag-low">Низкий приоритет</span>
-            </div>
-            <div class="idea-card">
-              <div class="idea-icon">⏳</div>
-              <h4>Таймер обратного отсчёта</h4>
-              <p>Виджет с обратным отсчётом до конца хакатона на главной странице. Настраиваемое время дедлайна для каждой команды.</p>
-              <span class="idea-tag idea-tag-low">Низкий приоритет</span>
-            </div>
-            <div class="idea-card">
-              <div class="idea-icon">📱</div>
-              <h4>Нативное мобильное приложение</h4>
-              <p>PWA уже работает. Следующий шаг — нативные приложения для iOS и Android через Capacitor с офлайн-поддержкой.</p>
-              <span class="idea-tag idea-tag-low">Низкий приоритет</span>
-            </div>
+            <div class="idea-card"><div class="idea-icon">⚡</div><h4>WebSocket реального времени</h4><p>Мгновенная доставка сообщений без перезагрузки страницы.</p><span class="idea-tag idea-tag-high">Высокий приоритет</span></div>
+            <div class="idea-card"><div class="idea-icon">📎</div><h4>Загрузка файлов</h4><p>PDF, изображения, ZIP прямо в чат и каналы.</p><span class="idea-tag idea-tag-high">Высокий приоритет</span></div>
+            <div class="idea-card"><div class="idea-icon">🔔</div><h4>Push-уведомления</h4><p>Уведомления о сообщениях и дедлайнах через Web Push API.</p><span class="idea-tag idea-tag-high">Высокий приоритет</span></div>
+            <div class="idea-card"><div class="idea-icon">🐙</div><h4>Интеграция с GitHub</h4><p>Автоматический code review на каждый пул-реквест.</p><span class="idea-tag idea-tag-med">Средний приоритет</span></div>
+            <div class="idea-card"><div class="idea-icon">📄</div><h4>Экспорт в PDF</h4><p>Отчёты по команде, канбан, аналитике для жюри.</p><span class="idea-tag idea-tag-med">Средний приоритет</span></div>
+            <div class="idea-card"><div class="idea-icon">📱</div><h4>Нативное приложение</h4><p>iOS и Android через Capacitor с офлайн-поддержкой.</p><span class="idea-tag idea-tag-low">Низкий приоритет</span></div>
           </div>
         </div>
       </div>
+
     </section>
+
 
     <!-- ── TEAM PAGE ── -->
     <section class="page" id="page-team">
