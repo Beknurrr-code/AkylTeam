@@ -61,7 +61,6 @@ app.include_router(codespace_router)
 app.include_router(notes_router)
 app.include_router(media_router)
 app.include_router(teams_router)
-app.include_router(media_router)
 
 # Serve static frontend
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend")
