@@ -75,153 +75,170 @@
        AUTH LANDING PAGE — shown when not logged in
        ══════════════════════════════════════════════════════════ -->
   <div id="authLanding" class="auth-landing">
-    <!-- Left branding panel -->
-    <div class="auth-left">
-      <div class="auth-brand">
-        <span class="auth-brand-icon">🧠</span>
-        <span class="auth-brand-name">AkylTeam</span>
-      </div>
-      <h1 class="auth-tagline" id="landingTagline" data-i18n="home.landingTitle">
-        AI-платформа для<br><span class="highlight">хакатонных команд</span>
-      </h1>
-      <p class="auth-sub" id="landingSub" data-i18n="home.landingSub">Умный ментор, детектор выгорания, AI-учитель, турниры и лидерборд — всё в одном месте.</p>
-      <!-- Stats -->
-      <div class="auth-stats">
-        <div class="auth-stat">
-          <div class="auth-stat-num">500+</div>
-          <div class="auth-stat-label">Пользователей</div>
-        </div>
-        <div class="auth-stat">
-          <div class="auth-stat-num">120+</div>
-          <div class="auth-stat-label">Команд</div>
-        </div>
-        <div class="auth-stat">
-          <div class="auth-stat-num">40+</div>
-          <div class="auth-stat-label">Хакатонов</div>
-        </div>
-      </div>
-      <div class="auth-features">
-        <div class="auth-feature">
-          <span class="auth-feature-icon">🤖</span>
-          <div class="auth-feature-text">
-            <strong id="lf1title" data-i18n="home.lf1title">AI-ментор и учитель</strong>
-            <span id="lf1desc" data-i18n="home.lf1desc">Анализ команды, распределение ролей, объяснение тем и генерация квизов</span>
-          </div>
-        </div>
-        <div class="auth-feature">
-          <span class="auth-feature-icon">🏆</span>
-          <div class="auth-feature-text">
-            <strong id="lf2title" data-i18n="home.lf2title">Турниры проектов</strong>
-            <span id="lf2desc" data-i18n="home.lf2desc">Мини-DevPost: создавай турниры, получай AI-оценку, голосуй за лучшие проекты</span>
-          </div>
-        </div>
-        <div class="auth-feature">
-          <span class="auth-feature-icon">⚡</span>
-          <div class="auth-feature-text">
-            <strong id="lf3title" data-i18n="home.lf3title">Гамификация</strong>
-            <span id="lf3desc" data-i18n="home.lf3desc">XP, ранги, бейджи, стрики и лидерборд — мотивация учиться и участвовать</span>
-          </div>
-        </div>
-      </div>
+    <!-- Animated background -->
+    <div class="auth-bg">
+      <div class="auth-orb auth-orb-1"></div>
+      <div class="auth-orb auth-orb-2"></div>
+      <div class="auth-orb auth-orb-3"></div>
     </div>
 
-    <!-- Right form panel -->
-    <div class="auth-right">
-      <div class="auth-form-title" id="landingFormTitle" data-i18n="home.landingFormTitle">Добро пожаловать 👋</div>
-      <div class="auth-form-sub" id="landingFormSub" data-i18n="home.landingFormSub">Войди или создай аккаунт чтобы начать</div>
+    <!-- Main wrapper -->
+    <div class="auth-wrapper">
 
-      <div class="auth-tabs">
-        <button class="auth-tab-btn active" id="landingTabLogin" onclick="switchLandingTab('login')" data-i18n="auth.loginTab">Войти</button>
-        <button class="auth-tab-btn" id="landingTabReg" onclick="switchLandingTab('register')" data-i18n="auth.registerTab">Регистрация</button>
-      </div>
-
-      <!-- Login form -->
-      <div class="auth-panel active" id="landingLoginPanel">
-        <div class="form-group">
-          <label id="ll_userLbl" data-i18n="auth.loginLabel">Логин или Email</label>
-          <div class="auth-input-wrap">
-            <span class="auth-input-icon">👤</span>
-            <input type="text" id="llUsername" class="input" placeholder="username" autocomplete="username" />
-          </div>
+      <!-- ── LEFT showcase ── -->
+      <div class="auth-showcase">
+        <div class="auth-logo">
+          <div class="auth-logo-icon">🧠</div>
+          <span class="auth-logo-name">AkylTeam</span>
         </div>
-        <div class="form-group">
-          <label id="ll_passLbl" data-i18n="auth.passwordLabel">Пароль</label>
-          <div class="auth-input-wrap">
-            <span class="auth-input-icon">🔒</span>
-            <input type="password" id="llPassword" class="input" placeholder="••••••••" autocomplete="current-password" />
-            <button type="button" class="auth-eye-btn" onclick="toggleEye('llPassword',this)" title="Показать/скрыть пароль">👁</button>
-          </div>
-        </div>
-        <div style="text-align:right;margin-top:-4px;margin-bottom:4px">
-          <a href="#" style="font-size:12px;color:var(--primary)">Забыл пароль?</a>
-        </div>
-        <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="doLandingLogin()" id="ll_btn" data-i18n="auth.loginBtn">Войти</button>
-        <div class="auth-divider"><span>или</span></div>
-        <button class="btn btn-secondary" style="width:100%;" onclick="doLandingGuestLogin()">👻 Войти как гость</button>
-        <p style="text-align:center;font-size:13px;color:var(--text-dim);margin-top:12px">
-          <span id="ll_noAcc" data-i18n="auth.noAccount">Нет аккаунта?</span>
-          <a href="#" onclick="switchLandingTab('register')" style="color:var(--primary);margin-left:4px" id="ll_regLink" data-i18n="auth.registerLink">Зарегистрируйся</a>
+        <h1 class="auth-headline">
+          Платформа для<br>
+          <span class="auth-headline-accent">успешных команд</span>
+        </h1>
+        <p class="auth-desc" data-i18n="home.landingSub">
+          AI-ментор, детектор выгорания, турниры и инструменты продуктивности — всё в одном месте
         </p>
+
+        <!-- Feature pills -->
+        <div class="auth-pills">
+          <div class="auth-pill">🤖 AI Ментор</div>
+          <div class="auth-pill">💤 Выгорание</div>
+          <div class="auth-pill">🏆 Турниры</div>
+          <div class="auth-pill">📋 Канбан</div>
+          <div class="auth-pill">📈 Лидерборд</div>
+          <div class="auth-pill">🎓 AI Учитель</div>
+          <div class="auth-pill">🔍 Код-ревью</div>
+          <div class="auth-pill">🎤 Питч-тренер</div>
+        </div>
+
+        <!-- Stats -->
+        <div class="auth-stats-row">
+          <div class="auth-stat-item">
+            <span class="auth-sn">500+</span>
+            <span class="auth-sl">Пользователей</span>
+          </div>
+          <div class="auth-stat-sep"></div>
+          <div class="auth-stat-item">
+            <span class="auth-sn">120+</span>
+            <span class="auth-sl">Команд</span>
+          </div>
+          <div class="auth-stat-sep"></div>
+          <div class="auth-stat-item">
+            <span class="auth-sn">40+</span>
+            <span class="auth-sl">Хакатонов</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Register form -->
-      <div class="auth-panel" id="landingRegPanel">
-        <div class="form-group">
-          <label id="lr_userLbl" data-i18n="auth.usernameLbl">Логин *</label>
-          <div class="auth-input-wrap">
-            <span class="auth-input-icon">👤</span>
-            <input type="text" id="lrUsername" class="input" placeholder="coolhacker" autocomplete="username" />
-          </div>
+      <!-- ── RIGHT auth card ── -->
+      <div class="auth-card">
+        <!-- Card header -->
+        <div class="auth-card-head">
+          <div class="auth-card-title" id="landingFormTitle">Добро пожаловать 👋</div>
+          <div class="auth-card-sub" id="landingFormSub">Войди или создай аккаунт</div>
         </div>
-        <div class="form-group">
-          <label id="lr_emailLbl" data-i18n="auth.emailLbl">Email *</label>
-          <div class="auth-input-wrap">
-            <span class="auth-input-icon">✉️</span>
-            <input type="email" id="lrEmail" class="input" placeholder="you@example.com" autocomplete="email" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label id="lr_passLbl" data-i18n="auth.passwordLbl">Пароль *</label>
-          <div class="auth-input-wrap">
-            <span class="auth-input-icon">🔒</span>
-            <input type="password" id="lrPassword" class="input" placeholder="••••••••" autocomplete="new-password" oninput="updatePassStrength(this.value)" />
-            <button type="button" class="auth-eye-btn" onclick="toggleEye('lrPassword',this)" title="Показать/скрыть пароль">👁</button>
-          </div>
-          <div class="pass-strength-wrap">
-            <div class="pass-strength-bar"><div class="pass-strength-fill" id="passStrengthFill"></div></div>
-            <div class="pass-strength-label" id="passStrengthLabel"></div>
-          </div>
-        </div>
-        <div class="form-group">
-          <label id="lr_nameLbl" data-i18n="auth.fullNameLbl">Имя</label>
-          <div class="auth-input-wrap">
-            <span class="auth-input-icon">✍️</span>
-            <input type="text" id="lrFullName" class="input" placeholder="Имя Фамилия" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label id="lr_skillsLbl" data-i18n="auth.skillsLbl">Навыки (через запятую)</label>
-          <div class="auth-input-wrap">
-            <span class="auth-input-icon">💻</span>
-            <input type="text" id="lrSkills" class="input" placeholder="Python, React, ML" />
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;margin-top:2px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border:1px solid var(--card-border)">
-          <input type="checkbox" id="lrLooking" style="width:16px;height:16px;accent-color:var(--primary);flex-shrink:0" />
-          <label for="lrLooking" id="lr_lookingLbl" style="font-size:14px;cursor:pointer;color:var(--text-dim)" data-i18n="auth.lookingLbl">🔍 Ищу команду (покажет другим)</label>
-        </div>
-        <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="doLandingRegister()" id="lr_btn" data-i18n="auth.registerBtn">Зарегистрироваться</button>
-        <p style="text-align:center;font-size:13px;color:var(--text-dim);margin-top:12px">
-          <span id="lr_hasAcc" data-i18n="auth.hasAccount">Уже есть аккаунт?</span>
-          <a href="#" onclick="switchLandingTab('login')" style="color:var(--primary);margin-left:4px" id="lr_loginLink" data-i18n="auth.loginLink">Войти</a>
-        </p>
-      </div>
 
-      <!-- Lang switcher on landing -->
-      <div class="auth-lang">
-        <button class="auth-lang-btn active" data-lang="ru" onclick="setLandingLang('ru')">RU</button>
-        <button class="auth-lang-btn" data-lang="kz" onclick="setLandingLang('kz')">KZ</button>
-        <button class="auth-lang-btn" data-lang="en" onclick="setLandingLang('en')">EN</button>
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button class="auth-tab-btn active" id="landingTabLogin" onclick="switchLandingTab('login')" data-i18n="auth.loginTab">Войти</button>
+          <button class="auth-tab-btn" id="landingTabReg" onclick="switchLandingTab('register')" data-i18n="auth.registerTab">Регистрация</button>
+        </div>
+
+        <!-- ── LOGIN form ── -->
+        <div class="auth-panel active" id="landingLoginPanel">
+          <div class="auth-field">
+            <label data-i18n="auth.loginLabel">Логин или Email</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">👤</span>
+              <input type="text" id="llUsername" class="input" placeholder="username" autocomplete="username" />
+            </div>
+          </div>
+          <div class="auth-field">
+            <div class="auth-field-row">
+              <label data-i18n="auth.passwordLabel">Пароль</label>
+              <a href="#" class="auth-forgot">Забыл пароль?</a>
+            </div>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">🔑</span>
+              <input type="password" id="llPassword" class="input" placeholder="••••••••" autocomplete="current-password" />
+              <button type="button" class="auth-eye-btn" onclick="toggleEye('llPassword',this)">👁</button>
+            </div>
+          </div>
+          <button class="btn btn-primary auth-submit-btn" onclick="doLandingLogin()" id="ll_btn" data-i18n="auth.loginBtn">Войти</button>
+          <div class="auth-divider"><span>или</span></div>
+          <button class="auth-guest-btn" onclick="doLandingGuestLogin()">
+            <span>👻</span> Войти как гость
+          </button>
+          <p class="auth-switch-text">
+            <span data-i18n="auth.noAccount">Нет аккаунта?</span>
+            <a href="#" onclick="switchLandingTab('register')" data-i18n="auth.registerLink">Зарегистрируйся</a>
+          </p>
+        </div>
+
+        <!-- ── REGISTER form ── -->
+        <div class="auth-panel" id="landingRegPanel">
+          <div class="auth-field-row-2">
+            <div class="auth-field">
+              <label data-i18n="auth.usernameLbl">Логин *</label>
+              <div class="auth-input-wrap">
+                <span class="auth-input-icon">👤</span>
+                <input type="text" id="lrUsername" class="input" placeholder="coolhacker" autocomplete="username" />
+              </div>
+            </div>
+            <div class="auth-field">
+              <label data-i18n="auth.emailLbl">Email *</label>
+              <div class="auth-input-wrap">
+                <span class="auth-input-icon">✉️</span>
+                <input type="email" id="lrEmail" class="input" placeholder="you@example.com" autocomplete="email" />
+              </div>
+            </div>
+          </div>
+          <div class="auth-field">
+            <label data-i18n="auth.passwordLbl">Пароль *</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">🔑</span>
+              <input type="password" id="lrPassword" class="input" placeholder="••••••••" autocomplete="new-password" oninput="updatePassStrength(this.value)" />
+              <button type="button" class="auth-eye-btn" onclick="toggleEye('lrPassword',this)">👁</button>
+            </div>
+            <div class="pass-strength-wrap">
+              <div class="pass-strength-bar"><div class="pass-strength-fill" id="passStrengthFill"></div></div>
+              <div class="pass-strength-label" id="passStrengthLabel"></div>
+            </div>
+          </div>
+          <div class="auth-field-row-2">
+            <div class="auth-field">
+              <label data-i18n="auth.fullNameLbl">Имя</label>
+              <div class="auth-input-wrap">
+                <span class="auth-input-icon">✍️</span>
+                <input type="text" id="lrFullName" class="input" placeholder="Имя Фамилия" />
+              </div>
+            </div>
+            <div class="auth-field">
+              <label data-i18n="auth.skillsLbl">Навыки</label>
+              <div class="auth-input-wrap">
+                <span class="auth-input-icon">💻</span>
+                <input type="text" id="lrSkills" class="input" placeholder="Python, React" />
+              </div>
+            </div>
+          </div>
+          <label class="auth-checkbox-row">
+            <input type="checkbox" id="lrLooking" />
+            <span class="auth-checkbox-custom"></span>
+            <span data-i18n="auth.lookingLbl">🔍 Ищу команду</span>
+          </label>
+          <button class="btn btn-primary auth-submit-btn" onclick="doLandingRegister()" id="lr_btn" data-i18n="auth.registerBtn">Создать аккаунт</button>
+          <p class="auth-switch-text">
+            <span data-i18n="auth.hasAccount">Уже есть аккаунт?</span>
+            <a href="#" onclick="switchLandingTab('login')" data-i18n="auth.loginLink">Войти</a>
+          </p>
+        </div>
+
+        <!-- Lang -->
+        <div class="auth-lang">
+          <button class="auth-lang-btn active" data-lang="ru" onclick="setLandingLang('ru')">RU</button>
+          <button class="auth-lang-btn" data-lang="kz" onclick="setLandingLang('kz')">KZ</button>
+          <button class="auth-lang-btn" data-lang="en" onclick="setLandingLang('en')">EN</button>
+        </div>
       </div>
     </div>
   </div>
