@@ -259,6 +259,10 @@ async function doLandingRegister() {
     showToast(t('auth.accountCreated'), 'success');
     if (typeof startHeartbeat === 'function') startHeartbeat();
     loadProfile();
+    // Show theme picker welcome modal after registration
+    setTimeout(() => {
+      if (typeof openThemePicker === 'function') openThemePicker();
+    }, 900);
     // Show onboarding if no skills provided
     if (!skills.length) {
       setTimeout(() => {
