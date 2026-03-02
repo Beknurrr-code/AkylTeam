@@ -818,32 +818,72 @@ body {
 }
 
 @media (max-width: 768px) {
+  /* ── Layout ── */
   .sidebar { display: none !important; }
   .hamburger { display: flex; align-items: center; justify-content: center; }
-  .main-content { margin-left: 0; width: 100%; padding: 70px 16px 16px; }
+  .main-content { margin-left: 0; width: 100%; padding: 70px 16px 20px; }
   .page.active { max-width: 100%; }
+
+  /* ── Chat ── */
   .chat-layout { grid-template-columns: 1fr; height: auto; }
   .chat-sidebar { display: none; }
   .chat-main { height: 70vh; }
+
+  /* ── Grids ── */
   .grid-2 { grid-template-columns: 1fr; }
   .modules-grid { grid-template-columns: 1fr 1fr; }
+
+  /* ── Home hero ── */
   .hero { padding: 32px 16px; }
   .home-hero { flex-direction: column; padding: 32px 0 24px; gap: 24px; }
-  .home-hero-stats { flex-direction: row; flex-wrap: wrap; width: 100%; }
-  .hstat-card { flex: 1; min-width: 0; min-width: 140px; }
-  .home-cards-grid { grid-template-columns: 1fr 1fr; }
+  .home-hero-title { font-size: clamp(1.8rem, 7vw, 2.6rem); }
+  .home-hero-btns { gap: 10px; }
+  .home-hero-btns .btn, .home-hero-outline { width: 100%; justify-content: center; min-height: 48px; }
+  .home-hero-stats { flex-direction: row; flex-wrap: wrap; width: 100%; gap: 10px; }
+  .hstat-card { flex: 1; min-width: 130px; padding: 14px 16px; }
+  .hstat-val { font-size: 22px; }
+
+  /* ── Home sections ── */
+  .home-cards-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .home-card { padding: 14px; gap: 12px; }
+  .hc-icon { font-size: 22px; }
+  .hc-title { font-size: 13px; }
+  .hc-desc { display: none; }
+  .hc-arrow { display: none; }
+  .home-section-hdr { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .home-section { margin-bottom: 32px; }
+
+  /* ── My hackathons ── */
+  .my-hack-grid { grid-template-columns: 1fr; }
+
+  /* ── Misc ── */
+  .btn-row { flex-wrap: wrap; }
+  .page-header h1 { font-size: 1.5rem; }
 }
 
 @media (max-width: 480px) {
+  /* ── Layout ── */
+  .main-content { padding: 64px 12px 16px; }
+
+  /* ── Grids ── */
   .modules-grid { grid-template-columns: 1fr; }
   .home-cards-grid { grid-template-columns: 1fr; }
+  .home-card { padding: 16px; gap: 14px; }
+  .hc-desc { display: block; }
+
+  /* ── Home hero ── */
+  .hstat-card { min-width: calc(50% - 5px); }
+
+  /* ── Lang switcher ── */
   .lang-switcher { gap: 4px; }
   .lang-btn { padding: 4px 8px; font-size: 11px; }
-}
 
-@media (max-width: 480px) {
-  .modules-grid { grid-template-columns: 1fr; }
+  /* ── Misc ── */
   .btn-row { flex-direction: column; }
+  .page-header h1 { font-size: 1.35rem; }
+  .card { padding: 18px 14px; }
+  .daily-challenge-card { flex-direction: column; align-items: flex-start; }
+  .dc-right { align-items: flex-start; width: 100%; }
 }
 
 /* ── VOICE INDICATOR ───────────────────────────────────────────── */
